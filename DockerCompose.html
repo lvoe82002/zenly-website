@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>项目部署——使用 DockerCompose 部署</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        a {
+            text-decoration: none;
+            color: #fff;
+        }
+        .clearfix:after {
+            content: "";
+            display: block;
+            height: 0;
+            visibility: hidden;
+            clear: both;
+        }
+        .clearfix {
+            *zoom: 1;
+        }
+        html,
+        body {
+            width: 100%;
+            overflow-x: hidden;
+            font-family: "宋体";
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                url(https://t.mwm.moe/ycy/) no-repeat center top;
+            background-size: cover;
+            background-attachment: fixed;
+        }
+
+        /* 首页同款雪花画布 */
+        #snowFullScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+        }
+        #stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -2;
+            width: 100%;
+            height: 100vh;
+            background: rgba(14, 23, 41, 0.6);
+        }
+        /* 月亮和流星相关样式已移除 */
+        .back-btn {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 8px 18px;
+            background: rgba(255, 255, 255, 0.28);
+            border-radius: 12px;
+            font-size: 17px;
+            z-index: 99;
+            color: #fff;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            transition: 0.25s ease;
+            outline: none;
+        }
+        .back-btn:focus {
+            outline: none;
+        }
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.45);
+            box-shadow: 0 0 18px rgba(255, 255, 255, 0.35);
+        }
+        .article-wrap {
+            width: 96vw;
+            max-width: 1100px;
+            margin: 140px auto 120px;
+            background: rgba(255, 255, 255, 0.32);
+            border-radius: 16px;
+            padding: 50px;
+            position: relative;
+            z-index: 2;
+        }
+        .img-box {
+            width: 100%;
+            margin-bottom: 48px;
+            text-align: center;
+        }
+        .article-cover {
+            width: 100%;
+            border-radius: 12px;
+            display: block;
+            margin: 0 auto;
+        }
+        .article-title {
+            font-size: 36px;
+            text-align: center;
+            color: #111;
+            margin-bottom: 24px;
+        }
+        .article-meta {
+            text-align: center;
+            color: #333;
+            font-size: 17px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+            margin-bottom: 40px;
+        }
+        .article-content {
+            font-size: 20px;
+            line-height: 2;
+            color: #1a1a1a;
+            width: 100%;
+        }
+        .article-content p {
+            margin-bottom: 20px;
+        }
+        .code-block {
+            background: rgba(255, 255, 255, 0.28);
+            padding: 20px;
+            border-radius: 10px;
+            font-family: Consolas;
+            font-size: 17px;
+            white-space: pre-wrap;
+            margin-bottom: 20px;
+        }
+        .tag-box {
+            margin-top: 40px;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .tag {
+            padding: 6px 16px;
+            background: rgba(255, 255, 255, 0.38);
+            border-radius: 24px;
+            font-size: 16px;
+            color: #222;
+        }
+        .footer-box {
+            width: 100%;
+            height: 80px;
+        }
+        .back-top {
+            position: fixed;
+            right: 30px;
+            bottom: 40px;
+            width: 46px;
+            height: 46px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 99;
+            transition: 0.3s ease;
+            cursor: pointer;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            outline: none;
+        }
+        .back-top:focus {
+            outline: none;
+        }
+        .back-top:hover {
+            background: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 0 18px rgba(255, 255, 255, 0.35);
+            transform: translateY(-6px);
+        }
+        .back-top::after {
+            content: "↑";
+            font-size: 22px;
+            color: #ffffff;
+            font-weight: bold;
+        }
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9998;
+        }
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: burst 0.6s ease-out forwards;
+        }
+        @keyframes burst {
+            0% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0.5);
+            }
+        }
+
+        /* 评论区样式 */
+        .comment-box {
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(0, 0, 0, 0.15);
+        }
+        .comment-title {
+            font-size: 26px;
+            margin-bottom: 30px;
+            color: #111;
+        }
+        .comment-input-panel {
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 12px;
+            padding: 22px;
+            margin-bottom: 24px;
+        }
+        .comment-row-top {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+            align-items: center;
+        }
+        .comment-row-top input {
+            padding: 9px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.7);
+            outline: none;
+            font-size: 15px;
+        }
+        .tag-required {
+            color: #dd3333;
+            font-size: 13px;
+        }
+        .tag-optional {
+            color: #666;
+            font-size: 13px;
+        }
+        .inp-content {
+            width: 100%;
+            min-height: 110px;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.7);
+            padding: 12px;
+            resize: none;
+            outline: none;
+            font-size: 15px;
+            margin-bottom: 10px;
+        }
+        .input-bottom-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .emoji-btn {
+            font-size: 19px;
+            cursor: pointer;
+        }
+        .word-count {
+            color: #555;
+            font-size: 14px;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+        .btn-preview {
+            padding: 7px 18px;
+            border-radius: 7px;
+            border: 1px solid #ddd;
+            background: #fff;
+            cursor: pointer;
+        }
+        .btn-send {
+            padding: 7px 18px;
+            border-radius: 7px;
+            border: none;
+            background: #72b8f5;
+            color: white;
+            cursor: pointer;
+        }
+        .empty-tip {
+            color: #444;
+            font-size: 15px;
+        }
+
+        /* 右键禁用提示框样式 */
+        .float-tip-top {
+            position: fixed;
+            top: 26px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(30, 30, 30, 0.75) !important;
+            backdrop-filter: blur(6px) !important;
+            -webkit-backdrop-filter: blur(6px) !important;
+            border-radius: 50px !important;
+            padding: 6px 22px 6px 20px !important;
+            display: none !important;
+            align-items: center !important;
+            gap: 10px !important;
+            color: #ffffff !important;
+            font-size: 14px !important;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+            z-index: 99999 !important;
+            white-space: nowrap !important;
+            pointer-events: none !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+            border: none !important;
+            animation: floatTipIn 0.35s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+        }
+        .float-tip-top.show {
+            display: flex !important;
+        }
+        .float-tip-top.float-tip-out {
+            animation: floatTipOut 0.3s ease-in forwards;
+        }
+        @keyframes floatTipIn {
+            0% {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-14px) scale(0.92);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0) scale(1);
+            }
+        }
+        @keyframes floatTipOut {
+            0% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-10px) scale(0.94);
+            }
+        }
+        .float-tip-top .tip-icon {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 20px !important;
+            height: 20px !important;
+            border-radius: 50% !important;
+            background: #ffffff !important;
+            color: #1f1f1f !important;
+            font-family: 'Times New Roman', Times, serif !important;
+            font-style: italic !important;
+            font-weight: 700 !important;
+            font-size: 15px !important;
+            line-height: 1 !important;
+            flex-shrink: 0 !important;
+            padding-bottom: 2px !important;
+            box-sizing: border-box !important;
+        }
+
+        /* ========== 自定义白色光标样式 ========== */
+        @media (hover: hover) and (pointer: fine) {
+            body, a, button, * {
+                cursor: none !important;
+            }
+        }
+
+        #cursor {
+            position: fixed;
+            pointer-events: none;
+            z-index: 100000;
+            width: 16px;
+            height: 16px;
+            margin-left: -8px;
+            margin-top: -8px;
+            border: 1.5px solid #fff;
+            border-radius: 50%;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: width 0.15s, height 0.15s, margin-left 0.15s, margin-top 0.15s;
+        }
+
+        #cursor::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: #fff;
+            border-radius: 50%;
+            transition: width 0.15s, height 0.15s;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (hover: none), (max-width: 768px) {
+            #cursor {
+                display: none !important;
+            }
+            body, a, button, * {
+                cursor: auto !important;
+            }
+        }
+        /* ========== 光标样式结束 ========== */
+    </style>
+</head>
+<body>
+    <!-- 首页同款雪花画布 -->
+    <canvas id="snowFullScreen"></canvas>
+    <canvas id="stars"></canvas>
+    <!-- 月亮 div 已移除 -->
+    <div class="particles" id="particles"></div>
+
+    <!-- 自定义光标元素 -->
+    <div id="cursor" class="xs-hidden hidden"></div>
+
+    <!-- 右键禁用提示框 -->
+    <div class="float-tip-top" id="rightTipTop">
+        <span class="tip-icon">i</span>
+        <span>为了浏览体验，本站禁用右键</span>
+    </div>
+
+    <a href="zenly.html" class="back-btn">← 返回首页</a>
+    <div class="article-wrap">
+        <div class="img-box">
+            <img class="article-cover" src="https://cdn-us.imgs.moe/2026/07/07/93ae65dcb1801e62fdc12604aff8125d.png" alt="DockerCompose封面">
+        </div>
+        <h1 class="article-title">项目部署——使用 DockerCompose 部署</h1>
+        <div class="article-meta">作者：玖染 &nbsp;|&nbsp; 发布时间：2026-06-23 &nbsp;|&nbsp; 更新时间：2026-07-05</div>
+        <div class="article-content">
+            <p>前言</p>
+            <p>前面已经使用 普通方法和DockerFile 的方法对项目进行部署</p>
+            <p>但是这有个缺点是</p>
+            <p>要写的指令和配置较多</p>
+            <p>运行的容器也比较多</p>
+            <p>还要去处理这些容器的网络，数据卷等</p>
+            <p>如果用docker命令一个个去处理还是不方便</p>
+            <p>无法集成化</p>
+            <p>而且文件需要动态更新还要一步一步来再部署很麻烦</p>
+            <p>下面使用 DockerCompose 来对项目进行集成化部署</p>
+            <p>在前面使用自定义镜像的基础上用 DockerCompose 来一键部署</p>
+            <p>实现</p>
+            <p>DockerCompose 是用来定义和运行一个或多个容器(通常都是多个)运行和应用的工具</p>
+            <p>有了 DockerCompose 之后你就可以在 DockerCompose yml 文件里定义好所有需要启动的容器的命令 到时候一次运行就可以把所有容器部署好</p>
+            <p>先查看 DockerCompose 是否已安装 若没安装请自行安装</p>
+            <div class="code-block">docker compose version</div>
+            <p>需要注意的是之前在运行容器时我们有给容器命名</p>
+            <p>但在 DockerCompose 中不需要给容器命名了 我们使用服务名称来进行互联</p>
+            <p>一、重新构建新镜像</p>
+            <p>前面我们对镜像进行构建里面包含了大量敏感信息 这是不对的</p>
+            <p>我们现在进行重新构建</p>
+            <p>也是开始一下正式的部署流程</p>
+            <p>在这之前还是对环境进行清理</p>
+            <p>这次要把旧镜像一起删掉重新构建</p>
+            <div class="code-block">==== 删除前台后端容器 ====
+                docker rm -f yun_blog_java
+                ==== 删除后台后端容器 ====
+                docker rm -f yun_blog_admin_java
+                ==== 删除数据库容器 ====
+                docker rm -f yun_blog_sql
+                ==== 删除 redis 容器 ====
+                docker rm -f yun_blog_redis
+                ==== 删除前端 nginx 容器 ====
+                docker rm -f yun_blog_vue
+                ==== 删除自定义前台后端镜像 ====
+                docker rmi yun_blog_java:01
+                ==== 删除自定义后台后端镜像 ====
+                docker rmi yun_blog_admin_java:01
+                ==== 删除自定义前端镜像 ====
+                docker rmi yun_blog_vue:01
+            ==== 删除网络 ====
+        docker network rm blog_network</div>
+        <p>清空环境后重新创建网络</p>
+        <div class="code-block">docker network create blog_network</div>
+        <div class="img-box">
+            <img class="article-cover" src="https://cdn-us.imgs.moe/2026/07/10/10e8e7e7fe874f0fe8b8cf1ed3b6c7cd.jpg" alt="构建镜像操作截图">
+        </div>
+        <p>修改前台后端的 dockerFile</p>
+        <div class="code-block"># 指定基础镜像
+            FROM openjdk:17-jdk
+            # 指定工作目录
+            WORKDIR /yun_blog_java/mengze-blog
+            # 添加前台工程 jar 包
+            ADD mengze-blog-1.0-SNAPSHOT.jar .
+            # 声明开放端口
+            EXPOSE 1314
+        # 指定容器的运行命令
+    CMD ["java", "-jar", "mengze-blog-1.0-SNAPSHOT.jar"]</div>
+    <p>运行新的前台后端的镜像</p>
+    <div class="code-block">docker build -t yun_blog_java:v1.0.0 -f mengze_blog_java_dockerFile .</div>
+    <p>修改后台后端的 dockerFile</p>
+    <div class="code-block"># 指定基础镜像
+        FROM openjdk:17-jdk
+        # 指定工作目录
+        WORKDIR /yun_blog_java/mengze-admin
+        # 添加前台工程 jar 包
+        ADD mengze-admin-1.0-SNAPSHOT.jar .
+        # 声明开放端口
+        EXPOSE 7616
+    # 指定容器的运行命令
+CMD ["java", "-jar", "mengze-admin-1.0-SNAPSHOT.jar"]</div>
+<p>运行新的后台后端的镜像</p>
+<div class="code-block">docker build -t yun_blog_admin_java:v1.0.0 -f mengze_admin_java_dockerFile .</div>
+<p>前端不用编写新的但是部署流程也要走一下</p>
+<div class="code-block"># 指定基础镜像
+    FROM nginx
+    # 指定工作目录
+    WORKDIR /home/yun_blog_vue
+    # 复制博客前端文件
+    COPY ./blog/dist /usr/share/nginx/html/blog
+    # 复制管理后台前端文件
+    COPY ./admin/dist /usr/share/nginx/html/admin
+    # 复制 nginx 配置文件
+    COPY ./nginx/conf.d /etc/nginx/conf.d
+# 暴露端口
+EXPOSE 80</div>
+<p>构建自定义前端镜像</p>
+<div class="code-block">docker build -t yun_blog_vue:v1.0.0 -f yun_blog_vue_dockerFile .</div>
+<p>先将后端的 .env 文件移动到 docker-compose.yml 的同级目录下</p>
+<div class="img-box">
+    <img class="article-cover" src="https://cdn-us.imgs.moe/2026/07/10/d8e8630952943e14b39ed762120d3df6.jpg" alt="项目目录文件截图">
+</div>
+<p>这里是 .env 的配置</p>
+<div class="code-block"># 开源部署环境变量模板
+    # 使用方法：
+    # 1. 将本文件复制为 `.env`
+    # 2. 按照下面的内容填写真实配置
+    # 3. 请保留 `.env` 文件私密，不要提交到 Git 仓库
+    # 后端 MySQL 数据源配置
+    # url 里的 yun_blog_sql 和你下面 docker-compose.yml 里的 redis 服务名一一对应
+    SPRING_DATASOURCE_URL=jdbc:mysql://yun_blog_sql:3306/yun_blog?characterEncoding=utf8&serverTimezone=Asia/Shanghai
+    SQL_USERNAME=your_sql_username
+    SQL_PASSWORD=your_sql_password
+    # redis 配置
+    # 这里的 host 应该要和你下面 docker-compose.yml 里的 redis 服务名一样
+    SPRING_REDIS_HOST=yun_blog_redis
+    # 后端 Spring Security 默认账号配置
+    SECURITY_USER_NAME=your_security_username
+    SECURITY_USER_PASSWORD=your_security_password
+    # QQ 邮箱 SMTP 配置，用于发送邮件
+    QQ_EMAIL_USERNAME=your_qq_email_username
+    QQ_EMAIL_KEY=your_qq_email_key
+    # 七牛云 OSS 配置，用于文件上传和访问
+    OSS_ACCESS_KEY=your_access_key
+    OSS_SECRET_KEY=your_secret_key
+    OSS_BUCKET_NAME=your_bucket_name
+    OSS_VISIT_DOM=your_oss_visit_domain
+    # 阿里云短信配置，用于发送验证码
+    ALIYUN_ACCESS_KEY_ID=your_access_key_id
+    ALIYUN_ACCESS_KEY_SECRET=your_access_key_secret
+    # 前端地址，用于邮件链接和跳转（此处应该填你的域名）
+    BLOG_FRONTEND_URL=http://yun-mi-manchi.top
+    # 和风天气 API 配置
+    WEATHER_KEY_ID=your_key_id
+    WEATHER_PROJECT_ID=your_project_id
+    WEATHER_API_HOST=your_api_host
+    WEATHER_PRIVATE_KEY=your_weather_private_key
+# DeepSeek API 密钥，用于 AI 相关功能
+DEEPSEEK_API_KEY=your_deepseek_api_key</div>
+<p>二、编写docker-compose.yml</p>
+<p>这个文件只需要写和前面 docker run 差不多的命令就行了</p>
+<p>就是一些环境变量要改一下</p>
+<p>你 .env 里的参数怎么写在 docker-compose.yml 里也要怎么写</p>
+<p>这里需要注意的是 --spring.redis.host=yun_blog_redis</p>
+<p>因为 redis 是通过 docker 网络进行连接的 所以这里写容器名</p>
+<div class="code-block">services:
+    # mysql
+    yun_blog_sql:
+    image: mysql:8.0
+    volumes:
+    - /home/mysql_date:/var/lib/mysql
+    ports:
+    - 3306:3306
+    environment:
+    MYSQL_ROOT_PASSWORD: you_sql_password
+    TZ: Asia/Shanghai
+    restart: always
+    networks:
+    - blog_network
+    # redis
+    yun_blog_redis:
+    image: redis
+    volumes:
+    - /home/redis_date:/data
+    ports:
+    - 6379:6379
+    restart: always
+    command: ['redis-server','--appendonly','yes']
+    networks:
+    - blog_network
+    # 前台后端
+    yun_blog_java:
+    image: yun_blog_java:v1.0.0
+    ports:
+    - 1314:1314
+    environment:
+    TZ: Asia/Shanghai
+    env_file:
+    - .env
+    command:
+    - java
+    - -jar
+    - /yun_blog_java/mengze-blog/mengze-blog-1.0-SNAPSHOT.jar
+    networks:
+    - blog_network
+    restart: always
+    # 后台后端
+    yun_blog_admin_java:
+    image: yun_blog_admin_java:v1.0.0
+    ports:
+    - 7616
+    environment:
+    TZ: Asia/Shanghai
+    env_file:
+    - .env
+    command:
+    - java
+    - -jar
+    - /yun_blog_java/mengze-admin/mengze-admin-1.0-SNAPSHOT.jar
+    networks:
+    - blog_network
+    restart: always
+    # 前端
+    yun_blog_vue:
+    image: yun_blog_vue:v1.0.0
+    ports:
+    - 80:80
+    restart: always
+    # 定义网络
+    networks:
+    blog_network:
+    driver: bridge
+# 定义数据卷 （如果你使用 docker 的命名卷挂载时就用）
+#volumes:
+#  /home/mysql_date:
+#  /home/redis_date:</div>
+<p>这里可以看到 docker-compose.yml 的作用就是将多容器的 docker run 都集成起来</p>
+<p>这样就可以统一运行和统一停止了</p>
+<p>最后 cd 到 docker-compose.yml 所在根目录下运行</p>
+<div class="code-block"># -d 表示后台运行
+docker compose up -d</div>
+<p>出现下面日志表示运行成功</p>
+<div class="img-box">
+    <img class="article-cover" src="https://cdn-us.imgs.moe/2026/07/10/f2ddcf071df08f57f8a176d0e1e87bd9.jpg" alt="compose启动成功日志">
+</div>
+<p>浏览器能正常浏览页面</p>
+<div class="img-box">
+    <img class="article-cover" src="https://cdn-us.imgs.moe/2026/07/10/b5810c5cdb41d4d144a593328dfa115c.png" alt="网站页面截图">
+</div>
+<p>三、一些常见指令</p>
+<div class="code-block"># 一键启动服务
+    docker compose up -d
+    # 查看运行状态
+    docker compose ps
+    # 查看所有服务日志
+    docker compose logs -f
+    # 查看单个服务日志
+    docker compose logs -f app
+    # 停止服务
+    docker compose down
+    #  停止并删除数据卷
+    docker compose down -v
+    # 重启服务
+    docker compose restart
+# 重启单个服务
+docker compose restart app
+# 重新构建并启动
+docker compose up -d --build</div>
+<p>PS:该系列只做为作者学习开发项目做的笔记用</p>
+<p>不一定符合读者来学习，仅供参考</p>
+<p>预告</p>
+<p>后续更新 SSL 证书的部署</p>
+<p>"一花一世界，一叶一菩提"</p>
+</div>
+<div class="tag-box">
+    <span class="tag">#项目部署</span>
+    <span class="tag">#服务器</span>
+    <span class="tag">#docker</span>
+    <span class="tag">#nginx</span>
+</div>
+<!-- 评论区 -->
+<div class="comment-box">
+    <h3 class="comment-title">评论区</h3>
+    <div class="comment-input-panel">
+        <div class="comment-row-top">
+            <input type="text" placeholder="昵称" class="inp-nick" required>
+            <span class="tag-required">必填</span>
+            <input type="email" placeholder="邮箱" class="inp-mail" required>
+            <span class="tag-required">必填</span>
+            <input type="url" placeholder="个人网址" class="inp-site">
+            <span class="tag-optional">选填</span>
+        </div>
+        <textarea maxlength="500" placeholder="说点什么吧~" class="inp-content"></textarea>
+        <div class="input-bottom-bar">
+            <span class="emoji-btn">😊</span>
+            <span class="word-count"><span id="cur-num">0</span>/500</span>
+            <div class="btn-group">
+                <button class="btn-preview">预览</button>
+                <button class="btn-send">发送</button>
+            </div>
+        </div>
+    </div>
+    <div class="comment-list">
+        <p class="empty-tip">0 条评论</p>
+    </div>
+</div>
+</div>
+<div class="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})"></div>
+<div class="footer-box"></div>
+<script>
+    let context, arr = [],
+        starCount = 300;
+    // 流星相关的 rains 数组和 rainCount 已移除
+    const particlesWrap = document.getElementById("particles");
+    const colors = ["#0099ff", "#0000ff", "#9900ff", "#ff66cc"];
+
+    // 首页同款雪花函数
+    function createSnowCanvas(canvasId, snowNum) {
+        const canvas = document.getElementById(canvasId);
+        const ctx = canvas.getContext("2d");
+        let width, height;
+        let flakes = [];
+
+        function resize() {
+            width = canvas.offsetWidth;
+            height = canvas.offsetHeight;
+            canvas.width = width;
+            canvas.height = height;
+        }
+        window.addEventListener("resize", resize);
+        resize();
+        class Snow {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * -height;
+                this.r = Math.random() * 2 + 1;
+                this.speed = Math.random() * 0.8 + 0.3;
+                this.swing = Math.random() * Math.PI * 2;
+                this.swingSpeed = Math.random() * 0.015 + 0.01;
+                this.wind = Math.random() * 0.3 - 0.15;
+            }
+            update() {
+                this.swing += this.swingSpeed;
+                this.x += Math.cos(this.swing) * 0.6 + this.wind;
+                this.y += this.speed;
+                if (this.y > height + 10) {
+                    this.reset();
+                }
+            }
+            reset() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * -50;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255,255,255,${0.4 + this.r/3})`;
+                ctx.fill();
+            }
+        }
+        for (let i = 0; i < snowNum; i++) flakes.push(new Snow());
+
+        function render() {
+            ctx.clearRect(0, 0, width, height);
+            flakes.forEach(s => {
+                s.update();
+                s.draw();
+            })
+            requestAnimationFrame(render);
+        }
+        render();
+    }
+
+    window.onload = function() {
+        // 初始化雪花
+        createSnowCanvas("snowFullScreen", 180);
+        init();
+        for (let i = 0; i < starCount; i++) {
+            let s = new Star();
+            s.init();
+            s.draw();
+            arr.push(s);
+        }
+        // 流星循环已移除
+        playStars();
+        // playRains() 调用已移除
+    };
+
+    document.addEventListener("click", function(e) {
+        for (let i = 0; i < 10; i++) {
+            const p = document.createElement("div");
+            p.className = "particle";
+            const size = Math.random() * 10 + 6;
+            const angle = (Math.PI * 2 / 10) * i + Math.random() * 0.5;
+            const dis = Math.random() * 100 + 50;
+            const tx = Math.cos(angle) * dis;
+            const ty = Math.sin(angle) * dis;
+            p.style.left = e.clientX + "px";
+            p.style.top = e.clientY + "px";
+            p.style.width = size + "px";
+            p.style.height = size + "px";
+            p.style.background = colors[Math.floor(Math.random() * colors.length)];
+            p.style.setProperty("--tx", tx + "px");
+            p.style.setProperty("--ty", ty + "px");
+            particlesWrap.appendChild(p);
+            setTimeout(() => p.remove(), 600);
+        }
+    });
+
+    function init() {
+        const canvas = document.getElementById("stars");
+        canvas.width = innerWidth;
+        canvas.height = innerHeight;
+        context = canvas.getContext("2d");
+    }
+
+    function Star() {
+        this.x = Math.random() * innerWidth;
+        this.y = Math.random() * innerHeight;
+        this.txt = ".";
+        this.color = "#fff";
+        this.init = () => {};
+        this.draw = () => {
+            context.fillStyle = this.color;
+            context.fillText(this.txt, this.x, this.y);
+        };
+    }
+
+    function playStars() {
+        context.clearRect(0, 0, innerWidth, innerHeight);
+        arr.forEach(s => {
+            s.draw();
+        });
+        setTimeout(playStars, 150);
+    }
+
+    // 流星相关的 MeteorRain 类和 playRains 函数已完全移除
+
+    // 评论区字数统计
+    const textArea = document.querySelector(".inp-content");
+    const numDom = document.getElementById("cur-num");
+    textArea.addEventListener("input", () => {
+        numDom.innerText = textArea.value.length;
+    });
+
+    // 右键禁用提示框逻辑
+    let rightTipTimer;
+    document.addEventListener('contextmenu', e => {
+        e.preventDefault();
+        const tip = document.getElementById('rightTipTop');
+        if (tip) {
+            tip.classList.remove('float-tip-out');
+            tip.classList.add('show');
+            clearTimeout(rightTipTimer);
+            rightTipTimer = setTimeout(() => {
+                tip.classList.add('float-tip-out');
+                setTimeout(() => {
+                    tip.classList.remove('show', 'float-tip-out');
+                }, 350);
+            }, 2500);
+        }
+    });
+
+    // ========== 自定义白色光标脚本（已优化灵敏度） ==========
+    (function() {
+        const cursor = document.getElementById('cursor');
+        if (!cursor) return;
+        // 移动端不启用
+        if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+        let mouseX = innerWidth / 2, mouseY = innerHeight / 2;
+        let curX = mouseX, curY = mouseY;
+        let visible = false;
+        let lastTime = performance.now();
+
+        document.addEventListener('mousemove', e => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            if (!visible) {
+                // 首次移动直接定位，避免从中心滑入
+                curX = mouseX;
+                curY = mouseY;
+                cursor.classList.remove('hidden');
+                visible = true;
+            }
+        });
+
+        document.addEventListener('mouseleave', () => {
+            cursor.classList.add('hidden');
+            visible = false;
+        });
+
+        // 点击放大
+        document.addEventListener('mousedown', () => {
+            cursor.style.width = '20px';
+            cursor.style.height = '20px';
+            cursor.style.marginLeft = '-10px';
+            cursor.style.marginTop = '-10px';
+        });
+        document.addEventListener('mouseup', () => {
+            cursor.style.width = '16px';
+            cursor.style.height = '16px';
+            cursor.style.marginLeft = '-8px';
+            cursor.style.marginTop = '-8px';
+        });
+
+        // 平滑跟随（帧率无关，灵敏度可调）
+        function animate(now) {
+            const dt = Math.min((now - lastTime) / 1000, 0.1);
+            lastTime = now;
+            // 灵敏度：建议 10~30，越大越灵敏
+            const smoothing = 18;
+            const t = 1 - Math.exp(-smoothing * dt);
+            curX += (mouseX - curX) * t;
+            curY += (mouseY - curY) * t;
+            cursor.style.left = curX + 'px';
+            cursor.style.top = curY + 'px';
+            requestAnimationFrame(animate);
+        }
+        requestAnimationFrame(animate);
+    })();
+    // ========== 光标脚本结束 ==========
+</script>
+</body>
+</html>

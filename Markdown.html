@@ -1,0 +1,1369 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>Markdown 语法与多语言代码汇总示例</title>
+    <style>
+        #snowFullScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        a {
+            text-decoration: none;
+            color: #fff;
+        }
+        .clearfix:after {
+            content: "";
+            display: block;
+            height: 0;
+            visibility: hidden;
+            clear: both;
+        }
+        .clearfix {
+            *zoom: 1;
+        }
+        html,
+        body {
+            width: 100%;
+            overflow-x: hidden;
+            font-family: "宋体";
+            /* 背景：半透明黑色蒙版 + 图片 */
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                url(https://t.mwm.moe/ycy/) no-repeat center top !important;
+            background-size: cover !important;
+            background-attachment: fixed !important;
+        }
+        #stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -2;
+            width: 100%;
+            height: 100vh;
+            background: rgba(14, 23, 41, 0.6);
+        }
+        /* 月亮和流星样式已移除 */
+        .back-btn {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            border-radius: 8px;
+            font-size: 18px;
+            z-index: 99;
+            color: #ffffff;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            transition: 0.25s ease;
+        }
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.45);
+            border-color: rgba(255, 255, 255, 0.65);
+            box-shadow: 0 0 18px rgba(255, 255, 255, 0.35);
+            color: #ffffff;
+        }
+        .article-wrap {
+            width: 96vw;
+            max-width: 1100px;
+            margin: 140px auto 120px;
+            background: rgba(255, 255, 255, 0.32);
+            border-radius: 16px;
+            padding: 50px;
+            position: relative;
+            z-index: 2;
+        }
+        .img-box {
+            width: 100%;
+            margin-bottom: 48px;
+            text-align: center;
+        }
+        .article-cover {
+            width: 100%;
+            border-radius: 12px;
+            display: block;
+            margin: 0 auto;
+        }
+        .content-img {
+            width: 100%;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .article-title {
+            font-size: 36px;
+            text-align: center;
+            color: #111;
+            margin-bottom: 24px;
+        }
+        .article-meta {
+            text-align: center;
+            color: #333;
+            font-size: 17px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+            margin-bottom: 40px;
+        }
+        .article-content {
+            font-size: 20px;
+            line-height: 2;
+            color: #1a1a1a;
+            width: 100%;
+        }
+        .article-content p {
+            margin-bottom: 20px;
+        }
+        .code-block {
+            background: rgba(0, 0, 0, 0.12);
+            padding: 20px;
+            border-radius: 10px;
+            font-family: Consolas;
+            font-size: 17px;
+            margin: 24px 0;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+        .tag-box {
+            margin-top: 40px;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .tag {
+            padding: 6px 16px;
+            background: rgba(230, 230, 230, 0.4);
+            border: none !important;
+            outline: none !important;
+            border-radius: 24px;
+            font-size: 16px;
+            color: #222;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            box-shadow: none !important;
+            filter: none !important;
+        }
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9998;
+        }
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: particle-burst 0.6s ease-out forwards;
+        }
+        @keyframes particle-burst {
+            0% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0.5);
+            }
+        }
+        .footer-box {
+            width: 100%;
+            height: 80px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th,
+        td {
+            border: 1px solid #999;
+            padding: 8px 12px;
+            text-align: center;
+        }
+        th {
+            background: rgba(255, 255, 255, 0.4);
+        }
+        ul,
+        ol {
+            padding-left: 40px;
+            margin: 16px 0;
+        }
+        blockquote {
+            border-left: 4px #888 solid;
+            padding: 8px 16px;
+            margin: 16px 0;
+            background: rgba(255, 255, 255, 0.08);
+        }
+        hr {
+            margin: 30px 0;
+            border: 0;
+            border-top: 1px rgba(0, 0, 0.15) solid;
+        }
+        .back-top {
+            position: fixed;
+            right: 30px;
+            bottom: 40px;
+            width: 46px;
+            height: 46px;
+            background: rgba(255, 255, 255, 0.18);
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 99;
+            transition: 0.3s ease;
+            cursor: pointer;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+        }
+        .back-top:hover {
+            background: rgba(255, 255, 255, 0.4);
+            border-color: rgba(255, 255, 255, 0.65);
+            box-shadow: 0 0 18px rgba(255, 255, 255, 0.35);
+            transform: translateY(-6px);
+        }
+        .back-top::after {
+            content: "↑";
+            font-size: 22px;
+            color: #ffffff;
+            font-weight: bold;
+        }
+        .comment-area {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid rgba(0, 0, 0, 0.15);
+        }
+        .comment-title {
+            font-size: 26px;
+            color: #111;
+            margin-bottom: 24px;
+        }
+        .comment-input {
+            width: 100%;
+            min-height: 120px;
+            padding: 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.12);
+            background: rgba(255, 255, 255, 0.4);
+            font-size: 18px;
+            resize: none;
+            outline: none;
+        }
+        .comment-submit {
+            margin-top: 16px;
+            padding: 10px 26px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(40, 120, 220, 0.7);
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .comment-submit:hover {
+            background: rgba(40, 120, 220, 0.9);
+        }
+        .comment-list {
+            margin-top: 40px;
+        }
+        .comment-item {
+            padding: 18px;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .comment-user {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #002244;
+        }
+        .comment-time {
+            font-size: 14px;
+            color: #555;
+            margin-left: 12px;
+            font-weight: normal;
+        }
+        .comment-text {
+            line-height: 1.8;
+            font-size: 18px;
+        }
+
+        /* ========== 右键禁用提示框 ========== */
+        .float-tip-top {
+            position: fixed;
+            top: 26px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(30, 30, 30, 0.75) !important;
+            backdrop-filter: blur(6px) !important;
+            -webkit-backdrop-filter: blur(6px) !important;
+            border-radius: 50px !important;
+            padding: 6px 22px 6px 20px !important;
+            display: none !important;
+            align-items: center !important;
+            gap: 10px !important;
+            color: #ffffff !important;
+            font-size: 14px !important;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+            z-index: 99999 !important;
+            white-space: nowrap !important;
+            pointer-events: none !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+            border: none !important;
+            animation: floatTipIn 0.35s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+        }
+        .float-tip-top.show {
+            display: flex !important;
+        }
+        .float-tip-top.float-tip-out {
+            animation: floatTipOut 0.3s ease-in forwards;
+        }
+        @keyframes floatTipIn {
+            0% {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-14px) scale(0.92);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0) scale(1);
+            }
+        }
+        @keyframes floatTipOut {
+            0% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-10px) scale(0.94);
+            }
+        }
+        .float-tip-top .tip-icon {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 20px !important;
+            height: 20px !important;
+            border-radius: 50% !important;
+            background: #ffffff !important;
+            color: #1f1f1f !important;
+            font-family: 'Times New Roman', Times, serif !important;
+            font-style: italic !important;
+            font-weight: 700 !important;
+            font-size: 15px !important;
+            line-height: 1 !important;
+            flex-shrink: 0 !important;
+            padding-bottom: 2px !important;
+            box-sizing: border-box !important;
+        }
+
+        /* ========== 自定义白色光标样式 ========== */
+        /* 桌面端隐藏系统光标 */
+        @media (hover: hover) and (pointer: fine) {
+            body, a, button, * {
+                cursor: none !important;
+            }
+        }
+
+        /* 自定义光标：纯白外圈 + 纯白内圆 */
+        #cursor {
+            position: fixed;
+            pointer-events: none;
+            z-index: 100000; /* 提高层级，保证在提示框之上 */
+            width: 16px;
+            height: 16px;
+            margin-left: -8px;
+            margin-top: -8px;
+            border: 1.5px solid #fff;      /* 纯白外圈 */
+            border-radius: 50%;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: width 0.15s, height 0.15s, margin-left 0.15s, margin-top 0.15s;
+        }
+
+        /* 内圆：纯白实心小点 */
+        #cursor::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: #fff;              /* 纯白内圆 */
+            border-radius: 50%;
+            transition: width 0.15s, height 0.15s;
+        }
+
+        /* 通用隐藏类（用于光标初始隐藏） */
+        .hidden {
+            display: none !important;
+        }
+
+        /* 移动端隐藏自定义光标，恢复系统光标 */
+        @media (hover: none), (max-width: 768px) {
+            #cursor {
+                display: none !important;
+            }
+            body, a, button, * {
+                cursor: auto !important;
+            }
+        }
+        /* ========== 光标样式结束 ========== */
+    </style>
+</head>
+<body>
+    <canvas id="snowFullScreen"></canvas>
+    <canvas id="stars"></canvas>
+    <!-- 月亮 div 已移除 -->
+    <div class="float-tip-top" id="rightTipTop">
+        <span class="tip-icon">i</span>
+        <span>为了浏览体验，本站禁用右键</span>
+    </div>
+    <a href="zenly.html" class="back-btn">← 返回首页</a>
+    <div class="particles" id="particles"></div>
+
+    <!-- 自定义光标元素（整合自第二段代码） -->
+    <div id="cursor" class="xs-hidden hidden"></div>
+
+    <div class="article-wrap">
+        <div class="img-box">
+            <img class="article-cover" src="https://cdn-us.imgs.moe/2026/07/09/e79d8c7c957391482e625b391b409eed.jpg" alt="Markdown封面">
+        </div>
+        <h1 class="article-title">Markdown 语法与多语言代码汇总示例</h1>
+        <div class="article-meta">
+            作者：玖染 &nbsp;|&nbsp; 发布时间：2026-06-05 &nbsp;|&nbsp; 更新时间：2026-07-07
+        </div>
+        <div class="article-content">
+            <p>这是一份用于测试、展示和学习 Markdown 文件样式的综合示例。</p>
+            <p>内容包含常见 Markdown 语法、多级标题、列表、表格、引用、任务清单、链接、图片、脚注、数学公式、代码块，以及多种编程语言的代码引用示例。</p>
+            <h2>目录</h2>
+            <ol>
+                <li>标题语法</li>
+                <li>文本样式</li>
+                <li>引用块</li>
+                <li>列表</li>
+                <li>任务清单</li>
+                <li>链接与图片</li>
+                <li>表格</li>
+                <li>分割线</li>
+                <li>行内代码与代码块</li>
+                <li>多语言代码示例</li>
+                <li>HTML 混写</li>
+                <li>数学公式</li>
+                <li>脚注</li>
+                <li>转义字符</li>
+                <li>Mermaid 图表示例</li>
+                <li>综合文章排版示例</li>
+            </ol>
+            <h2>1. 标题语法</h2>
+            <p>一级标题 H1</p>
+            <p>二级标题 H2</p>
+            <p>三级标题 H3</p>
+            <p>四级标题 H4</p>
+            <p>五级标题 H5</p>
+            <p>六级标题 H6</p>
+            <h2>2. 文本样式</h2>
+            <p>普通文本：这是一段普通的 Markdown 文本。</p>
+            <p><strong>加粗文本</strong></p>
+            <p><em>斜体文本</em></p>
+            <p><strong><em>加粗并斜体</em></strong></p>
+            <p><s>删除线文本</s></p>
+            <p>行内代码文本 <code>code</code></p>
+            <p><u>下划线文本，部分 Markdown 渲染器支持 HTML 下划线。</u></p>
+            <p>高亮文本示例：==部分 Markdown 渲染器支持高亮语法==</p>
+            <p>英文排版示例：Markdown is a lightweight markup language for creating formatted text.</p>
+            <p>中文排版示例：Markdown 常用于技术文档、博客文章、README、接口文档和学习笔记。</p>
+            <h2>3. 引用块</h2>
+            <blockquote>
+                这是一段一级引用。
+                这是一段引用。
+                引用中可以包含多行文本、列表和代码。
+                <ul>
+                    <li>引用内列表 1</li>
+                    <li>引用内列表 2 <code>引用内行内代码</code></li>
+                </ul>
+                <blockquote>二级嵌套引用
+                    <blockquote>三级嵌套引用</blockquote>
+                </blockquote>
+            </blockquote>
+            <h2>4. 列表</h2>
+            <h3>无序列表</h3>
+            <ul>
+                <li>前端
+                    <ul>
+                        <li>Vue</li>
+                        <li>React</li>
+                        <li>Angular</li>
+                    </ul>
+                </li>
+                <li>后端
+                    <ul>
+                        <li>Java</li>
+                        <li>Node.js</li>
+                        <li>Python</li>
+                    </ul>
+                </li>
+                <li>数据库
+                    <ul>
+                        <li>MySQL</li>
+                        <li>PostgreSQL</li>
+                        <li>MongoDB</li>
+                    </ul>
+                </li>
+            </ul>
+            <h3>有序列表</h3>
+            <ol>
+                <li>安装依赖</li>
+                <li>编写代码</li>
+                <li>运行测试</li>
+                <li>构建项目</li>
+                <li>部署上线</li>
+            </ol>
+            <h3>混合列表</h3>
+            <ul>
+                <li>创建项目
+                    <ol>
+                        <li>初始化 Git 仓库</li>
+                        <li>配置包管理器</li>
+                        <li>编写功能
+                            <ul>
+                                <li>页面组件</li>
+                                <li>API 接口</li>
+                                <li>状态管理</li>
+                            </ul>
+                        </li>
+                    </ol>
+                </li>
+                <li>优化项目
+                    <ol>
+                        <li>性能优化</li>
+                        <li>SEO 优化</li>
+                        <li>可访问性优化</li>
+                    </ol>
+                </li>
+            </ul>
+            <h2>5. 任务清单</h2>
+            <ul style="list-style:none;">
+                <li>[x] 创建 Markdown 示例文件</li>
+                <li>[x] 添加基础 Markdown 语法</li>
+                <li>[x] 添加多语言代码块</li>
+                <li>[x] 添加表格、引用、链接、图片示例</li>
+                <li>[ ] 根据项目主题继续扩展样式测试内容</li>
+                <li>[ ] 将该文件作为博客文章渲染测试数据</li>
+            </ul>
+            <h2>6. 链接与图片</h2>
+            <p>普通链接：<a href="https://github.com">访问 GitHub</a>、<a href="https://vuejs.org">访问 Vue 官方文档</a></p>
+            <p>带标题的链接：<a href="https://developer.mozilla.org" title="MDN文档">访问 MDN Web Docs</a></p>
+            <p>自动链接：&lt;https://example.com&gt;</p>
+            <p>邮箱链接：&lt;test@qq.com&gt;</p>
+            <p>插入图片（按指定顺序）：</p>
+            <img class="content-img" src="https://cdn-us.imgs.moe/2026/07/10/2ec0a858224735945998e040e69e2bc7.png" alt="Mark Logo图片">
+            <img class="content-img" src="https://cdn-us.imgs.moe/2026/07/10/7d118e9256a465f2b7ec0e4945e9db33.jpg" alt="报错截图1">
+            <img class="content-img" src="https://cdn-us.imgs.moe/2026/07/10/cf23526f451784ff137f161b8fe18d5a.png" alt="报错截图2">
+            <h2>7. 表格</h2>
+            <h3>基础表格</h3>
+            <table>
+                <tr>
+                    <th>编号</th>
+                    <th>技术</th>
+                    <th>类型</th>
+                    <th>说明</th>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>Vue</td>
+                    <td>前端框架</td>
+                    <td>用于构建用户界面</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Spring Boot</td>
+                    <td>后端框架</td>
+                    <td>用于构建 Java Web 服务</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>MySQL</td>
+                    <td>数据库</td>
+                    <td>用于存储结构化数据</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>Redis</td>
+                    <td>缓存</td>
+                    <td>用于提升访问速度</td>
+                </tr>
+            </table>
+            <h3>对齐表格</h3>
+            <table>
+                <tr>
+                    <th>左对齐</th>
+                    <th>居中对齐</th>
+                    <th>右对齐</th>
+                </tr>
+                <tr>
+                    <td>JavaScript</td>
+                    <td>Vue</td>
+                    <td>99</td>
+                </tr>
+                <tr>
+                    <td>Python</td>
+                    <td>FastAPI</td>
+                    <td>88</td>
+                </tr>
+                <tr>
+                    <td>Java</td>
+                    <td>Spring Boot</td>
+                    <td>95</td>
+                </tr>
+            </table>
+            <h3>复杂内容表格</h3>
+            <table>
+                <tr>
+                    <th>功能</th>
+                    <th>Markdown 写法</th>
+                    <th>效果</th>
+                </tr>
+                <tr>
+                    <td>加粗</td>
+                    <td><code>**文本**</code></td>
+                    <td><strong>文本</strong></td>
+                </tr>
+                <tr>
+                    <td>斜体</td>
+                    <td><code>*文本*</code></td>
+                    <td><em>文本</em></td>
+                </tr>
+                <tr>
+                    <td>删除线</td>
+                    <td><code>~~文本~~</code></td>
+                    <td><s>文本</s></td>
+                </tr>
+                <tr>
+                    <td>行内代码</td>
+                    <td><code>`code`</code></td>
+                    <td><code>code</code></td>
+                </tr>
+            </table>
+            <h2>8. 分割线</h2>
+            <p>下面是三种常见分割线写法。</p>
+            <hr>
+            <p>***</p>
+            <p>___</p>
+            <h2>9. 行内代码与代码块</h2>
+            <p>行内代码示例：使用 <code>npm install</code> 安装依赖，使用 <code>npm run dev</code> 启动项目。</p>
+            <p>普通文本代码块：</p>
+            <div class="code-block">
+                这是一段普通文本代码块。
+                它不会进行语法高亮。
+                适合展示日志、说明、配置片段等内容。
+            </div>
+            <h2>10. 多语言代码示例</h2>
+            <h3>JavaScript</h3>
+            <div class="code-block">
+                const blog = {
+                title: '玖染',
+                author: 'Yun',
+                tags: ['Vue', 'Markdown', 'JavaScript'],
+                };
+                function formatTitle(post) {
+                return `${post.title} - ${post.author}`;
+                }
+                console.log(formatTitle(blog));
+            </div>
+            <h3>TypeScript</h3>
+            <div class="code-block">
+                type Post = {
+                id: number;
+                title: string;
+                content: string;
+                published: boolean;
+                };
+                function getPublishedPosts(posts: Post[]): Post[] {
+                return posts.filter((post) => post.published);
+                }
+            </div>
+            <h3>Vue</h3>
+            <div class="code-block">
+                <template>
+                <div class="post-card">{{ title }}</div>
+                </template>
+                <script setup>
+                const title = 'Markdown示例';
+                </script>
+                <style>
+                .post-card {
+                padding: 16px;
+                border-radius: 12px;
+                background: #ffffff;
+                }
+                </style>
+            </div>
+            <h3>HTML</h3>
+            <div class="code-block">
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <h1>欢迎来到玖博客</h1>
+                </body>
+                </html>
+            </div>
+            <h3>CSS</h3>
+            <div class="code-block">
+                .post-content {
+                line-height: 1.8;
+                color: #1f2937;
+                background: linear-gradient(135deg, #f8fafc, #eef2ff);
+                }
+                .post-content h2 {
+                margin-top: 2rem;
+                border-left: 4px solid #6366f1;
+                padding-left: 12px;
+                }
+            </div>
+            <h3>SCSS</h3>
+            <div class="code-block">
+                $primary-color: #6366f1;
+                $radius: 12px;
+                .card {
+                border-radius: $radius;
+                border: 1px solid rgba($primary-color, 0.2);
+                &:hover {
+                box-shadow: 0 12px 30px rgba($primary-color, 0.18);
+                }
+                }
+            </div>
+            <h3>Java</h3>
+            <div class="code-block">
+                public class BlogPost {
+                private Long id;
+                private String title;
+                private String content;
+                public BlogPost(Long id, String title, String content) {
+                this.id = id;
+                this.title = title;
+                this.content = content;
+                }
+                public String getSummary() {
+                return content.length() > 100 ? content.substring(0, 100) + "..." : content;
+                }
+                }
+            </div>
+            <h3>Python</h3>
+            <div class="code-block">
+                from dataclasses import dataclass
+                @dataclass
+                class Post:
+                title: str
+                content: str
+                published: bool = False
+                def summary(self) -> str:
+                return self.content[:100] + '...' if len(self.content) > 100 else self.content
+                post = Post(title='Markdown 示例', content='这是一篇 Markdown 语法测试文章。', published=True)
+                print(post.summary())
+            </div>
+            <h3>Go</h3>
+            <div class="code-block">
+                package main
+                import "fmt"
+                type Post struct {
+                Title   string
+                Content string
+                }
+                func main() {
+                post := Post{Title: "玖博客", Content: "Go 语言代码示例"}
+                fmt.Println(post.Title)
+                }
+            </div>
+            <h3>Rust</h3>
+            <div class="code-block">
+                struct Post {
+                title: String,
+                content: String,
+                }
+                impl Post {
+                fn summary(&self) -> String {
+                self.content.chars().take(100).collect()
+                }
+                }
+                fn main() {
+                let post = Post {
+                title: String::from("Rust 示例"),
+                content: String::from("这是一段 Rust 代码。"),
+                };
+                println!("{}", post.summary());
+                }
+            </div>
+            <h3>C</h3>
+            <div class="code-block">
+                #include <stdio.h>
+                int main(void) {
+                const char *title = "C 语言示例";
+                printf("%s\n", title);
+                return 0;
+                }
+            </div>
+            <h3>C++</h3>
+            <div class="code-block">
+                #include <iostream>
+                #include <string>
+                class Post {
+                public:
+                std::string title;
+                explicit Post(std::string title) : title(std::move(title)) {}
+                };
+                int main() {
+                Post post("C++ 示例");
+                std::cout << post.title << std::endl;
+                return 0;
+                }
+            </div>
+            <h3>C#</h3>
+            <div class="code-block">
+                public class Post
+                {
+                public string Title { get; set; }
+                public string Content { get; set; }
+                public Post(string title, string content)
+                {
+                Title = title;
+                Content = content;
+                }
+                }
+            </div>
+            <h3>PHP</h3>
+            <div class="code-block">
+                <?php
+                class Post {
+                public string $title;
+                public string $content;
+                public function __construct(string $title, string $content) {
+                $this->title = $title;
+                $this->content = $content;
+                }
+                }
+                $post = new Post('PHP 示例', '这是一段 PHP 代码。');
+                echo $post->title;
+                ?>
+            </div>
+            <h3>Ruby</h3>
+            <div class="code-block">
+                class Post
+                attr_reader :title, :content
+                def initialize(title, content)
+                @title = title
+                @content = content
+                end
+                end
+                post = Post.new('Ruby 示例', '这是一段 Ruby 代码。')
+                puts post.title
+            </div>
+            <h3>Kotlin</h3>
+            <div class="code-block">
+                data class Post(
+                val title: String,
+                val content: String,
+                val published: Boolean = false
+                )
+                fun main() {
+                val post = Post("Kotlin 示例", "这是一段 Kotlin 代码。", true)
+                println(post.title)
+                }
+            </div>
+            <h3>Swift</h3>
+            <div class="code-block">
+                struct Post {
+                let title: String
+                let content: String
+                let published: Bool
+                }
+                let post = Post(title: "Swift 示例", content: "这是一段 Swift 代码。", published: true)
+                print(post.title)
+            </div>
+            <h3>SQL</h3>
+            <div class="code-block">
+                CREATE TABLE posts (
+                id BIGINT PRIMARY KEY AUTO_INCREMENT,
+                title VARCHAR(255) NOT NULL,
+                content TEXT NOT NULL,
+                published BOOLEAN DEFAULT FALSE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                );
+                SELECT id, title, created_at
+                FROM posts
+                WHERE published = TRUE ORDER BY created_at DESC;
+            </div>
+            <h3>Shell</h3>
+            <div class="code-block">
+                npm install
+                npm run dev
+                npm run build
+            </div>
+            <h3>PowerShell</h3>
+            <div class="code-block">
+                Get-ChildItem -Path . -Filter "*.md"
+                Write-Host "Markdown 文件扫描完成"
+            </div>
+            <h3>JSON</h3>
+            <div class="code-block">
+                {
+                "siteName": "玖博客",
+                "theme": "light",
+                "features": ["markdown", "comments", "categories", "tags"],
+                "pagination": {
+                "pageSize": 10,
+                "showTotal": true
+                }
+                }
+            </div>
+            <h3>YAML</h3>
+            <div class="code-block">
+                site:
+                name: 玖博客
+                theme: light
+                author: Yun
+                features:
+                - markdown
+                - comments
+                - categories
+                - tags
+            </div>
+            <h3>XML</h3>
+            <div class="code-block">
+                <blog>
+                <title>玖博客</title>
+                <author>玖染</author>
+                </blog>
+            </div>
+            <h3>Dockerfile</h3>
+            <div class="code-block">
+                FROM node:20-alpine
+                WORKDIR /app
+                COPY package*.json ./
+                RUN npm install
+                COPY . .
+                RUN npm run build
+                CMD ["npm", "run", "preview"]
+            </div>
+            <h3>Nginx</h3>
+            <div class="code-block">
+                server {
+                listen 80;
+                server_name example.com;
+                location / {
+                root /usr/share/nginx/html;
+                try_files $uri $uri/ /index.html;
+                }
+                }
+            </div>
+            <h2>11. HTML 混写</h2>
+            <p>Markdown 中可以混写部分 HTML，用来增强展示效果。</p>
+            <div style="background:rgba(255,255,255,0.25);padding:16px;border-radius:10;">
+                HTML 卡片示例： 这段内容使用 HTML 写在 Markdown 文件中。
+                <details>
+                    <summary>点击展开详情</summary>
+                    <ul>
+                        <li>折叠项 1</li>
+                        <li>折叠项 2</li>
+                        <li>折叠项 3</li>
+                    </ul>
+                </details>
+            </div>
+            <h2>12. 数学公式</h2>
+            <p>行内数学公式示例：圆的面积公式为 $S = \pi r^2$。</p>
+            <div class="code-block">
+                E = mc^2
+                \sum_{i=1}^{n} i = \frac{n(n+1)}{2}
+                \frac{\partial f}{\partial x} = 2x + y
+            </div>
+            <h2>13. 脚注</h2>
+            <p>这是一段带脚注的文本。[^markdown]</p>
+            <p>这里还有另一个脚注示例。[^blog]</p>
+            <p>[^markdown]: Markdown 是一种轻量级标记语言。</p>
+            <p>[^blog]: 博客系统常使用 Markdown 来编写文章内容。</p>
+            <h2>14. 转义字符</h2>
+            <p>如果想显示 Markdown 的特殊符号，可以使用反斜杠进行转义。</p>
+            <p>\*这不会被解析为斜体\*</p>
+            <p>\# 这不会被解析为标题</p>
+            <p>\`这不会被解析为行内代码\`</p>
+            <p>\[这不会被解析为链接文本\](https://example.com)</p>
+            <h2>15. Mermaid 图表示例</h2>
+            <h3>流程图</h3>
+            <div class="code-block">
+                flowchart TD
+                A[开始] --> B{是否登录}
+                B -- 是 --> C[进入博客首页]
+                B -- 否 --> D[跳转登录页]
+                C --> E[阅读文章]
+                D --> F[完成登录]
+                F --> C
+            </div>
+            <h3>时序图</h3>
+            <div class="code-block">
+                sequenceDiagram
+                participant User as 用户
+                participant Frontend as 前端
+                participant Backend as 后端
+                participant DB as 数据库
+                User->>Frontend: 打开文章详情页
+                Frontend->>Backend: 请求文章数据
+                Backend->>DB: 查询文章
+                DB-->>Backend: 返回文章记录
+                Backend-->>Frontend: 返回文章 JSON
+                Frontend-->>User: 渲染 Markdown 内容
+            </div>
+            <h3>类图</h3>
+            <div class="code-block">
+                classDiagram
+                class Post {
+                +Long id
+                +String title
+                +String content
+                +Boolean published
+                +getSummary()
+                }
+                class Category {
+                +Long id
+                +String name
+                }
+                Post --> Category
+            </div>
+            <h2>16. 综合文章排版示例</h2>
+            <h3>前言</h3>
+            <p>在现代博客系统中，Markdown 是非常常见的文章编写方式。它语法简单、结构清晰，并且可以很好地与代码块、图片、表格、数学公式等内容结合。</p>
+            <p>好的技术文章不仅需要内容准确，也需要排版清晰。</p>
+            <h3>技术栈</h3>
+            <table>
+                <tr>
+                    <th>层级</th>
+                    <th>技术</th>
+                    <th>说明</th>
+                </tr>
+                <tr>
+                    <td>前端</td>
+                    <td>Vue 3</td>
+                    <td>构建交互式页面</td>
+                </tr>
+                <tr>
+                    <td>构建工具</td>
+                    <td>Vite</td>
+                    <td>快速开发与打包</td>
+                </tr>
+                <tr>
+                    <td>后端</td>
+                    <td>Spring Boot</td>
+                    <td>提供 REST API</td>
+                </tr>
+                <tr>
+                    <td>数据库</td>
+                    <td>MySQL</td>
+                    <td>存储文章数据</td>
+                </tr>
+                <tr>
+                    <td>缓存</td>
+                    <td>Redis</td>
+                    <td>提升热点数据访问速度</td>
+                </tr>
+            </table>
+            <h3>示例代码</h3>
+            <div class="code-block">
+                <template>
+                <div class="article">{{ content }}</div>
+                </template>
+            </div>
+            <h2>注意事项</h2>
+            <ul>
+                <li>Markdown 渲染器不同，支持的扩展语法可能不同。</li>
+                <li>Mermaid、数学公式、脚注、高亮等功能通常需要额外插件支持。</li>
+                <li>代码高亮通常依赖 highlight.js、Prism.js 或 Shiki。</li>
+                <li>如果用于博客文章详情页，应注意 XSS 安全过滤。</li>
+            </ul>
+            <h2>总结</h2>
+            <p>这份文件可以用于：</p>
+            <ol>
+                <li>测试 Markdown 渲染效果；</li>
+                <li>测试代码高亮主题；</li>
+                <li>测试博客文章页面样式；</li>
+                <li>测试目录、锚点、表格、图片、公式、脚注等功能；</li>
+                <li>作为后续编写技术文章的参考模板。</li>
+            </ol>
+            <p>文件结束。</p>
+            <p>作者 玖染 | 发布于 2026年6月5日 | 更新于 2026年7月7日</p>
+        </div>
+        <div class="tag-box">
+            <span class="tag">#Markdown</span>
+            <span class="tag">#代码示例</span>
+            <span class="tag">#技术文档</span>
+        </div>
+        <div class="comment-area">
+            <h3 class="comment-title">评论区</h3>
+            <textarea class="comment-input" placeholder="写下你的评论..."></textarea>
+            <button class="comment-submit">提交评论</button>
+            <div class="comment-list">
+                <div class="comment-item">
+                    <div class="comment-user">技术小白 <span class="comment-time">2026-07-08 16:10</span></div>
+                    <div class="comment-text">这份大全太全了，复制当模板直接写笔记！</div>
+                </div>
+                <div class="comment-item">
+                    <div class="comment-user">后端开发阿泽 <span class="comment-time">2026-07-09 09:42</span></div>
+                    <div class="comment-text">想问下哪些博客平台原生支持Mermaid？</div>
+                </div>
+                <div class="comment-item">
+                    <div class="comment-user">玖染(作者) <span class="comment-time">2026-07-09 10:05</span></div>
+                    <div class="comment-text">GitBook、Obsidian、语雀、部分自建博客支持，CSDN/掘金需要插件。</div>
+                </div>
+                <div class="comment-item">
+                    <div class="comment-user">访客 <span class="comment-time">2026-07-10 11:20</span></div>
+                    <div class="comment-text">多语言代码块整理得非常齐全，收藏备用。</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})"></div>
+    <div class="footer-box"></div>
+    <script>
+        // 雪花函数
+        function createSnowCanvas(canvasId, snowNum) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext("2d");
+            let width, height;
+            let flakes = [];
+            function resize() {
+                width = canvas.offsetWidth;
+                height = canvas.offsetHeight;
+                canvas.width = width;
+                canvas.height = height;
+            }
+            window.addEventListener("resize", resize);
+            resize();
+            class Snow {
+                constructor() {
+                    this.x = Math.random() * width;
+                    this.y = Math.random() * -height;
+                    this.r = Math.random() * 2 + 1;
+                    this.speed = Math.random() * 0.8 + 0.3;
+                    this.swing = Math.random() * Math.PI * 2;
+                    this.swingSpeed = Math.random() * 0.015 + 0.01;
+                    this.wind = Math.random() * 0.3 - 0.15;
+                }
+                update() {
+                    this.swing += this.swingSpeed;
+                    this.x += Math.cos(this.swing) * 0.6 + this.wind;
+                    this.y += this.speed;
+                    if (this.y > height + 10) {
+                        this.reset();
+                    }
+                }
+                reset() {
+                    this.x = Math.random() * width;
+                    this.y = Math.random() * -50;
+                }
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255,255,255,${0.4 + this.r/3})`;
+                    ctx.fill();
+                }
+            }
+            for (let i = 0; i < snowNum; i++) flakes.push(new Snow());
+
+            function render() {
+                ctx.clearRect(0, 0, width, height);
+                flakes.forEach(s => {
+                    s.update();
+                    s.draw();
+                })
+                requestAnimationFrame(render);
+            }
+            render();
+        }
+
+        let context, arr = [],
+            starCount = 800;
+        // 流星相关变量已移除
+        const particlesWrap = document.getElementById("particles");
+        const colors = ["#0099ff", "#0000ff", "#9900ff", "#ff66cc"];
+        window.onload = function() {
+            init();
+            for (let i = 0; i < starCount; i++) {
+                let s = new Star();
+                s.init();
+                s.draw();
+                arr.push(s);
+            }
+            playStars();
+            createSnowCanvas("snowFullScreen", 180);
+        };
+
+        // 点击粒子爆炸
+        document.addEventListener("click", function(e) {
+            for (let i = 0; i < 18; i++) {
+                const p = document.createElement("div");
+                p.className = "particle";
+                const size = Math.random() * 10 + 6;
+                const angle = (Math.PI * 2 / 18) * i + Math.random() * 0.5;
+                const dis = Math.random() * 100 + 50;
+                const tx = Math.cos(angle) * dis;
+                const ty = Math.sin(angle) * dis;
+                p.style.left = e.clientX + "px";
+                p.style.top = e.clientY + "px";
+                p.style.width = size + "px";
+                p.style.height = size + "px";
+                p.style.background = colors[Math.floor(Math.random() * colors.length)];
+                p.style.setProperty("--tx", tx + "px");
+                p.style.setProperty("--ty", ty + "px");
+                particlesWrap.appendChild(p);
+                setTimeout(() => p.remove(), 600);
+            }
+        });
+
+        function init() {
+            const canvas = document.getElementById("stars");
+            windowWidth = window.innerWidth;
+            windowHeight = window.innerHeight;
+            canvas.width = windowWidth;
+            canvas.height = windowHeight;
+            context = canvas.getContext("2d");
+        }
+
+        function Star() {
+            this.x = windowWidth * Math.random();
+            this.y = windowHeight * Math.random();
+            this.txt = ".";
+            this.color = "#fff";
+            this.getC = () => { this.color = "#fff"; }
+            this.init = () => this.getC();
+            this.draw = () => {
+                context.fillStyle = this.color;
+                context.fillText(this.txt, this.x, this.y);
+            }
+        }
+
+        function playStars() {
+            context.clearRect(0, 0, windowWidth, windowHeight);
+            arr.forEach(s => {
+                s.getC();
+                s.draw();
+            })
+            setTimeout(playStars, 100);
+        }
+
+        // 流星相关函数已全部移除
+
+        // 评论提交逻辑（修正变量名）
+        const submitBtn = document.querySelector(".comment-submit");
+        const commentInput = document.querySelector(".comment-input");
+        const commentList = document.querySelector(".comment-list");
+        submitBtn.addEventListener("click", () => {
+            const val = commentInput.value.trim();
+            if (!val) {
+                alert("请输入评论内容");
+                return;
+            }
+            const now = new Date();
+            const timeStr =
+                `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,'0')}-${now.getDate().toString().padStart(2,'0')} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+            const item = document.createElement("div");
+            item.className = "comment-item";
+            item.innerHTML = `
+            <div class="comment-user">访客 <span class="comment-time">${timeStr}</span></div>
+            <div class="comment-text">${val}</div>
+            `;
+            commentList.prepend(item);
+            commentInput.value = "";
+            alert("评论提交成功");
+        });
+
+        // 右键禁用提示框
+        let rightTipTimer;
+        document.addEventListener('contextmenu', e => {
+            e.preventDefault();
+            const tip = document.getElementById('rightTipTop');
+            if (tip) {
+                tip.classList.remove('float-tip-out');
+                tip.classList.add('show');
+                clearTimeout(rightTipTimer);
+                rightTipTimer = setTimeout(() => {
+                    tip.classList.add('float-tip-out');
+                    setTimeout(() => {
+                        tip.classList.remove('show', 'float-tip-out');
+                    }, 350);
+                }, 2500);
+            }
+        });
+
+        // ========== 自定义白色光标脚本（已优化灵敏度） ==========
+        (function() {
+            const cursor = document.getElementById('cursor');
+            if (!cursor) return;
+            // 移动端不启用
+            if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+            let mouseX = innerWidth / 2, mouseY = innerHeight / 2;
+            let curX = mouseX, curY = mouseY;
+            let visible = false;
+            let lastTime = performance.now();
+
+            document.addEventListener('mousemove', e => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+                if (!visible) {
+                    // 首次移动直接定位，避免从中心滑入
+                    curX = mouseX;
+                    curY = mouseY;
+                    cursor.classList.remove('hidden');
+                    visible = true;
+                }
+            });
+
+            document.addEventListener('mouseleave', () => {
+                cursor.classList.add('hidden');
+                visible = false;
+            });
+
+            // 点击放大
+            document.addEventListener('mousedown', () => {
+                cursor.style.width = '20px';
+                cursor.style.height = '20px';
+                cursor.style.marginLeft = '-10px';
+                cursor.style.marginTop = '-10px';
+            });
+            document.addEventListener('mouseup', () => {
+                cursor.style.width = '16px';
+                cursor.style.height = '16px';
+                cursor.style.marginLeft = '-8px';
+                cursor.style.marginTop = '-8px';
+            });
+
+            // 平滑跟随（帧率无关，灵敏度可调）
+            function animate(now) {
+                const dt = Math.min((now - lastTime) / 1000, 0.1);
+                lastTime = now;
+                // 灵敏度：建议 10~30，越大越灵敏
+                const smoothing = 18;
+                const t = 1 - Math.exp(-smoothing * dt);
+                curX += (mouseX - curX) * t;
+                curY += (mouseY - curY) * t;
+                cursor.style.left = curX + 'px';
+                cursor.style.top = curY + 'px';
+                requestAnimationFrame(animate);
+            }
+            requestAnimationFrame(animate);
+        })();
+        // ========== 光标脚本结束 ==========
+    </script>
+</body>
+</html>

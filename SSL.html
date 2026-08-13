@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>项目部署——为域名安装 SSL 证书</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        a {
+            text-decoration: none;
+            color: #fff;
+        }
+        .clearfix:after {
+            content: "";
+            display: block;
+            height: 0;
+            visibility: hidden;
+            clear: both;
+        }
+        .clearfix {
+            *zoom: 1;
+        }
+        html,
+        body {
+            width: 100%;
+            overflow-x: hidden;
+            font-family: "宋体";
+            /* 背景：半透明黑色蒙版 + 图片，已按要求覆盖 */
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                url(https://t.mwm.moe/ycy/) no-repeat center top !important;
+            background-size: cover !important;
+            background-attachment: fixed !important;
+        }
+
+        /* 雪花画布 */
+        #snowFullScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+        }
+        .back-btn {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 8px 18px;
+            background: rgba(255, 255, 255, 0.28);
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            border-radius: 12px;
+            font-size: 17px;
+            z-index: 99;
+            color: #fff;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            transition: 0.25s ease;
+        }
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.45);
+            box-shadow: 0 0 18px rgba(255, 255, 255, 0.35);
+        }
+        .article-wrap {
+            width: 96vw;
+            max-width: 1100px;
+            margin: 140px auto 120px;
+            background: rgba(255, 255, 255, 0.32);
+            border-radius: 16px;
+            padding: 50px;
+            position: relative;
+            z-index: 2;
+        }
+        .img-box {
+            width: 100%;
+            margin-bottom: 48px;
+            text-align: center;
+        }
+        .article-cover {
+            width: 100%;
+            border-radius: 12px;
+            display: block;
+            margin: 0 auto;
+        }
+        .article-title {
+            font-size: 36px;
+            text-align: center;
+            color: #111;
+            margin-bottom: 24px;
+        }
+        .article-meta {
+            text-align: center;
+            color: #333;
+            font-size: 17px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+            margin-bottom: 40px;
+        }
+        .article-content {
+            font-size: 20px;
+            line-height: 2;
+            color: #1a1a1a;
+            width: 100%;
+        }
+        .article-content p {
+            margin-bottom: 20px;
+        }
+        .code-block {
+            background: rgba(255, 255, 255, 0.28);
+            padding: 20px;
+            border-radius: 10px;
+            font-family: Consolas;
+            font-size: 17px;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+        .tag-box {
+            margin-top: 40px;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .tag {
+            padding: 6px 16px;
+            background: rgba(255, 255, 255, 0.38);
+            border-radius: 24px;
+            font-size: 16px;
+            color: #222;
+        }
+        .footer-box {
+            width: 100%;
+            height: 80px;
+        }
+        .back-top {
+            position: fixed;
+            right: 30px;
+            bottom: 40px;
+            width: 46px;
+            height: 46px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 99;
+            transition: 0.3s ease;
+            cursor: pointer;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+        }
+        .back-top:hover {
+            background: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 0 18px rgba(255, 255, 255, 0.35);
+            transform: translateY(-6px);
+        }
+        .back-top::after {
+            content: "↑";
+            font-size: 22px;
+            color: #ffffff;
+            font-weight: bold;
+        }
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9998;
+        }
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: burst 0.6s ease-out forwards;
+        }
+        @keyframes burst {
+            0% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0.5);
+            }
+        }
+        /* 评论区样式 */
+        .comment-box {
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(0, 0, 0, 0.15);
+        }
+        .comment-title {
+            font-size: 26px;
+            margin-bottom: 30px;
+            color: #111;
+        }
+        .comment-item {
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        .comment-author {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #000;
+        }
+        .comment-text {
+            line-height: 1.8;
+            color: #222;
+        }
+
+        /* ========== 右键禁用提示框样式 ========== */
+        .float-tip-top {
+            position: fixed;
+            top: 26px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(30, 30, 30, 0.75) !important;
+            backdrop-filter: blur(6px) !important;
+            -webkit-backdrop-filter: blur(6px) !important;
+            border-radius: 50px !important;
+            padding: 6px 22px 6px 20px !important;
+            display: none !important;
+            align-items: center !important;
+            gap: 10px !important;
+            color: #ffffff !important;
+            font-size: 14px !important;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+            z-index: 99999 !important;
+            white-space: nowrap !important;
+            pointer-events: none !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+            border: none !important;
+            animation: floatTipIn 0.35s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+        }
+        .float-tip-top.show {
+            display: flex !important;
+        }
+        .float-tip-top.float-tip-out {
+            animation: floatTipOut 0.3s ease-in forwards;
+        }
+        @keyframes floatTipIn {
+            0% {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-14px) scale(0.92);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0) scale(1);
+            }
+        }
+        @keyframes floatTipOut {
+            0% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-10px) scale(0.94);
+            }
+        }
+        .float-tip-top .tip-icon {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 20px !important;
+            height: 20px !important;
+            border-radius: 50% !important;
+            background: #ffffff !important;
+            color: #1f1f1f !important;
+            font-family: 'Times New Roman', Times, serif !important;
+            font-style: italic !important;
+            font-weight: 700 !important;
+            font-size: 15px !important;
+            line-height: 1 !important;
+            flex-shrink: 0 !important;
+            padding-bottom: 2px !important;
+            box-sizing: border-box !important;
+        }
+
+        /* ========== 自定义白色光标样式 ========== */
+        /* 桌面端隐藏系统光标 */
+        @media (hover: hover) and (pointer: fine) {
+            body, a, button, * {
+                cursor: none !important;
+            }
+        }
+
+        /* 自定义光标：纯白外圈 + 纯白内圆 */
+        #cursor {
+            position: fixed;
+            pointer-events: none;
+            z-index: 100000; /* 提高层级，确保在最上层 */
+            width: 16px;
+            height: 16px;
+            margin-left: -8px;
+            margin-top: -8px;
+            border: 1.5px solid #fff;      /* 纯白外圈 */
+            border-radius: 50%;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: width 0.15s, height 0.15s, margin-left 0.15s, margin-top 0.15s;
+        }
+
+        /* 内圆：纯白实心小点 */
+        #cursor::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: #fff;              /* 纯白内圆 */
+            border-radius: 50%;
+            transition: width 0.15s, height 0.15s;
+        }
+
+        /* 通用隐藏类（用于光标初始隐藏） */
+        .hidden {
+            display: none !important;
+        }
+
+        /* 移动端隐藏自定义光标，恢复系统光标 */
+        @media (hover: none), (max-width: 768px) {
+            #cursor {
+                display: none !important;
+            }
+            body, a, button, * {
+                cursor: auto !important;
+            }
+        }
+        /* ========== 光标样式结束 ========== */
+    </style>
+</head>
+<body>
+    <!-- 雪花画布 -->
+    <canvas id="snowFullScreen"></canvas>
+    <div class="particles" id="particles"></div>
+
+    <!-- 右键禁用提示框 -->
+    <div class="float-tip-top" id="rightTipTop">
+        <span class="tip-icon">i</span>
+        <span>为了浏览体验，本站禁用右键</span>
+    </div>
+
+    <!-- 自定义光标元素（整合自第二段代码） -->
+    <div id="cursor" class="xs-hidden hidden"></div>
+
+    <a href="zenly.html" class="back-btn">← 返回首页</a>
+    <div class="article-wrap">
+        <div class="img-box">
+            <img class="article-cover" src="https://cdn-us.imgs.moe/2026/07/09/8f45aa97d11597a6c8b8f002abf7d392.jpg" alt="SSL证书封面">
+        </div>
+        <h1 class="article-title">项目部署——为域名安装 SSL 证书</h1>
+        <div class="article-meta">作者：玖染 &nbsp;|&nbsp; 发布时间：2026-06-23 &nbsp;|&nbsp; 更新时间：2026-07-07</div>
+        <div class="article-content">
+            <p>前言</p>
+            <p>在完成前面的操作后你会发现你的网页已经可以预览了</p>
+            <p>但是你会看到浏览器提示你的网页不安全</p>
+            <p>这是因为你没有为你的域名部署 SSL 证书导致的</p>
+            <p>这篇文章主要实现 SSL 证书的安装</p>
+            <p>分为两章 初创 ssl 证书 / 获取 ssl 证书 + 自动续约</p>
+            <p>一、实现</p>
+            <p>1. 安装 cerbot</p>
+            <p>运行以下指令（我的是 CentOS 系统）</p>
+            <div class="code-block"># 1. 安装 Snap
+                sudo yum install epel-release
+                sudo yum install snapd
+                # 2. 启用 Snap
+                sudo systemctl enable --now snapd.socket
+                sudo ln -s /var/lib/snapd/snap /snap
+                # 3. 安装最新版 Certbot
+                sudo snap install core
+                sudo snap refresh core
+                sudo snap install --classic certbot
+            # 4. 创建软链接 相当于 Windows 中的快捷方式 后续想执行这个指令就不用每次都输入完整路径 直接输入 certbot 就可以
+        sudo ln -s /snap/bin/certbot /usr/bin/certbot</div>
+        <p>由于我的 nginx 是安装在 docker 容器里的</p>
+        <p>所以要先停掉 nginx 容器</p>
+        <div class="code-block">docker stop <nginx容器名></div>
+        <p>2. 获取并安装 SSL 证书</p>
+        <div class="code-block">#获取并安装证书
+            #单域名：sudo certbot --nginx -d 域名
+            #多域名：sudo certbot --nginx -d 域名1 -d 域名2
+            #我这里使用多域名：
+        sudo certbot certonly --standalone -d yun-mi-manchi.top -d admin.yun-mi-manchi.top --cert-name ssl</div>
+        <p>我这里是在宿主机中独立模式申请的证书</p>
+        <p>这里是将证书保存在系统默认路径的 /etc/letsencrypt/live/ssl/ 目录下 --cert-name 后面指定你要保存证书的文件夹名</p>
+        <p>申请之后会问你要邮箱 正常操作就好</p>
+        <div class="code-block">[root@iZkidb90xmela9Z ]# sudo certbot certonly --standalone -d yun-mi-manchi.top -d admin.yun-mi-manchi.top --config-dir /home/yun_blog_vue/SSL
+            Saving debug log to /var/log/letsencrypt/letsencrypt.log
+            Enter email address or hit Enter to skip.
+            (Enter 'c' to cancel): 29629331520qq.com
+            Invalid email address 29629331520qq.com.
+            Enter email address or hit Enter to skip.
+            (Enter 'c' to cancel): 29629331520qq.com
+            Please read the Terms of Service at: https://letsencrypt.org/documents/LE-SA-v1.7-June-04-2026.pdf
+            You must agree in order to register with the ACME server.
+            Do you agree? (Y)es/ (N)o: y
+            Would you be willing, once your first certificate is successfully issued, to share your email address with the Electronic Frontier Foundation, a founding partner of the Let's Encrypt project and the non-profit organization that develops Certbot? We'd like to send you email about our work encrypting the web, EFF news, campaigns, and ways to support digital freedom. (Y)es/ (N)o: y
+            Account registered.
+        Requesting a certificate for yun-mi-manchi.top and admin.yun-mi-manchi.top</div>
+        <!-- 图1：证书申请交互截图 -->
+        <div class="img-box">
+            <img class="article-cover" src="https://cdn-us.imgs.moe/2026/07/10/110d2ec7af156421da774e216ee95c0c.jpg" alt="certbot申请证书交互日志">
+        </div>
+        <p>安装完之后可以看到证书存放路径：/etc/letsencrypt/live/ssl/</p>
+        <p>目录内文件：cert.pem、chain.pem、fullchain.pem、privkey.pem、README</p>
+        <!-- 图2：ssl证书目录文件截图 -->
+        <div class="img-box">
+            <img class="article-cover" src="https://cdn-us.imgs.moe/2026/07/10/d98c686a39effb4f1829f62a05b45c80.jpg" alt="/etc/letsencrypt/live/ssl 文件列表">
+        </div>
+        <p>修改自定义前端镜像的 dockerFile</p>
+        <div class="code-block"># 指定基础镜像
+            FROM nginx
+            # 指定工作目录
+            WORKDIR /home/yun_blog_vue
+            # 复制博客前端文件
+            COPY ./blog/dist /usr/share/nginx/html/blog
+            # 复制管理后台前端文件
+            COPY ./admin/dist /usr/share/nginx/html/admin
+            # 复制 nginx 配置文件
+            COPY ./nginx/conf.d /etc/nginx/conf.d
+            # 暴露端口
+            EXPOSE 80
+        EXPOSE 443</div>
+        <p>修改 nginx 配置文件</p>
+        <div class="code-block"># ================================
+            # 前台配置（yun-mi-manchi.top）
+            # ================================
+            # HTTP 重定向到 HTTPS（前台）
+            server {
+            listen 80;
+            server_name yun-mi-manchi.top;
+            
+            # 强制跳转到 HTTPS
+            return 301 https://$server_name$request_uri;
+            }
+            # HTTPS 配置（前台）
+            server {
+            listen 443 ssl http2;
+            server_name yun-mi-manchi.top;
+            # SSL 证书配置
+            # 由于 Let's Encrypt 的 live 目录里的文件实际上都是符号链接
+            # Docker 默认不会自动把链接目标一起挂载进去
+            # 所以要使用 fullchain1 和 privkey1 来指向正确的文件
+            # 对应的下面也要用 /etc/letsencrypt/archive/ssl 这个路径挂载文件
+            ssl_certificate /etc/nginx/ssl/fullchain1.pem;
+            ssl_certificate_key /etc/nginx/ssl/privkey1.pem;
+            
+            #  开启 gzip 压缩
+            gzip on;
+            gzip_comp_level 6;
+            gzip_min_length 1k;
+            gzip_types text/plain text/css application/json application/javascript application/x-javascript application/xml application/xml+rss image/svg+xml;
+            gzip_vary on;
+            gzip_proxied any;
+            gzip_disable "msie6";
+            # SSL 安全优化
+            ssl_protocols TLSv1.2 TLSv1.3;
+            ssl_ciphers HIGH:!aNULL:!MD5;
+            ssl_prefer_server_ciphers on;
+            ssl_session_cache shared:SSL:10m;
+            ssl_session_timeout 10m;
+            # 静态资源（带缓存）
+            location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+            root /usr/share/nginx/html/blog;
+            expires 30d;
+            add_header Cache-Control "public, immutable";
+            log_not_found off;
+            }
+            # 前台页面
+            location / {
+            alias /usr/share/nginx/html/blog/;
+            try_files $uri $uri/ /index.html;
+            }
+            # 前台 API 代理
+            location ^~ /api/ {
+            proxy_pass http://你服务器的域名:1314/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            }
+            # 前台 WebSocket
+            location /ws/blog {
+            proxy_pass http://120.24.20.121:1314/ws/blog;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header X-Forwarded-Proto $scheme;
+            }
+            # 上传大小限制
+            client_max_body_size 50M;
+            }
+            # ================================
+            # 后台配置（admin.yun-mi-manchi.top）
+            # ================================
+            # HTTP 重定向到 HTTPS（后台）
+            server {
+            listen 80;
+            server_name admin.yun-mi-manchi.top;
+            
+            # 强制跳转到 HTTPS
+            return 301 https://$server_name$request_uri;
+            }
+            # HTTPS 配置（后台）
+            server {
+            listen 443 ssl http2;
+            server_name admin.yun-mi-manchi.top;
+            # SSL 证书配置
+            # 由于 Let's Encrypt 的 live 目录里的文件实际上都是符号链接
+            # Docker 默认不会自动把链接目标一起挂载进去
+            # 所以要使用 fullchain1 和 privkey1 来指向正确的文件
+            # 对应的下面也要用 /etc/letsencrypt/archive/ssl 这个路径挂载文件
+            ssl_certificate /etc/nginx/ssl/fullchain1.pem;
+            ssl_certificate_key /etc/nginx/ssl/privkey1.pem;
+            
+            #  开启 gzip 压缩
+            gzip on;
+            gzip_comp_level 6;
+            gzip_min_length 1k;
+            gzip_types text/plain text/css application/json application/javascript application/x-javascript application/xml application/xml+rss image/svg+xml;
+            gzip_vary on;
+            gzip_proxied any;
+            gzip_disable "msie6";
+            # SSL 安全优化
+            ssl_protocols TLSv1.2 TLSv1.3;
+            ssl_ciphers HIGH:!aNULL:!MD5;
+            ssl_prefer_server_ciphers on;
+            ssl_session_cache shared:SSL:10m;
+            ssl_session_timeout 10m;
+            # 静态资源（带缓存）
+            location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+            root /usr/share/nginx/html/admin;
+            expires 30d;
+            add_header Cache-Control "public, immutable";
+            log_not_found off;
+            }
+            # 后台页面
+            location / {
+            alias /usr/share/nginx/html/admin/;
+            try_files $uri $uri/ /index.html;
+            }
+            # 后台 API
+            location ^~ /api/ {
+            proxy_pass http://你服务器的域名:7616/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            }
+            # 后台 WebSocket
+            location /ws/admin {
+            proxy_pass http://120.24.20.121:7616/ws/admin;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header X-Forwarded-Proto $scheme;
+            }
+            # 上传大小限制
+            client_max_body_size 50M;
+        }</div>
+        <p>修改 docker-compose.yml</p>
+        <div class="code-block">services:
+            # mysql
+            yun_blog_sql:
+            image: mysql:8.0
+            volumes:
+            - /home/mysql_date:/var/lib/mysql
+            ports:
+            - 3306:3306
+            environment:
+            MYSQL_ROOT_PASSWORD: 123456
+            TZ: Asia/Shanghai
+            restart: always
+            networks:
+            - blog_network
+            # redis
+            yun_blog_redis:
+            image: redis
+            volumes:
+            - /home/redis_date:/data
+            ports:
+            - 6379:6379
+            restart: always
+            command: ['redis-server','--appendonly','yes']
+            networks:
+            - blog_network
+            # 前台后端
+            yun_blog_java:
+            image: yun_blog_java:v1.0.0
+            ports:
+            - 1314:1314
+            environment:
+            TZ: Asia/Shanghai
+            env_file:
+            - .env
+            command:
+            - java
+            - -jar
+            - /yun_blog_java/mengze-blog/mengze-blog-1.0-SNAPSHOT.jar
+            networks:
+            - blog_network
+            restart: always
+            # 后台后端
+            yun_blog_admin_java:
+            image: yun_blog_admin_java:v1.0.0
+            ports:
+            - 7616:7616
+            environment:
+            TZ: Asia/Shanghai
+            env_file:
+            - .env
+            command:
+            - java
+            - -jar
+            - /yun_blog_admin/mengze-admin/mengze-admin-1.0-SNAPSHOT.jar
+            networks:
+            - blog_network
+            restart: always
+            # 前端
+            yun_blog_vue:
+            image: yun_blog_vue:v1.0.0
+            ports:
+            - 80:80
+            - 443:443
+            volumes:
+            # 挂载证书目录（只读）（/etc/letsencrypt/archive 为默认路径 后面的可以自定义文件名）
+            - /etc/letsencrypt/archive/ssl:/etc/nginx/ssl:ro
+            # 可选：挂载 nginx 配置文件以便修改 这里是我自己宿主机的文件目录
+            - /home/yun_blog_vue/nginx/conf.d:/etc/nginx/conf.d:ro
+            restart: always
+            # 定义网络
+            networks:
+            blog_network:
+            
+            # 定义数据卷 （如果你使用 docker 的命名卷挂载时就用）
+            # 我这里用的是和宿主机的挂载卷，就不用了
+            #volumes:
+            #  /home/mysql_date:
+        #  /home/redis_date:</div>
+        <p>3. 重新部署前端</p>
+        <p>先看证书是否真的存在</p>
+        <div class="code-block">ls -la /etc/letsencrypt/live/ssl/</div>
+        <p>删除旧的镜像和容器</p>
+        <p>重新构建镜像 记得 cd 到对应目录里运行</p>
+        <div class="code-block">docker build -t yun_blog_vue:v1.0.0 -f yun_blog_vue_dockerFile .</div>
+        <p>注意要修改你的 .env 文件是否有 http 要将其改成 https</p>
+        <p>最后 cd 到 docker-compose.yml 所在根目录下运行</p>
+        <div class="code-block"># -d 表示后台运行
+        docker compose up -d</div>
+        <p>二、关于 SSL 证书的自动续约</p>
+        <p>上面我们说了首次申请ssl证书</p>
+        <p>但是证书只有三个月有效期</p>
+        <p>我们要保证证书不能过期</p>
+        <p>所以要设置个自动程序来对证书进行续约</p>
+        <p>我们使用 webroot 的模式来对证书进行续约（standalone 模式会有端口占用问题 重新续约时还要停止服务 这样很不方便）</p>
+        <p>先找出你运行前端容器的配置文件</p>
+        <div class="code-block"># 查看你的 Nginx 容器配置
+        docker exec <你的nginx容器名> cat /etc/nginx/conf.d/*.conf | grep -E "root|server_name"</div>
+        <p>先找到你前端项目存放的根目录</p>
+        <p>前台 yun-mi-manchi.top >>> /home/yun_blog_vue/blog/dist</p>
+        <p>后台 admin.yun-mi-manchi.top >>> /home/yun_blog_vue/admin/dist</p>
+        <!-- 图3：前端项目根目录截图 -->
+        <div class="img-box">
+            <img class="article-cover" src="https://cdn-us.imgs.moe/2026/08/13/45ba4c2ac5dbe1e076c950b23107d83b.png" alt="项目根目录 yun_blog_vue">
+        </div>
+        <div class="img-box">
+            <img class="article-cover" src="https://cdn-us.imgs.moe/2026/07/10/6ded24edbf78674848a0dfe6e9204379.jpg" alt="项目文件夹列表">
+        </div>
+        <p>在前面我们使用的是两个项目部署的证书是同一个</p>
+        <p>现在我们尝试两个项目分别部署不同的的证书</p>
+        <p>运行申请 ssl 证书的指令</p>
+        <div class="code-block">sudo certbot certonly --webroot -d yun-mi-manchi.top
+        sudo certbot certonly --webroot -d admin.yun-mi-manchi.top</div>
+        <p>这样证书就会被创建在默认路径下 /etc/letsencrypt/live/</p>
+        <!-- 图5：live目录多域名证书文件夹 -->
+        <div class="img-box">
+            <img class="article-cover" src="https://cdn-us.imgs.moe/2026/07/10/c8f21e28b031e2c512eaec5b662f6b7b.jpg" alt="/etc/letsencrypt/live 多域名证书文件夹">
+        </div>
+        <p>然后找到证书的配置文件 /etc/letsencrypt/renewal/</p>
+        <!-- 图6：renewal目录续约配置文件 -->
+        <div class="img-box">
+            <img class="article-cover" src="https://cdn-us.imgs.moe/2026/07/10/94e554e3255ce151e5b0513dd37511e9.jpg" alt="/etc/letsencrypt/renewal 配置文件列表">
+        </div>
+        <p>修改两个配置文件</p>
+        <p>前台 yun-mi-manchi.top.conf</p>
+        <div class="code-block">version = 5.6.0
+            archive_dir = /etc/letsencrypt/archive/yun-mi-manchi.top
+            cert = /etc/letsencrypt/live/yun-mi-manchi.top/cert.pem
+            privkey = /etc/letsencrypt/live/yun-mi-manchi.top/privkey.pem
+            chain = /etc/letsencrypt/live/yun-mi-manchi.top/chain.pem
+            fullchain = /etc/letsencrypt/live/yun-mi-manchi.top/fullchain.pem
+            [renewalparams]
+            account = 20
+            authenticator = webroot
+            webroot_path = /home/yun_blog_vue/blog/dist,
+            server = https://acme-v02.api.letsencrypt.org/directory
+            key_type = ecdsa
+        [[webroot_map]]</div>
+        <!-- 图7：前台续约配置内容 -->
+        <div class="img-box">
+            <img class="article-cover" src="https://cdn-us.imgs.moe/2026/07/10/04fe41b842a65fff410c6bfb2e1d48a4.jpg" alt="yun-mi-manchi.top.conf 配置内容">
+        </div>
+        <p>后台 admin.yun-mi-manchi.top.conf</p>
+        <div class="code-block">version = 5.6.0
+            archive_dir = /etc/letsencrypt/archive/admin.yun-mi-manchi.top
+            cert = /etc/letsencrypt/live/admin.yun-mi-manchi.top/cert.pem
+            privkey = /etc/letsencrypt/live/admin.yun-mi-manchi.top/privkey.pem
+            chain = /etc/letsencrypt/live/admin.yun-mi-manchi.top/chain.pem
+            fullchain = /etc/letsencrypt/live/admin.yun-mi-manchi.top/fullchain.pem
+            [renewalparams]
+            account = 2
+            authenticator = webroot
+            webroot_path = /home/yun_blog_vue/admin,
+            server = https://acme-v02.api.letsencrypt.org/directory
+            key_type = ecdsa
+        [[webroot_map]]</div>
+        <!-- 图8：后台续约配置内容 -->
+        <div class="img-box">
+            <img class="article-cover" src="https://cdn-us.imgs.moe/2026/07/10/2b00cb1beceb4fa3ec4a3e45632fc77f.jpg" alt="admin.yun-mi-manchi.top.conf 配置内容">
+        </div>
+        <p>下面用另一种配置方法：直接挂载 /live 的上一级目录</p>
+        <p>重新配置 nginx 配置文件</p>
+        <div class="code-block"># ================================
+            # 前台配置（yun-mi-manchi.top）
+            # ================================
+            # HTTP 重定向到 HTTPS（前台）
+            server {
+            listen 80;
+            server_name yun-mi-manchi.top;
+            
+            # 为 Let's Encrypt 验证提供访问
+            location ^~ /.well-known/acme-challenge/ {
+            root /usr/share/nginx/html/blog;
+            default_type "text/plain";
+            allow all;
+            }
+            
+            # 强制跳转到 HTTPS
+            return 301 https://$server_name$request_uri;
+            }
+            # HTTPS 配置（前台）
+            server {
+            listen 443 ssl http2;
+            server_name yun-mi-manchi.top;
+            # SSL 证书配置
+            # 由于 Let's Encrypt 的 live 目录里的文件实际上都是符号链接
+            # 通过挂载 /live 上一级目录来避免软链接导致的挂载失败
+            ssl_certificate     /etc/letsencrypt/live/yun-mi-manchi.top/fullchain.pem;
+            ssl_certificate_key /etc/letsencrypt/live/yun-mi-manchi.top/privkey.pem; 
+            # SSL 安全优化
+            ssl_protocols TLSv1.2 TLSv1.3;
+            ssl_ciphers HIGH:!aNULL:!MD5;
+            ssl_prefer_server_ciphers on;
+            ssl_session_cache shared:SSL:10m;
+            ssl_session_timeout 10m;
+            # 静态资源（带缓存）
+            location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+            root /usr/share/nginx/html/blog;
+            expires 30d;
+            add_header Cache-Control "public, immutable";
+            log_not_found off;
+            }
+            # 前台页面
+            location / {
+            alias /usr/share/nginx/html/blog/;
+            try_files $uri $uri/ /index.html;
+            }
+            # 前台 API 代理
+            location ^~ /api/ {
+            proxy_pass http://你服务器的域名:1314/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            }
+            # 前台 WebSocket
+            location /ws/blog {
+            proxy_pass http://120.24.20.121:1314/ws/blog;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header X-Forwarded-Proto $scheme;
+            }
+            # 上传大小限制
+            client_max_body_size 50M;
+            }
+            # ================================
+            # 后台配置（admin.yun-mi-manchi.top）
+            # ================================
+            # HTTP 重定向到 HTTPS（后台）
+            server {
+            listen 80;
+            server_name admin.yun-mi-manchi.top;
+            
+            # 为 Let's Encrypt 验证提供访问
+            location ^~ /.well-known/acme-challenge/ {
+            root /usr/share/nginx/html/admin;
+            default_type "text/plain";
+            allow all;
+            }
+            
+            # 强制跳转到 HTTPS
+            return 301 https://$server_name$request_uri;
+            }
+            # HTTPS 配置（后台）
+            server {
+            listen 443 ssl http2;
+            server_name admin.yun-mi-manchi.top;
+            # SSL 证书配置
+            # 由于 Let's Encrypt 的 live 目录里的文件实际上都是符号链接
+            # 通过挂载 /live 上一级目录来避免软链接导致的挂载失败
+            ssl_certificate     /etc/letsencrypt/live/admin.yun-mi-manchi.top/fullchain.pem;
+            ssl_certificate_key /etc/letsencrypt/live/admin.yun-mi-manchi.top/privkey.pem; 
+            # SSL 安全优化
+            ssl_protocols TLSv1.2 TLSv1.3;
+            ssl_ciphers HIGH:!aNULL:!MD5;
+            ssl_prefer_server_ciphers on;
+            ssl_session_cache shared:SSL:10m;
+            ssl_session_timeout 10m;
+            # 静态资源（带缓存）
+            location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+            root /usr/share/nginx/html/admin;
+            expires 30d;
+            add_header Cache-Control "public, immutable";
+            log_not_found off;
+            }
+            # 后台页面
+            location / {
+            alias /usr/share/nginx/html/admin/;
+            try_files $uri $uri/ /index.html;
+            }
+            # 后台 API
+            location ^~ /api/ {
+            proxy_pass http://你服务器的域名:7616/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            }
+            # 后台 WebSocket
+            location /ws/admin {
+            proxy_pass http://120.24.20.121:7616/ws/admin;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header X-Forwarded-Proto $scheme;
+            }
+            # 上传大小限制
+            client_max_body_size 50M;
+        }</div>
+        <p>修改 docker-compose.yml</p>
+        <div class="code-block">services:
+            # mysql
+            yun_blog_sql:
+            image: mysql:8.0
+            volumes:
+            - /home/mysql_date:/var/lib/mysql
+            ports:
+            - 3306:3306
+            environment:
+            MYSQL_ROOT_PASSWORD: 123456
+            TZ: Asia/Shanghai
+            restart: always
+            networks:
+            - blog_network
+            # redis
+            yun_blog_redis:
+            image: redis
+            volumes:
+            - /home/redis_date:/data
+            ports:
+            - 6379:6379
+            restart: always
+            command: ['redis-server','--appendonly','yes']
+            networks:
+            - blog_network
+            # 前台后端
+            yun_blog_java:
+            image: yun_blog_java:v1.0.0
+            ports:
+            - 1314:1314
+            environment:
+            TZ: Asia/Shanghai
+            env_file:
+            - .env
+            command:
+            - java
+            - -jar
+            - /yun_blog_java/mengze-blog/mengze-blog-1.0-SNAPSHOT.jar
+            networks:
+            - blog_network
+            restart: always
+            # 后台后端
+            yun_blog_admin_java:
+            image: yun_blog_admin_java:v1.0.0
+            ports:
+            - 7616:7616
+            environment:
+            TZ: Asia/Shanghai
+            env_file:
+            - .env
+            command:
+            - java
+            - -jar
+            - /yun_blog_admin/mengze-admin/mengze-admin-1.0-SNAPSHOT.jar
+            networks:
+            - blog_network
+            restart: always
+            # 前端
+            yun_blog_vue:
+            image: yun_blog_vue:v1.0.0
+            ports:
+            - 80:80
+            - 443:443
+            volumes:
+            # 挂载证书目录（只读）（挂载 /live 上一级目录，避免软链接导致的挂载失败）
+            - /etc/letsencrypt:/etc/letsencrypt:ro
+            
+            # 挂载前后台项目 
+            - /home/yun_blog_vue/blog/dist:/usr/share/nginx/html/blog
+            - /home/yun_blog_vue/admin/dist:/usr/share/nginx/html/admin
+            # 可选：挂载 nginx 配置文件以便修改 这里是我自己宿主机的文件目录
+            - /home/yun_blog_vue/nginx/conf.d:/etc/nginx/conf.d:ro
+            restart: always
+            # 定义网络
+            networks:
+        blog_network:</div>
+        <p>重新构建镜像和运行服务</p>
+        <!-- 图9：docker容器列表截图 -->
+        <div class="img-box">
+            <img class="article-cover" src="https://cdn-us.imgs.moe/2026/07/10/e60e8b8ef61c5bf13f73f217826877e1.jpg" alt="docker ps 容器列表">
+        </div>
+        <p>三、测试是否可以正常续约证书</p>
+        <p>上面这些配置好之后运行下面指令测试是否可以续约证书</p>
+        <div class="code-block">sudo certbot renew --dry-run</div>
+        <p>如果你上面的 nginx 和 ssl 配置文件修改正确</p>
+        <p>且容器和宿主机项目的路径和证书的路径挂载正确</p>
+        <p>成功输出示例：</p>
+        <div class="code-block">[root@iZkidb90xmela9Z yun_blog_compose]# sudo certbot renew --dry-run
+            Saving debug log to /var/log/letsencrypt/letsencrypt.log
+            Processing /etc/letsencrypt/renewal/admin.yun-mi-manchi.top.conf
+            Simulating renewal of an existing certificate for admin.yun-mi-manchi.top
+            ---------------------
+            Processing /etc/letsencrypt/renewal/yun-mi-manchi.top.conf
+            Simulating renewal of an existing certificate for yun-mi-manchi.top
+            Congratulations, all simulated renewals succeeded: 
+            /etc/letsencrypt/live/admin.yun-mi-manchi.top/fullchain.pem (success)
+        /etc/letsencrypt/live/yun-mi-manchi.top/fullchain.pem (success)</div>
+        <!-- 图10：dry-run模拟续约成功截图 -->
+        <div class="img-box">
+            <img class="article-cover" src="https://cdn-us.imgs.moe/2026/07/10/0f207cbe66222032da6682d966f669d8.jpg" alt="certbot renew --dry-run 模拟续约成功">
+        </div>
+        <p>出现Congratulations代表续约流程配置正常。</p>
+        <p>四、让续约后自动重载Nginx</p>
+        <p>因为我们的 nginx 在 Docker 里的</p>
+        <p>所以要先找出前端工程的容器是哪个</p>
+        <div class="code-block">docker ps</div>
+        <!-- 图11：前端容器名称标注截图 -->
+        <div class="img-box">
+            <img class="article-cover" src="https://cdn-us.imgs.moe/2026/07/10/bf569227e4ba9f04af5353824df61061.jpg" alt="前端容器名称">
+        </div>
+        <p>找到前端工程容器名称后测试Nginx配置是否合法</p>
+        <div class="code-block">docker exec yun_blog_compose-yun_blog_vue-1 nginx -t</div>
+        <p>输出ok代表配置无错误：</p>
+        <div class="code-block">nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+        nginx: configuration file /etc/nginx/nginx.conf test is successful</div>
+        <!-- 图12：nginx -t 校验成功截图 -->
+        <div class="img-box">
+            <img class="article-cover" src="https://cdn-us.imgs.moe/2026/07/10/c60cd67496a4650de31fa7b65a98a740.jpg" alt="nginx -t 配置校验通过">
+        </div>
+        <p>手动测试重载命令</p>
+        <div class="code-block">docker exec yun_blog_compose-yun_blog_vue-1 nginx -s reload</div>
+        <p>输出 signal process started 说明重载正常。</p>
+        <!-- 图13：nginx重载执行日志截图 -->
+        <div class="img-box">
+            <img class="article-cover" src="https://cdn-us.imgs.moe/2026/07/10/b6c85006a37752ee1d1c4d46a920a758.jpg" alt="nginx -s reload 重载成功">
+        </div>
+        <p>五、配置自动reload定时任务</p>
+        <p>使用 deploy-hook，仅在实际完成续约时才执行重载Nginx</p>
+        <div class="code-block">sudo crontab -e</div>
+        <p>添加定时规则</p>
+        <div class="code-block">0 3 * * * certbot renew --quiet --deploy-hook "docker exec yun_blog_compose-yun_blog_vue-1 nginx -s reload"</div>
+        <p>释义：每天凌晨3点检测证书有效期；仅续约成功时执行Nginx重载。</p>
+        <p>编辑器操作说明：</p>
+        <p>Vim：按i编辑，ESC后输入 :wq 保存退出</p>
+        <p>Nano：Ctrl+O保存，回车确认，Ctrl+X退出</p>
+        <p>强制续约完整测试命令</p>
+        <div class="code-block">sudo certbot renew \
+            --force-renewal \
+        --deploy-hook "docker exec yun_blog_compose-yun_blog_vue-1 nginx -s reload"</div>
+        <p>执行后输入 echo $?，返回0代表全部流程执行成功。</p>
+        <!-- 图14：强制续约完整执行截图 -->
+        <div class="img-box">
+            <img class="article-cover" src="https://cdn-us.imgs.moe/2026/07/10/5a7840c1fa89df7fe75600b42f924de6.jpg" alt="--force-renewal 强制续约完整输出">
+        </div>
+        <p>PS:该系列只做为作者学习开发项目做的笔记用</p>
+        <p>不一定符合读者来学习，仅供参考</p>
+        <p>“一花一世界，一叶一菩提”</p>
+    </div>
+    <div class="tag-box">
+        <span class="tag">#项目部署</span>
+        <span class="tag">#服务器</span>
+        <span class="tag">#docker</span>
+        <span class="tag">#nginx</span>
+    </div>
+    <!-- 评论区域 -->
+    <div class="comment-box">
+        <h3 class="comment-title">评论区</h3>
+        <div class="comment-item">
+            <div class="comment-author">游客小明</div>
+            <div class="comment-text">博主写得太详细了，之前用standalone每次续约都要停nginx容器，换成webroot模式后不用停机，踩坑解决了！</div>
+        </div>
+        <div class="comment-item">
+            <div class="comment-author">玖染（作者）</div>
+            <div class="comment-text">感谢支持，docker挂载letsencrypt完整目录是关键，live软链接直接挂载会读不到证书，很多人卡在这一步。</div>
+        </div>
+        <div class="comment-item">
+            <div class="comment-author">后端小菜鸡</div>
+            <div class="comment-text">请问多域名分开申请证书后，nginx配置需要分别写ssl路径吗？</div>
+        </div>
+        <div class="comment-item">
+            <div class="comment-author">玖染（作者）</div>
+            <div class="comment-text">是的，每个域名对应自己live下的证书文件，不要混用，方便后期单独更换域名证书。</div>
+        </div>
+        <div class="comment-item">
+            <div class="comment-author">运维阿泽</div>
+            <div class="comment-text">定时任务deploy-hook比post-hook更合理，无续约时不会频繁重载nginx，生产环境推荐。</div>
+        </div>
+    </div>
+</div>
+<div class="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})"></div>
+<div class="footer-box"></div>
+<script>
+    const particlesWrap = document.getElementById("particles");
+    const colors = ["#0099ff", "#0000ff", "#9900ff", "#ff66cc"];
+
+    // 雪花函数（无月亮、无流星）
+    function createSnowCanvas(canvasId, snowNum) {
+        const canvas = document.getElementById(canvasId);
+        const ctx = canvas.getContext("2d");
+        let width, height;
+        let flakes = [];
+
+        function resize() {
+            width = canvas.offsetWidth;
+            height = canvas.offsetHeight;
+            canvas.width = width;
+            canvas.height = height;
+        }
+        window.addEventListener("resize", resize);
+        resize();
+        class Snow {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * -height;
+                this.r = Math.random() * 2 + 1;
+                this.speed = Math.random() * 0.8 + 0.3;
+                this.swing = Math.random() * Math.PI * 2;
+                this.swingSpeed = Math.random() * 0.015 + 0.01;
+                this.wind = Math.random() * 0.3 - 0.15;
+            }
+            update() {
+                this.swing += this.swingSpeed;
+                this.x += Math.cos(this.swing) * 0.6 + this.wind;
+                this.y += this.speed;
+                if (this.y > height + 10) {
+                    this.reset();
+                }
+            }
+            reset() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * -50;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255,255,255,${0.4 + this.r/3})`;
+                ctx.fill();
+            }
+        }
+        for (let i = 0; i < snowNum; i++) flakes.push(new Snow());
+
+        function render() {
+            ctx.clearRect(0, 0, width, height);
+            flakes.forEach(s => {
+                s.update();
+                s.draw();
+            })
+            requestAnimationFrame(render);
+        }
+        render();
+    }
+
+    window.onload = function() {
+        createSnowCanvas("snowFullScreen", 180);
+    };
+
+    // 点击粒子特效（保留）
+    document.addEventListener("click", function(e) {
+        for (let i = 0; i < 10; i++) {
+            const p = document.createElement("div");
+            p.className = "particle";
+            const size = Math.random() * 10 + 6;
+            const angle = (Math.PI * 2 / 10) * i + Math.random() * 0.5;
+            const dis = Math.random() * 100 + 50;
+            const tx = Math.cos(angle) * dis;
+            const ty = Math.sin(angle) * dis;
+            p.style.left = e.clientX + "px";
+            p.style.top = e.clientY + "px";
+            p.style.width = size + "px";
+            p.style.height = size + "px";
+            p.style.background = colors[Math.floor(Math.random() * colors.length)];
+            p.style.setProperty("--tx", tx + "px");
+            p.style.setProperty("--ty", ty + "px");
+            particlesWrap.appendChild(p);
+            setTimeout(() => p.remove(), 600);
+        }
+    });
+
+    // ========== 右键禁用提示框逻辑 ==========
+    let rightTipTimer;
+    document.addEventListener('contextmenu', e => {
+        e.preventDefault();
+        const tip = document.getElementById('rightTipTop');
+        if (tip) {
+            tip.classList.remove('float-tip-out');
+            tip.classList.add('show');
+            clearTimeout(rightTipTimer);
+            rightTipTimer = setTimeout(() => {
+                tip.classList.add('float-tip-out');
+                setTimeout(() => {
+                    tip.classList.remove('show', 'float-tip-out');
+                }, 350);
+            }, 2500);
+        }
+    });
+
+    // ========== 自定义白色光标脚本（已优化灵敏度） ==========
+    (function() {
+        const cursor = document.getElementById('cursor');
+        if (!cursor) return;
+        // 移动端不启用
+        if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+        let mouseX = innerWidth / 2, mouseY = innerHeight / 2;
+        let curX = mouseX, curY = mouseY;
+        let visible = false;
+        let lastTime = performance.now();
+
+        document.addEventListener('mousemove', e => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            if (!visible) {
+                // 首次移动直接定位，避免从中心滑入
+                curX = mouseX;
+                curY = mouseY;
+                cursor.classList.remove('hidden');
+                visible = true;
+            }
+        });
+
+        document.addEventListener('mouseleave', () => {
+            cursor.classList.add('hidden');
+            visible = false;
+        });
+
+        // 点击放大
+        document.addEventListener('mousedown', () => {
+            cursor.style.width = '20px';
+            cursor.style.height = '20px';
+            cursor.style.marginLeft = '-10px';
+            cursor.style.marginTop = '-10px';
+        });
+        document.addEventListener('mouseup', () => {
+            cursor.style.width = '16px';
+            cursor.style.height = '16px';
+            cursor.style.marginLeft = '-8px';
+            cursor.style.marginTop = '-8px';
+        });
+
+        // 平滑跟随（帧率无关，灵敏度可调）
+        function animate(now) {
+            const dt = Math.min((now - lastTime) / 1000, 0.1);
+            lastTime = now;
+            // 灵敏度：建议 10~30，越大越灵敏
+            const smoothing = 18;
+            const t = 1 - Math.exp(-smoothing * dt);
+            curX += (mouseX - curX) * t;
+            curY += (mouseY - curY) * t;
+            cursor.style.left = curX + 'px';
+            cursor.style.top = curY + 'px';
+            requestAnimationFrame(animate);
+        }
+        requestAnimationFrame(animate);
+    })();
+    // ========== 光标脚本结束 ==========
+</script>
+</body>
+</html>

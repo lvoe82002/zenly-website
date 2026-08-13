@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>项目部署——基础篇</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        a {
+            text-decoration: none;
+            color: #fff;
+        }
+        .clearfix:after {
+            content: "";
+            display: block;
+            height: 0;
+            visibility: hidden;
+            clear: both;
+        }
+        .clearfix {
+            *zoom: 1;
+        }
+        html,
+        body {
+            width: 100%;
+            overflow-x: hidden;
+            font-family: "宋体";
+            /* 半透明黑色蒙版背景，替换原纯图片背景 */
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                url(https://t.mwm.moe/ycy/) no-repeat center top !important;
+            background-size: cover !important;
+            background-attachment: fixed !important;
+        }
+
+        /* 雪花画布 */
+        #snowFullScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+        }
+        /* 返回首页：纯白边框、hover纯白强光，无任何黄色 */
+        .back-btn {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 8px 18px;
+            background: rgba(255, 255, 255, 0.28);
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            border-radius: 12px;
+            font-size: 17px;
+            z-index: 99;
+            color: #fff;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            transition: 0.25s ease;
+        }
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.55);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.85);
+            border-color: rgba(255, 255, 255, 0.75);
+        }
+        .article-wrap {
+            width: 96vw;
+            max-width: 1100px;
+            margin: 140px auto 120px;
+            background: rgba(255, 255, 255, 0.32);
+            border-radius: 16px;
+            padding: 50px;
+            position: relative;
+            z-index: 2;
+        }
+        .img-box {
+            width: 100%;
+            margin-bottom: 48px;
+            text-align: center;
+        }
+        .article-cover {
+            width: 100%;
+            border-radius: 12px;
+            display: block;
+            margin: 0 auto;
+        }
+        .content-img {
+            width: 100%;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .article-title {
+            font-size: 36px;
+            text-align: center;
+            color: #111;
+            margin-bottom: 24px;
+        }
+        .article-meta {
+            text-align: center;
+            color: #333;
+            font-size: 17px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+            margin-bottom: 40px;
+        }
+        .article-content {
+            font-size: 20px;
+            line-height: 2;
+            color: #1a1a1a;
+            width: 100%;
+        }
+        .article-content p {
+            margin-bottom: 20px;
+        }
+        .code-block {
+            background: rgba(255, 255, 255, 0.28);
+            padding: 20px;
+            border-radius: 10px;
+            font-family: Consolas;
+            font-size: 17px;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            margin: 24px 0;
+        }
+        .tag-box {
+            margin-top: 40px;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .tag {
+            padding: 6px 16px;
+            background: rgba(255, 255, 255, 0.38);
+            border-radius: 24px;
+            font-size: 16px;
+            color: #222;
+        }
+        .footer-box {
+            width: 100%;
+            height: 80px;
+        }
+        .back-top {
+            position: fixed;
+            right: 30px;
+            bottom: 40px;
+            width: 46px;
+            height: 46px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 99;
+            transition: 0.3s ease;
+            cursor: pointer;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+        }
+        .back-top:hover {
+            background: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 0 18px rgba(255, 255, 255, 0.35);
+            transform: translateY(-6px);
+        }
+        .back-top::after {
+            content: "↑";
+            font-size: 22px;
+            color: #ffffff;
+            font-weight: bold;
+        }
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9998;
+        }
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: burst 0.6s ease-out forwards;
+        }
+        @keyframes burst {
+            0% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0.5);
+            }
+        }
+        /* 评论区样式 */
+        .comment-area {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid rgba(0, 0, 0, 0.15);
+        }
+        .comment-title {
+            font-size: 26px;
+            color: #111;
+            margin-bottom: 24px;
+        }
+        .comment-input {
+            width: 100%;
+            min-height: 120px;
+            padding: 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.12);
+            background: rgba(255, 255, 255, 0.4);
+            font-size: 18px;
+            resize: none;
+            outline: none;
+        }
+        .comment-submit {
+            margin-top: 16px;
+            padding: 10px 26px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(40, 120, 220, 0.7);
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .comment-submit:hover {
+            background: rgba(40, 120, 220, 0.9);
+        }
+        .comment-list {
+            margin-top: 40px;
+        }
+        .comment-item {
+            padding: 18px;
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .comment-user {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #002244;
+        }
+        .comment-time {
+            font-size: 14px;
+            color: #555;
+            margin-left: 12px;
+            font-weight: normal;
+        }
+        .comment-text {
+            line-height: 1.8;
+            font-size: 18px;
+        }
+
+        /* ========== 右键禁用提示框样式 ========== */
+        .float-tip-top {
+            position: fixed;
+            top: 26px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(30, 30, 30, 0.75) !important;
+            backdrop-filter: blur(6px) !important;
+            -webkit-backdrop-filter: blur(6px) !important;
+            border-radius: 50px !important;
+            padding: 6px 22px 6px 20px !important;
+            display: none !important;
+            align-items: center !important;
+            gap: 10px !important;
+            color: #ffffff !important;
+            font-size: 14px !important;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+            z-index: 99999 !important;
+            white-space: nowrap !important;
+            pointer-events: none !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+            border: none !important;
+            animation: floatTipIn 0.35s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+        }
+        .float-tip-top.show {
+            display: flex !important;
+        }
+        .float-tip-top.float-tip-out {
+            animation: floatTipOut 0.3s ease-in forwards;
+        }
+        @keyframes floatTipIn {
+            0% {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-14px) scale(0.92);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0) scale(1);
+            }
+        }
+        @keyframes floatTipOut {
+            0% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-10px) scale(0.94);
+            }
+        }
+        .float-tip-top .tip-icon {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 20px !important;
+            height: 20px !important;
+            border-radius: 50% !important;
+            background: #ffffff !important;
+            color: #1f1f1f !important;
+            font-family: 'Times New Roman', Times, serif !important;
+            font-style: italic !important;
+            font-weight: 700 !important;
+            font-size: 15px !important;
+            line-height: 1 !important;
+            flex-shrink: 0 !important;
+            padding-bottom: 2px !important;
+            box-sizing: border-box !important;
+        }
+
+        /* ========== 自定义白色光标样式 ========== */
+        /* 桌面端隐藏系统光标 */
+        @media (hover: hover) and (pointer: fine) {
+            body, a, button, * {
+                cursor: none !important;
+            }
+        }
+
+        /* 自定义光标：纯白外圈 + 纯白内圆 */
+        #cursor {
+            position: fixed;
+            pointer-events: none;
+            z-index: 100000; /* 提高层级，保证在最上层 */
+            width: 16px;
+            height: 16px;
+            margin-left: -8px;
+            margin-top: -8px;
+            border: 1.5px solid #fff;      /* 纯白外圈 */
+            border-radius: 50%;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: width 0.15s, height 0.15s, margin-left 0.15s, margin-top 0.15s;
+        }
+
+        /* 内圆：纯白实心小点 */
+        #cursor::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: #fff;              /* 纯白内圆 */
+            border-radius: 50%;
+            transition: width 0.15s, height 0.15s;
+        }
+
+        /* 通用隐藏类（用于光标初始隐藏） */
+        .hidden {
+            display: none !important;
+        }
+
+        /* 移动端隐藏自定义光标，恢复系统光标 */
+        @media (hover: none), (max-width: 768px) {
+            #cursor {
+                display: none !important;
+            }
+            body, a, button, * {
+                cursor: auto !important;
+            }
+        }
+        /* ========== 光标样式结束 ========== */
+    </style>
+</head>
+<body>
+    <!-- 雪花画布 -->
+    <canvas id="snowFullScreen"></canvas>
+    <div class="particles" id="particles"></div>
+
+    <!-- 右键禁用提示框 -->
+    <div class="float-tip-top" id="rightTipTop">
+        <span class="tip-icon">i</span>
+        <span>为了浏览体验，本站禁用右键</span>
+    </div>
+
+    <!-- 自定义光标元素 -->
+    <div id="cursor" class="xs-hidden hidden"></div>
+
+    <a href="zenly.html" class="back-btn">← 返回首页</a>
+    <div class="article-wrap">
+        <div class="img-box">
+            <img class="article-cover" src="https://cdn-us.imgs.moe/2026/07/07/f1e1d7524f0ca114ffbdd3e1915b970f.png" alt="部署基础篇封面">
+        </div>
+        <h1 class="article-title">项目部署——基础篇</h1>
+        <div class="article-meta">作者：玖染 &nbsp;|&nbsp; 发布时间：2026-06-23 &nbsp;|&nbsp; 更新时间：2026-07-07</div>
+        <div class="article-content">
+            <h2>前言</h2>
+            <p>由于项目整体已经开发完成，现在进入项目部署阶段。</p>
+            <h2>服务器与域名的购买</h2>
+            <p>我这里是在阿里云购买的服务器（学生优惠可以白嫖）和域名，买到服务器和域名后自行备案和解析。</p>
+            <p>服务器建议买 Linux 系统的，我使用的系统是 CentOS 7.9 64 位。</p>
+            <p>在服务器安全组中给必要端口放行，入方向规则如下：</p>
+            <img class="content-img" src="https://cdn-us.imgs.moe/2026/07/10/d10738cfea6a2f53250b38e446fe6a5a.png" alt="阿里云安全组规则截图">
+            <h2>在系统中安装Docker</h2>
+            <p>在安装 Docker 前先准备两个工具软件：</p>
+            <h3>WinSCP</h3>
+            <p>用于和云服务器进行文件传输</p>
+            <img class="content-img" src="https://cdn-us.imgs.moe/2026/07/10/d701eb1f288039ace696e4b308da7036.png" alt="WinSCP图标">
+            <p>WinSCP 操作界面：</p>
+            <img class="content-img" src="https://cdn-us.imgs.moe/2026/07/10/10a995951d678097e97bf6ef5cf497eb.png" alt="WinSCP操作界面">
+            <h3>PuTTY</h3>
+            <p>用于与云服务器进行远程终端连接</p>
+            <img class="content-img" src="https://cdn-us.imgs.moe/2026/07/10/c5354ef2a66e74730cb4dbfdfca58858.png" alt="PuTTY图标">
+            <p>PuTTY配置界面：</p>
+            <img class="content-img" src="https://cdn-us.imgs.moe/2026/07/10/885f170efd5ccb8be27358efa9e7ccf5.png" alt="PuTTY配置窗口">
+            <p>Docker完整安装脚本：</p>
+            <div class="code-block"># 安装依赖
+                sudo yum install -y yum-utils device-mapper-persistent-data lvm2
+                # 添加 Docker 官方仓库
+                sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+                # 设置阿里docker镜像仓库地址
+                sudo yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+                # 配置docker加速
+                sudo mkdir -p /etc/docker
+                sudo tee /etc/docker/daemon.json <<-'EOF'
+                {
+                "registry-mirrors": ["https://xxxx.mirror.aliyuncs.com"]
+                }
+                EOF
+                sudo systemctl daemon-reload
+                sudo systemctl restart docker
+                # 安装 Docker
+                sudo yum install -y docker-ce docker-ce-cli containerd.io
+                # 启动 Docker
+                sudo systemctl start docker
+                # 设置开机自启
+                sudo systemctl enable docker
+            # 查看 Docker 版本
+        docker version</div>
+        <h2>常见的docker命令</h2>
+        <h3>查看Docker基础信息</h3>
+        <div class="code-block"># 查看 Docker 版本
+            docker version
+            # 查看 Docker 系统信息
+            docker info
+        # 查看 Docker 磁盘占用
+    docker system df</div>
+    <h3>镜像相关命令</h3>
+    <div class="code-block"># 查看本地镜像
+        docker images
+        # 拉取镜像
+        docker pull nginx:latest
+        # 删除镜像
+        docker rmi nginx:latest
+        # 强制删除镜像
+        docker rmi -f 镜像ID
+        # 搜索镜像
+        docker search mysql
+        # 构建镜像
+        docker build -t 镜像名:版本号 .
+        # 给镜像打标签
+        docker tag 本地镜像名:版本号 仓库地址/镜像名:版本号
+    # 推送镜像到远程仓库
+docker push 仓库地址/镜像名:版本号</div>
+<h3>容器相关命令</h3>
+<div class="code-block"># 查看正在运行的容器
+    docker ps
+    # 查看所有容器，包括已停止的容器
+    docker ps -a
+    # 启动容器
+    docker start 容器名或容器ID
+    # 停止容器
+    docker stop 容器名或容器ID
+    # 重启容器
+    docker restart 容器名或容器ID
+    # 删除容器
+    docker rm 容器名或容器ID
+    # 强制删除正在运行的容器
+    docker rm -f 容器名或容器ID
+    # 查看容器日志
+    docker logs 容器名或容器ID
+    # 实时查看容器日志
+    docker logs -f 容器ID
+    # 进入容器
+    docker exec -it 容器名或容器ID /bin/bash
+# 如果容器没有 bash，可以使用 sh
+docker exec -it 容器名或容器ID /bin/sh</div>
+<p>在 docker 中下载镜像：运行docker run时本地无镜像会自动拉取，也可手动pull下载。</p>
+<h2>运行docker中的容器——前台后端部署</h2>
+<p>先打包后端项目生成jar包，在服务器创建专属docker网络：</p>
+<div class="code-block">docker network create blog_network</div>
+<h3>运行mysql容器</h3>
+<div class="code-block">docker run --restart always \
+    -e TZ=Asia/Shanghai \
+    --name yun_blog_sql \
+    -d \
+    --network blog_network \
+    -p 3306:3306 \
+    -v /home/mysql_date:/var/lib/mysql \
+    -e MYSQL_ROOT_PASSWORD=your_password \
+mysql:8.0</div>
+<p>挂载目录文件展示：</p>
+<img class="content-img" src="https://cdn-us.imgs.moe/2026/07/10/95da9ef9e77a9917a813ef6dc40d6f62.png" alt="服务器home目录挂载文件夹">
+<p>Navicat数据库连接配置：</p>
+<img class="content-img" src="https://cdn-us.imgs.moe/2026/07/10/0e08656fd1e9330b1e38b6dd18cc168e.png" alt="Navicat新建连接窗口">
+<h3>运行redis容器</h3>
+<div class="code-block">docker run --restart always \
+    --name yun_blog_redis \
+    -d \
+    --network blog_network \
+    -p 6379:6379 \
+    -v /home/redis_date:/data \
+redis redis-server --appendonly yes</div>
+<p>Redis挂载目录：</p>
+<img class="content-img" src="https://cdn-us.imgs.moe/2026/07/10/f3dc5c15a7bdc38e75956c9cde9fd721.png" alt="redis挂载目录截图">
+<p>Redis工具SSH隧道配置：</p>
+<img class="content-img" src="https://cdn-us.imgs.moe/2026/07/10/9cd34df48fbd702b69de4029c67c3c77.png" alt="Redis连接SSH配置">
+<p>容器运行列表：</p>
+<img class="content-img" src="https://cdn-us.imgs.moe/2026/07/10/edd3a40b03f731673ce36ff4e541bc29.png" alt="docker ps容器列表">
+<p>Redis客户端测试写入数据：</p>
+<img class="content-img" src="https://cdn-us.imgs.moe/2026/07/10/fe50879a7ddfeb0ea8a63b1f3bf2f9cb.png" alt="Redis可视化工具数据">
+<h3>运行java前台后端容器</h3>
+<div class="code-block">docker run --restart always \
+    -e TZ=Asia/Shanghai \
+    --name yun_blog_java \
+    -d \
+    --network blog_network \
+    -p 1314:1314 \
+    -v /home/yun_blog_java/mengze-blog:/yun_blog_java/mengze-blog \
+    openjdk:17-jdk java -jar /yun_blog_java/mengze-blog/mengze-blog-1.0-SNAPSHOT.jar \
+    "--spring.datasource.url=jdbc:mysql://yun_blog_sql:3306/yun_blog?characterEncoding=utf8&serverTimezone=Asia/Shanghai" \
+    "--spring.datasource.username=your_sql_username" \
+    "--spring.datasource.password=your_sql_password" \
+    "--spring.redis.host=yun_blog_redis" \
+    "--spring.mail.username=your_qq_email_username" \
+    "--spring.mail.password=your_qq_email_key" \
+    "--oss.accessKey=your_access_key" \
+    "--oss.secretKey=your_secret_key" \
+    "--oss.bucket=your_bucket_name" \
+    "--oss.domain=your_oss_visit_domain" \
+    "--aliyun.sms.access-key-id=your_access_key_id" \
+    "--aliyun.sms.access-key-secret=your_access_key_secret" \
+    "--blog.frontend.url=blog_frontend_url" \
+    "--weather.api.key-id=your_key_id" \
+    "--weather.api.project-id=your_project_id" \
+    "--weather.api.host=your_api_host" \
+    "--weather.api.private-key=your_weather_private_key" \
+"--deepseek.api-key=your_deepseek_api_key"</div>
+<p>后端启动日志：</p>
+<img class="content-img" src="https://cdn-us.imgs.moe/2026/07/10/2aa1c1c96c5f22ca3276871e0473b1ff.png" alt="java容器启动日志">
+<p>curl接口测试连通：</p>
+<img class="content-img" src="https://cdn-us.imgs.moe/2026/07/10/2d5e7830265b034b9b06ac9efbd86ba4.png" alt="curl登录接口测试">
+<h3>运行nginx容器(部署前后端前端)</h3>
+<p>前端生产环境配置（后台管理）：</p>
+<img class="content-img" src="https://cdn-us.imgs.moe/2026/07/10/9ede19b91a62790f616d230755a4d394.png" alt="后台.env.production">
+<p>前台前端生产配置：</p>
+<img class="content-img" src="https://cdn-us.imgs.moe/2026/07/10/a451b5536d58eae382c3512f159db1cb.png" alt="前台.env.production">
+<p>服务器Nginx配置文件目录：</p>
+<img class="content-img" src="https://cdn-us.imgs.moe/2026/07/10/356d196939d8173ec5ad8f17ddc67dc5.png" alt="nginx conf.d目录">
+<p>Nginx完整default.conf配置：</p>
+<div class="code-block"># ================================
+    # 前台配置（yun-mi-manchi.top）
+    # ================================
+    server {
+    listen 80;
+    server_name yun-mi-manchi.top;
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+    root /usr/share/nginx/html/blog; 
+    expires 30d;
+    add_header Cache-Control "public, immutable";
+    log_not_found off;
+    }
+    location / {
+    alias /usr/share/nginx/html/blog/;
+    try_files $uri $uri/ /index.html;
+    }
+    location ^~ /api/ {
+    proxy_pass http://服务器公网ip:1314/;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+    location /ws/blog {
+    proxy_pass http://服务器公网ip:1314/ws/blog;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    }
+    client_max_body_size 50M;
+    }
+    # ================================
+    # 后台配置（admin.yun-mi-manchi.top）
+    # ================================
+    server {
+    listen 80;
+    server_name admin.yun-mi-manchi.top;
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+    root /usr/share/nginx/html/admin;
+    expires 30d;
+    add_header Cache-Control "public, immutable";
+    log_not_found off;
+    }
+    location / {
+    alias /usr/share/nginx/html/admin/;
+    try_files $uri /index.html;
+    }
+    location ^~ /api/ {
+    proxy_pass http://服务器公网ip:7616/;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+    location /ws/admin {
+    proxy_pass http://服务器公网ip:7616/ws/admin;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    }
+    client_max_body_size 50M;
+}</div>
+<p>Nginx启动命令：</p>
+<div class="code-block">docker run --restart always \
+    --name yun_blog_vue \
+    -d \
+    -p 80:80 \
+    -v /home/yun_blog_vue/blog/dist:/usr/share/nginx/html/blog \
+    -v /home/yun_blog_vue/admin/dist:/usr/share/nginx/html/admin \
+    -v /home/yun_blog_vue/nginx/conf.d:/etc/nginx/conf.d \
+nginx</div>
+<h2>后台后端部署</h2>
+<p>部署命令，仅端口、挂载目录、jar包名称与前台区分：</p>
+<div class="code-block">docker run --restart always \
+    -e TZ=Asia/Shanghai \
+    --name yun_blog_admin_java \
+    -d \
+    --network blog_network \
+    -p 7616:7616 \
+    -v /home/yun_blog_java/mengze-admin:/yun_blog_java/mengze-admin \
+    openjdk:17-jdk java -Xms256m -Xmx384m -jar /yun_blog_java/mengze-admin/mengze-admin-1.0-SNAPSHOT.jar \
+    "--spring.datasource.url=jdbc:mysql://yun_blog_sql:3306/yun_blog?characterEncoding=utf8&serverTimezone=Asia/Shanghai" \
+    "--spring.datasource.username=your_sql_username" \
+    "--spring.datasource.password=your_sql_password" \
+    "--spring.redis.host=yun_blog_redis" \
+    "--spring.mail.username=your_qq_email_username" \
+    "--spring.mail.password=your_qq_email_key" \
+    "--oss.accessKey=your_access_key" \
+    "--oss.secretKey=your_secret_key" \
+    "--oss.bucket=your_bucket_name" \
+    "--oss.domain=your_oss_visit_domain" \
+    "--aliyun.sms.access-key-id=your_access_key_id" \
+    "--aliyun.sms.access-key-secret=your_access_key_secret" \
+    "--blog.frontend.url=blog_frontend_url" \
+    "--weather.api.key-id=your_key_id" \
+    "--weather.api.project-id=your_project_id" \
+    "--weather.api.host=your_api_host" \
+    "--weather.api.private-key=your_weather_private_key" \
+"--deepseek.api-key=your_deepseek_api_key"</div>
+<p>注意：直接在启动命令写入密钥极度不安全，后续进阶教程提供解决方案。</p>
+<h2>预告</h2>
+<p>后续更新两篇进阶部署教程。</p>
+<p style="text-align:center;margin:40px 0;font-size:22px;">"一花一世界，一叶一菩提"</p>
+<p>博客开发系列笔记，仅个人学习记录，仅供参考。</p>
+</div>
+<div class="tag-box">
+    <span class="tag">#项目部署</span>
+    <span class="tag">#服务器</span>
+    <span class="tag">#docker</span>
+    <span class="tag">#nginx</span>
+</div>
+<!-- 底部评论区 -->
+<div class="comment-area">
+    <h3 class="comment-title">评论区</h3>
+    <textarea class="comment-input" placeholder="写下你的评论..."></textarea>
+    <button class="comment-submit">提交评论</button>
+    <div class="comment-list">
+        <div class="comment-item">
+            <div class="comment-user">运维小菜 <span class="comment-time">2026-07-08 15:30</span></div>
+            <div class="comment-text">步骤写得非常详细，跟着一遍部署成功了！</div>
+        </div>
+        <div class="comment-item">
+            <div class="comment-user">后端开发阿泽 <span class="comment-time">2026-07-09 10:12</span></div>
+            <div class="comment-text">想问下敏感配置除了DockerFile还有什么安全方案？</div>
+        </div>
+        <div class="comment-item">
+            <div class="comment-user">玖染(作者) <span class="comment-time">2026-07-09 11:05</span></div>
+            <div class="comment-text">后续进阶篇会讲Docker Compose、环境变量文件、密钥托管方式。</div>
+        </div>
+        <div class="comment-item">
+            <div class="comment-user">访客 <span class="comment-time">2026-07-10 14:22</span></div>
+            <div class="comment-text">收藏备用，搭建个人博客直接套用。</div>
+        </div>
+    </div>
+</div>
+</div>
+<div class="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})"></div>
+<div class="footer-box"></div>
+<script>
+    const particlesWrap = document.getElementById("particles");
+    const colors = ["#0099ff", "#0000ff", "#9900ff", "#ff66cc"];
+
+    // 雪花函数
+    function createSnowCanvas(canvasId, snowNum) {
+        const canvas = document.getElementById(canvasId);
+        const ctx = canvas.getContext("2d");
+        let width, height;
+        let flakes = [];
+
+        function resize() {
+            width = canvas.offsetWidth;
+            height = canvas.offsetHeight;
+            canvas.width = width;
+            canvas.height = height;
+        }
+        window.addEventListener("resize", resize);
+        resize();
+        class Snow {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * -height;
+                this.r = Math.random() * 2 + 1;
+                this.speed = Math.random() * 0.8 + 0.3;
+                this.swing = Math.random() * Math.PI * 2;
+                this.swingSpeed = Math.random() * 0.015 + 0.01;
+                this.wind = Math.random() * 0.3 - 0.15;
+            }
+            update() {
+                this.swing += this.swingSpeed;
+                this.x += Math.cos(this.swing) * 0.6 + this.wind;
+                this.y += this.speed;
+                if (this.y > height + 10) {
+                    this.reset();
+                }
+            }
+            reset() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * -50;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255,255,255,${0.4 + this.r/3})`;
+                ctx.fill();
+            }
+        }
+        for (let i = 0; i < snowNum; i++) flakes.push(new Snow());
+
+        function render() {
+            ctx.clearRect(0, 0, width, height);
+            flakes.forEach(s => {
+                s.update();
+                s.draw();
+            })
+            requestAnimationFrame(render);
+        }
+        render();
+    }
+
+    window.onload = function() {
+        createSnowCanvas("snowFullScreen", 180);
+    };
+
+    // 点击粒子特效
+    document.addEventListener("click", function(e) {
+        for (let i = 0; i < 10; i++) {
+            const p = document.createElement("div");
+            p.className = "particle";
+            const size = Math.random() * 10 + 6;
+            const angle = (Math.PI * 2 / 10) * i + Math.random() * 0.5;
+            const dis = Math.random() * 100 + 50;
+            const tx = Math.cos(angle) * dis;
+            const ty = Math.sin(angle) * dis;
+            p.style.left = e.clientX + "px";
+            p.style.top = e.clientY + "px";
+            p.style.width = size + "px";
+            p.style.height = size + "px";
+            p.style.background = colors[Math.floor(Math.random() * colors.length)];
+            p.style.setProperty("--tx", tx + "px");
+            p.style.setProperty("--ty", ty + "px");
+            particlesWrap.appendChild(p);
+            setTimeout(() => p.remove(), 600);
+        }
+    });
+
+    // 评论提交交互
+    const submitBtn = document.querySelector(".comment-submit");
+    const commentInput = document.querySelector(".comment-input");
+    const commentList = document.querySelector(".comment-list");
+    submitBtn.addEventListener("click", () => {
+        const val = commentInput.value.trim();
+        if (!val) {
+            alert("请输入评论内容");
+            return;
+        }
+        const now = new Date();
+        const timeStr =
+            `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+        const item = document.createElement("div");
+        item.className = "comment-item";
+        item.innerHTML =
+            `<div class="comment-user">访客 <span class="comment-time">${timeStr}</span></div><div class="comment-text">${val}</div>`;
+        commentList.prepend(item);
+        commentInput.value = "";
+        alert("评论提交成功");
+    });
+
+    // ========== 右键禁用提示框逻辑 ==========
+    let rightTipTimer;
+    document.addEventListener('contextmenu', e => {
+        e.preventDefault();
+        const tip = document.getElementById('rightTipTop');
+        if (tip) {
+            tip.classList.remove('float-tip-out');
+            tip.classList.add('show');
+            clearTimeout(rightTipTimer);
+            rightTipTimer = setTimeout(() => {
+                tip.classList.add('float-tip-out');
+                setTimeout(() => {
+                    tip.classList.remove('show', 'float-tip-out');
+                }, 350);
+            }, 2500);
+        }
+    });
+
+    // ========== 自定义白色光标脚本（已优化灵敏度） ==========
+    (function() {
+        const cursor = document.getElementById('cursor');
+        if (!cursor) return;
+        // 移动端不启用
+        if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+        let mouseX = innerWidth / 2, mouseY = innerHeight / 2;
+        let curX = mouseX, curY = mouseY;
+        let visible = false;
+        let lastTime = performance.now();
+
+        document.addEventListener('mousemove', e => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            if (!visible) {
+                // 首次移动直接定位，避免从中心滑入
+                curX = mouseX;
+                curY = mouseY;
+                cursor.classList.remove('hidden');
+                visible = true;
+            }
+        });
+
+        document.addEventListener('mouseleave', () => {
+            cursor.classList.add('hidden');
+            visible = false;
+        });
+
+        // 点击放大
+        document.addEventListener('mousedown', () => {
+            cursor.style.width = '20px';
+            cursor.style.height = '20px';
+            cursor.style.marginLeft = '-10px';
+            cursor.style.marginTop = '-10px';
+        });
+        document.addEventListener('mouseup', () => {
+            cursor.style.width = '16px';
+            cursor.style.height = '16px';
+            cursor.style.marginLeft = '-8px';
+            cursor.style.marginTop = '-8px';
+        });
+
+        // 平滑跟随（帧率无关，灵敏度可调）
+        function animate(now) {
+            const dt = Math.min((now - lastTime) / 1000, 0.1);
+            lastTime = now;
+            // 灵敏度：建议 10~30，越大越灵敏
+            const smoothing = 18;
+            const t = 1 - Math.exp(-smoothing * dt);
+            curX += (mouseX - curX) * t;
+            curY += (mouseY - curY) * t;
+            cursor.style.left = curX + 'px';
+            cursor.style.top = curY + 'px';
+            requestAnimationFrame(animate);
+        }
+        requestAnimationFrame(animate);
+    })();
+    // ========== 光标脚本结束 ==========
+</script>
+</body>
+</html>

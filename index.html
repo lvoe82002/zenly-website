@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>登录验证</title>
+<style>
+*{
+	margin:0;
+	padding:0;
+	box-sizing:border-box;
+}
+
+/* ========== 自定义光标样式（全白色，无混合模式） ========== */
+@media (hover: hover) and (pointer: fine) {
+	body, a, button, * {
+		cursor: none !important;
+	}
+}
+
+#cursor {
+	position: fixed;
+	pointer-events: none;
+	z-index: 99999;
+	width: 16px;
+	height: 16px;
+	margin-left: -8px;
+	margin-top: -8px;
+	border: 1.5px solid #fff;
+	border-radius: 50%;
+	background: transparent;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: width 0.15s, height 0.15s, margin-left 0.15s, margin-top 0.15s;
+}
+
+#cursor::after {
+	content: '';
+	width: 8px;
+	height: 8px;
+	background: #fff;
+	border-radius: 50%;
+	transition: width 0.15s, height 0.15s;
+}
+
+/* 初始隐藏光标 */
+.hidden {
+	display: none !important;
+}
+
+@media (hover: none), (max-width: 768px) {
+	#cursor {
+		display: none !important;
+	}
+	body, a, button, * {
+		cursor: auto !important;
+	}
+}
+/* ========== 自定义光标样式结束 ========== */
+
+/* ========== 粒子画布样式 ========== */
+#particleCanvas {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+	z-index: 99998;
+}
+/* ========== 粒子画布样式结束 ========== */
+
+/* ========== 下雨特效画布样式 ========== */
+#rainCanvas {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+	z-index: 0;
+}
+/* ========== 下雨特效画布样式结束 ========== */
+
+/* ========== 闪电特效画布样式 ========== */
+#lightningCanvas {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+	z-index: 0;               /* 与雨滴同层，但DOM顺序在后，会显示在雨滴上方 */
+}
+/* ========== 闪电特效画布样式结束 ========== */
+
+/* ========== 修改后的 body 背景 ========== */
+body{
+	width:100vw;
+	height:100vh;
+	background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+	            url(https://t.mwm.moe/ycy/) no-repeat center top !important;
+	background-size: cover !important;
+	background-attachment: fixed !important;
+	display:flex;
+	align-items:center;
+	justify-content:center;
+	font-family:"宋体";
+}
+/* ========== body 背景修改结束 ========== */
+
+.login-box{
+	position: relative;
+	z-index: 1;
+	width:360px;
+	padding:35px 30px;
+	background:rgba(255,255,255,0.35);
+	border-radius:12px;
+	box-shadow:0 0 25px rgba(0,0,0.3);
+}
+.login-box h2{
+	text-align:center;
+	color:#111;
+	margin-bottom:35px;
+}
+#tip{
+	color:red;
+	height:20px;
+	font-size:14px;
+	text-align:center;
+	margin-bottom:22px;
+}
+.inputBox {
+	position: relative;
+	width: 100%;
+	margin-bottom:26px;
+}
+.inputBox input {
+	width: 100%;
+	padding: 10px 0 6px;
+	background: transparent;
+	outline: none;
+	box-shadow: none;
+	border: none;
+	color: #111;
+	font-size: 1em;
+	letter-spacing: 0.1em;
+	transition: 0.5s;
+}
+.inputBox span {
+	position: absolute;
+	left: 0;
+	top: 8px;
+	pointer-events: none;
+	font-size: 1em;
+	color: rgba(60,60,60,0.6);
+	text-transform: none;
+	letter-spacing: 0.05em;
+	transition: 0.5s;
+}
+.inputBox input:valid~span,
+.inputBox input:focus~span {
+	color: #7388ff;
+	transform: translateY(-18px);
+	font-size: 0.68em;
+}
+.inputBox i {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	height: 2px;
+	background: #333;
+	overflow: hidden;
+}
+.inputBox i::before {
+	content: '';
+	position: absolute;
+	left: -100%;
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(90deg, #6096ff, #7388ff, #b07bff, #6cc6cb, #82a9ff, #c2bfff);
+	animation: runing 1s linear infinite;
+	transition: 0.5s;
+}
+.inputBox input:valid~i::before,
+.inputBox input:focus~i::before {
+	left: 0;
+}
+@keyframes runing {
+	0% { background-position-x: 0; }
+	100% { background-position-x: 250px; }
+}
+button{
+	width:100%;
+	height:44px;
+	background:#222;
+	color:#fff;
+	border:none;
+	border-radius:6px;
+	font-size:17px;
+	cursor:pointer;
+	transition:0.3s;
+	margin-top:8px;
+}
+button:hover{
+	background:#3a5ed8;
+}
+
+/* ========== 顶部提示框样式 ========== */
+.float-tip-top {
+    position: fixed;
+    top: 26px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(30, 30, 30, 0.75) !important;
+    backdrop-filter: blur(6px) !important;
+    -webkit-backdrop-filter: blur(6px) !important;
+    border-radius: 50px !important;
+    padding: 6px 22px 6px 20px !important;
+    display: none !important;
+    align-items: center !important;
+    gap: 10px !important;
+    color: #ffffff !important;
+    font-size: 14px !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    z-index: 99999 !important;
+    white-space: nowrap !important;
+    pointer-events: none !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+    border: none !important;
+    animation: floatTipIn 0.35s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+.float-tip-top.show {
+    display: flex !important;
+}
+.float-tip-top.float-tip-out {
+    animation: floatTipOut 0.3s ease-in forwards;
+}
+@keyframes floatTipIn {
+    0% { opacity: 0; transform: translateX(-50%) translateY(-14px) scale(0.92); }
+    100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+}
+@keyframes floatTipOut {
+    0% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateX(-50%) translateY(-10px) scale(0.94); }
+}
+.float-tip-top .tip-icon {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 20px !important;
+    height: 20px !important;
+    border-radius: 50% !important;
+    background: #ffffff !important;
+    color: #1f1f1f !important;
+    font-family: 'Times New Roman', Times, serif !important;
+    font-style: italic !important;
+    font-weight: 700 !important;
+    font-size: 15px !important;
+    line-height: 1 !important;
+    flex-shrink: 0 !important;
+    padding-bottom: 2px !important;
+    box-sizing: border-box !important;
+}
+/* ========== 顶部提示框样式结束 ========== */
+</style>
+</head>
+<body>
+
+<!-- 下雨特效画布 -->
+<canvas id="rainCanvas"></canvas>
+<!-- 闪电特效画布 -->
+<canvas id="lightningCanvas"></canvas>
+<!-- 粒子画布 -->
+<canvas id="particleCanvas"></canvas>
+<!-- 自定义光标元素（初始隐藏） -->
+<div id="cursor" class="hidden"></div>
+
+<div class="login-box">
+	<h2>玖染的项目主页</h2>
+	<div id="tip"></div>
+
+	<div class="inputBox">
+		<input type="text" id="user" required>
+		<span>账号</span>
+		<i></i>
+	</div>
+	<div class="inputBox">
+		<input type="password" id="pwd" required>
+		<span>密码</span>
+		<i></i>
+	</div>
+
+	<button onclick="loginCheck()">登录</button>
+</div>
+
+<!-- 提示框（放在 body 内） -->
+<div class="float-tip-top" id="rightTipTop">
+    <span class="tip-icon">i</span>
+    <span>为了浏览体验，本站禁用右键</span>
+</div>
+
+<script>
+// ========== 登录验证脚本 ==========
+const userTrue = "kali";
+const pwdTrue = "132860";
+function loginCheck(){
+	let u = document.getElementById("user").value.trim();
+	let p = document.getElementById("pwd").value.trim();
+	let tip = document.getElementById("tip");
+	if(!u || !p){
+		tip.innerText = "账号和密码不能为空";
+		return;
+	}
+	if(u === userTrue && p === pwdTrue){
+		localStorage.setItem("yunLogin","ok");
+		location.href = "zenly.html";
+	}else{
+		tip.innerText = "账号或密码错误";
+	}
+}
+
+// ========== 自定义光标脚本（帧率无关 + 灵敏度可调） ==========
+(function() {
+	const cursor = document.getElementById('cursor');
+	if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+	let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+	let curX = mouseX, curY = mouseY;
+	let visible = false;
+	let lastTime = performance.now();
+
+	document.addEventListener('mousemove', e => {
+		mouseX = e.clientX;
+		mouseY = e.clientY;
+		if (!visible) {
+			// 第一次移动时直接跳转到鼠标位置，避免从中心滑入
+			curX = mouseX;
+			curY = mouseY;
+			cursor.classList.remove('hidden');
+			visible = true;
+		}
+	});
+
+	document.addEventListener('mouseleave', () => {
+		cursor.classList.add('hidden');
+		visible = false;
+	});
+
+	document.addEventListener('mousedown', () => {
+		cursor.style.width = '20px';
+		cursor.style.height = '20px';
+		cursor.style.marginLeft = '-10px';
+		cursor.style.marginTop = '-10px';
+	});
+	document.addEventListener('mouseup', () => {
+		cursor.style.width = '16px';
+		cursor.style.height = '16px';
+		cursor.style.marginLeft = '-8px';
+		cursor.style.marginTop = '-8px';
+	});
+
+	function animate(now) {
+		const dt = Math.min((now - lastTime) / 1000, 0.1);
+		lastTime = now;
+		// 灵敏度调节：建议 10~30，越大越灵敏
+		const smoothing = 18;
+		const t = 1 - Math.exp(-smoothing * dt);
+		curX += (mouseX - curX) * t;
+		curY += (mouseY - curY) * t;
+		cursor.style.left = curX + 'px';
+		cursor.style.top = curY + 'px';
+		requestAnimationFrame(animate);
+	}
+	requestAnimationFrame(animate);
+})();
+
+// ========== 点击彩色粒子爆炸特效 ==========
+(function() {
+	const canvas = document.getElementById('particleCanvas');
+	const ctx = canvas.getContext('2d');
+	let particles = [];
+
+	function resizeCanvas() {
+		canvas.width = window.innerWidth;
+		canvas.height = window.innerHeight;
+	}
+	resizeCanvas();
+	window.addEventListener('resize', resizeCanvas);
+
+	class Particle {
+		constructor(x, y) {
+			this.x = x;
+			this.y = y;
+			const angle = Math.random() * Math.PI * 2;
+			const speed = Math.random() * 6 + 2;
+			this.vx = Math.cos(angle) * speed;
+			this.vy = Math.sin(angle) * speed;
+			this.hue = Math.random() * 360;
+			this.saturation = 100;
+			this.lightness = 60;
+			this.radius = Math.random() * 4 + 2;
+			this.life = 1;
+			this.decay = Math.random() * 0.02 + 0.015;
+		}
+
+		update() {
+			this.x += this.vx;
+			this.y += this.vy;
+			this.vy += 0.05;
+			this.vx *= 0.98;
+			this.vy *= 0.98;
+			this.life -= this.decay;
+			this.radius *= 0.97;
+		}
+
+		draw() {
+			ctx.save();
+			ctx.globalAlpha = this.life;
+			ctx.fillStyle = `hsl(${this.hue}, ${this.saturation}%, ${this.lightness}%)`;
+			ctx.beginPath();
+			ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+			ctx.fill();
+			ctx.restore();
+		}
+	}
+
+	function spawnExplosion(x, y) {
+		const count = 30;
+		for (let i = 0; i < count; i++) {
+			particles.push(new Particle(x, y));
+		}
+	}
+
+	window.addEventListener('click', e => {
+		spawnExplosion(e.clientX, e.clientY);
+	});
+
+	function animateParticles() {
+		requestAnimationFrame(animateParticles);
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+		for (let i = particles.length - 1; i >= 0; i--) {
+			const p = particles[i];
+			p.update();
+			if (p.life <= 0 || p.radius <= 0.1) {
+				particles.splice(i, 1);
+				continue;
+			}
+			p.draw();
+		}
+	}
+	animateParticles();
+})();
+
+// ========== 下雨特效脚本（重新设计，更真实） ==========
+(function() {
+	const canvas = document.getElementById('rainCanvas');
+	const ctx = canvas.getContext('2d');
+	let raindrops = [];
+	let ripples = [];
+
+	// ---- 可调参数 ----
+	const RAIN_COUNT = 180;            // 雨滴数量
+	const WIND = 1.5;                   // 水平风速，正值向右，负值向左
+	const GRAVITY = 0.08;               // 重力加速度，影响速度变化
+	const MIN_SPEED = 6;                // 初始最小速度
+	const MAX_SPEED = 14;               // 初始最大速度
+	const LENGTH_FACTOR = 0.8;          // 雨丝长度与速度的比例
+	const RIPPLE_MAX_RADIUS = 18;       // 涟漪最大半径
+	const RIPPLE_LIFE = 40;             // 涟漪生命周期（帧数）
+	const COLOR = '174, 194, 224';     // 雨滴颜色 RGB
+	// ---------------------
+
+	function resizeCanvas() {
+		canvas.width = window.innerWidth;
+		canvas.height = window.innerHeight;
+	}
+	resizeCanvas();
+	window.addEventListener('resize', () => {
+		resizeCanvas();
+		for (const drop of raindrops) {
+			drop.x = Math.random() * canvas.width;
+			drop.y = Math.random() * -canvas.height;
+		}
+	});
+
+	class Raindrop {
+		constructor() {
+			this.reset();
+		}
+
+		reset() {
+			this.x = Math.random() * canvas.width;
+			this.y = Math.random() * -canvas.height;
+			this.vx = WIND + (Math.random() - 0.5) * 0.8;
+			this.vy = MIN_SPEED + Math.random() * (MAX_SPEED - MIN_SPEED);
+			this.length = this.vy * LENGTH_FACTOR;
+			this.opacity = 0.35 + Math.random() * 0.45;
+			this.thickness = 0.6 + Math.random() * 0.8;
+		}
+
+		update() {
+			this.vy += GRAVITY;
+			this.x += this.vx;
+			this.y += this.vy;
+			this.length = this.vy * LENGTH_FACTOR;
+
+			if (this.y > canvas.height + this.length) {
+				ripples.push({
+					x: this.x,
+					y: canvas.height - 2,
+					radius: 1,
+					opacity: 0.5,
+					life: 0
+				});
+				this.reset();
+				this.y = -this.length;
+			}
+		}
+
+		draw() {
+			const tailX = this.x - this.vx * this.length * 0.15;
+			const tailY = this.y - this.vy * this.length * 0.15;
+
+			ctx.beginPath();
+			ctx.moveTo(this.x, this.y);
+			ctx.lineTo(tailX, tailY);
+			ctx.strokeStyle = `rgba(${COLOR}, ${this.opacity})`;
+			ctx.lineWidth = this.thickness;
+			ctx.lineCap = 'round';
+			ctx.stroke();
+		}
+	}
+
+	for (let i = 0; i < RAIN_COUNT; i++) {
+		raindrops.push(new Raindrop());
+	}
+
+	function drawRipples() {
+		for (let i = ripples.length - 1; i >= 0; i--) {
+			const r = ripples[i];
+			r.life++;
+			if (r.life > RIPPLE_LIFE) {
+				ripples.splice(i, 1);
+				continue;
+			}
+			r.radius = 1 + (r.life / RIPPLE_LIFE) * RIPPLE_MAX_RADIUS;
+			r.opacity = 0.5 * (1 - r.life / RIPPLE_LIFE);
+
+			ctx.beginPath();
+			ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
+			ctx.strokeStyle = `rgba(${COLOR}, ${r.opacity})`;
+			ctx.lineWidth = 1;
+			ctx.stroke();
+		}
+	}
+
+	function animateRain() {
+		requestAnimationFrame(animateRain);
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+		for (const drop of raindrops) {
+			drop.update();
+			drop.draw();
+		}
+
+		drawRipples();
+	}
+	animateRain();
+})();
+
+// ========== 闪电特效脚本 ==========
+(function() {
+	const canvas = document.getElementById('lightningCanvas');
+	const ctx = canvas.getContext('2d');
+	let lightningActive = false;
+	let lightningAlpha = 0;
+	let flashAlpha = 0;
+	let lightningPaths = [];
+
+	function resizeCanvas() {
+		canvas.width = window.innerWidth;
+		canvas.height = window.innerHeight;
+	}
+	resizeCanvas();
+	window.addEventListener('resize', resizeCanvas);
+
+	function generateLightning() {
+		if (lightningActive) return;
+		lightningActive = true;
+		lightningAlpha = 1;
+		flashAlpha = 0.6;
+
+		lightningPaths = [];
+		const startX = Math.random() * canvas.width;
+		const startY = 0;
+		const segments = 20 + Math.random() * 20;
+		let x = startX;
+		let y = startY;
+		const mainPoints = [{x, y}];
+		for (let i = 1; i <= segments; i++) {
+			x += (Math.random() - 0.5) * 60;
+			y += (canvas.height / segments) * (1 + Math.random() * 0.5);
+			mainPoints.push({x, y});
+
+			if (Math.random() < 0.3) {
+				const branchLength = 5 + Math.random() * 15;
+				const branchPoints = [];
+				let bx = x;
+				let by = y;
+				for (let j = 0; j < branchLength; j++) {
+					bx += (Math.random() - 0.5) * 30;
+					by += Math.random() * 15;
+					branchPoints.push({x: bx, y: by});
+				}
+				lightningPaths.push({points: branchPoints, alpha: 0.7});
+			}
+		}
+		lightningPaths.push({points: mainPoints, alpha: 1});
+
+		setTimeout(() => {
+			lightningActive = false;
+			lightningAlpha = 0;
+			flashAlpha = 0;
+		}, 150);
+	}
+
+	function drawLightning() {
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		if (!lightningActive) return;
+
+		if (flashAlpha > 0) {
+			ctx.fillStyle = `rgba(255, 255, 255, ${flashAlpha})`;
+			ctx.fillRect(0, 0, canvas.width, canvas.height);
+		}
+
+		ctx.save();
+		ctx.shadowColor = 'rgba(255,255,255,0.8)';
+		ctx.shadowBlur = 15;
+		ctx.lineWidth = 2;
+		ctx.lineJoin = 'round';
+		ctx.lineCap = 'round';
+
+		for (const path of lightningPaths) {
+			ctx.beginPath();
+			ctx.moveTo(path.points[0].x, path.points[0].y);
+			for (let i = 1; i < path.points.length; i++) {
+				ctx.lineTo(path.points[i].x, path.points[i].y);
+			}
+			ctx.strokeStyle = `rgba(255, 255, 255, ${lightningAlpha * path.alpha})`;
+			ctx.stroke();
+		}
+		ctx.restore();
+
+		if (flashAlpha > 0) {
+			flashAlpha -= 0.05;
+			if (flashAlpha < 0) flashAlpha = 0;
+		}
+	}
+
+	function scheduleLightning() {
+		const delay = 3000 + Math.random() * 7000;
+		setTimeout(() => {
+			generateLightning();
+			scheduleLightning();
+		}, delay);
+	}
+	scheduleLightning();
+
+	function animate() {
+		requestAnimationFrame(animate);
+		drawLightning();
+	}
+	animate();
+})();
+
+// ========== 右键禁用提示 ==========
+let rightTipTimer;
+document.addEventListener('contextmenu', e => {
+    e.preventDefault();
+    const tip = document.getElementById('rightTipTop');
+    if (tip) {
+        tip.classList.remove('float-tip-out');
+        tip.classList.add('show');
+        clearTimeout(rightTipTimer);
+        rightTipTimer = setTimeout(() => {
+            tip.classList.add('float-tip-out');
+            setTimeout(() => {
+                tip.classList.remove('show', 'float-tip-out');
+            }, 350);
+        }, 2500);
+    }
+});
+</script>
+</body>
+</html>

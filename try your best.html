@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>try your best</title>
+    <style>
+        #snowCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 999;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        a {
+            text-decoration: none;
+            color: #fff;
+        }
+        .clearfix::after {
+            content: "";
+            display: block;
+            clear: both;
+            height: 0;
+            visibility: hidden;
+        }
+        html,
+        body {
+            width: 100%;
+            overflow-x: hidden;
+            font-family: "SimSun", serif;
+            /* 半透明蒙版 + 图片背景 */
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                url(https://t.mwm.moe/ycy/) no-repeat center top !important;
+            background-size: cover !important;
+            background-attachment: fixed !important;
+        }
+        #stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: -2;
+            background: rgba(14, 23, 41, 0.6);
+        }
+        /* 月亮样式已删除 */
+        .back-btn {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 8px 18px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            background: rgba(255, 255, 255, 0.28);
+            font-size: 17px;
+            color: #fff;
+            z-index: 9999;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            transition: 0.24s ease;
+        }
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.45);
+            box-shadow: 0 0 18px rgba(255, 255, 255, 0.35);
+        }
+        .article-wrap {
+            width: 96vw;
+            max-width: 1100px;
+            margin: 140px auto 120px;
+            padding: 50px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.32);
+            position: relative;
+            z-index: 2;
+        }
+        .img-box {
+            width: 100%;
+            margin-bottom: 48px;
+            text-align: center;
+        }
+        .article-cover {
+            width: 100%;
+            border-radius: 12px;
+            display: block;
+            margin: 0 auto;
+        }
+        .article-title {
+            font-size: 36px;
+            text-align: center;
+            color: #111;
+            margin-bottom: 24px;
+        }
+        .article-meta {
+            text-align: center;
+            font-size: 17px;
+            color: #333;
+            padding-bottom: 24px;
+            margin-bottom: 40px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+        }
+        .article-content {
+            font-size: 20px;
+            line-height: 2;
+            color: #1a1a1a;
+            width: 100%;
+        }
+        .article-content p {
+            margin-bottom: 20px;
+        }
+        .code-block {
+            padding: 20px;
+            margin: 24px 0;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.28);
+            font-family: Consolas;
+            font-size: 17px;
+            white-space: pre-wrap;
+        }
+        .tag-box {
+            margin-top: 40px;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .tag {
+            padding: 6px 16px;
+            background: rgba(220, 220, 220, 0.45);
+            border-radius: 24px;
+            font-size: 16px;
+            color: #111;
+            box-shadow: none !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            border: none;
+            transition: none !important;
+        }
+        .tag:hover {
+            background: rgba(220, 220, 220, 0.45);
+            color: #111;
+            box-shadow: none !important;
+        }
+        .footer-box {
+            width: 100%;
+            height: 80px;
+        }
+        .back-top {
+            position: fixed;
+            right: 30px;
+            bottom: 40px;
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            cursor: pointer;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            transition: 0.3s ease;
+        }
+        .back-top:hover {
+            background: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 0 18px rgba(255, 255, 255, 0.35);
+            transform: translateY(-6px);
+        }
+        .back-top::after {
+            content: "↑";
+            font-size: 22px;
+            color: #fff;
+            font-weight: bold;
+        }
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9998;
+        }
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: particle-burst 0.6s ease-out forwards;
+        }
+        @keyframes particle-burst {
+            0% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0.5);
+            }
+        }
+        .question {
+            border: 1px solid rgba(0, 0, 0, 0.6);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 40px;
+            position: relative;
+            color: #111;
+            background: transparent;
+        }
+        .red-score {
+            position: absolute;
+            top: 12px;
+            right: 20px;
+            font-size: 34px;
+            color: red;
+            font-weight: bold;
+        }
+        .red-cross {
+            position: absolute;
+            right: 20px;
+            top: -10px;
+            width: 90px;
+            height: 90px;
+        }
+
+        /* ========== 右键禁用提示框 ========== */
+        .float-tip-top {
+            position: fixed;
+            top: 26px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(30, 30, 30, 0.75) !important;
+            backdrop-filter: blur(6px) !important;
+            -webkit-backdrop-filter: blur(6px) !important;
+            border-radius: 50px !important;
+            padding: 6px 22px 6px 20px !important;
+            display: none !important;
+            align-items: center !important;
+            gap: 10px !important;
+            color: #ffffff !important;
+            font-size: 14px !important;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+            z-index: 99999 !important;
+            white-space: nowrap !important;
+            pointer-events: none !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+            border: none !important;
+            animation: floatTipIn 0.35s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+        }
+        .float-tip-top.show {
+            display: flex !important;
+        }
+        .float-tip-top.float-tip-out {
+            animation: floatTipOut 0.3s ease-in forwards;
+        }
+        @keyframes floatTipIn {
+            0% {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-14px) scale(0.92);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0) scale(1);
+            }
+        }
+        @keyframes floatTipOut {
+            0% {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-10px) scale(0.94);
+            }
+        }
+        .float-tip-top .tip-icon {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 20px !important;
+            height: 20px !important;
+            border-radius: 50% !important;
+            background: #ffffff !important;
+            color: #1f1f1f !important;
+            font-family: 'Times New Roman', Times, serif !important;
+            font-style: italic !important;
+            font-weight: 700 !important;
+            font-size: 15px !important;
+            line-height: 1 !important;
+            flex-shrink: 0 !important;
+            padding-bottom: 2px !important;
+            box-sizing: border-box !important;
+        }
+
+        /* ========== 自定义白色光标样式 ========== */
+        /* 桌面端隐藏系统光标 */
+        @media (hover: hover) and (pointer: fine) {
+            body, a, button, * {
+                cursor: none !important;
+            }
+        }
+
+        /* 自定义光标：纯白外圈 + 纯白内圆 */
+        #cursor {
+            position: fixed;
+            pointer-events: none;
+            z-index: 100000; /* 提高层级，确保在最上层 */
+            width: 16px;
+            height: 16px;
+            margin-left: -8px;
+            margin-top: -8px;
+            border: 1.5px solid #fff;      /* 纯白外圈 */
+            border-radius: 50%;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: width 0.15s, height 0.15s, margin-left 0.15s, margin-top 0.15s;
+        }
+
+        /* 内圆：纯白实心小点 */
+        #cursor::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: #fff;              /* 纯白内圆 */
+            border-radius: 50%;
+            transition: width 0.15s, height 0.15s;
+        }
+
+        /* 通用隐藏类（用于光标初始隐藏） */
+        .hidden {
+            display: none !important;
+        }
+
+        /* 移动端隐藏自定义光标，恢复系统光标 */
+        @media (hover: none), (max-width: 768px) {
+            #cursor {
+                display: none !important;
+            }
+            body, a, button, * {
+                cursor: auto !important;
+            }
+        }
+        /* ========== 光标样式结束 ========== */
+    </style>
+</head>
+<body>
+    <canvas id="snowCanvas"></canvas>
+    <canvas id="stars"></canvas>
+    <!-- 月亮 div 已删除 -->
+
+    <!-- 右键禁用提示框 -->
+    <div class="float-tip-top" id="rightTipTop">
+        <span class="tip-icon">i</span>
+        <span>为了浏览体验，本站禁用右键</span>
+    </div>
+
+    <div class="particles" id="particles"></div>
+    <a href="zenly.html" class="back-btn">← 返回首页</a>
+
+    <!-- 自定义光标元素（整合自第二段代码） -->
+    <div id="cursor" class="xs-hidden hidden"></div>
+
+    <div class="article-wrap">
+        <div class="img-box">
+            <img class="article-cover" src="https://cdn-us.imgs.moe/2026/07/09/852642e5c9e6069bad7093767ad9b5c5.jpg" alt="心底独白配图">
+        </div>
+        <div class="question">
+            <span class="red-score">−10</span>
+            <p style="font-size:22px;font-weight:bold;margin-bottom:16px;">九、应用题（10分）</p>
+            <p style="font-size:20px;line-height:1.8;">小红想买一个文具盒还差 8 元，请问：小红现在有多少钱？</p>
+            <div style="position:relative;margin-top:24px;">
+                <p style="font-size:20px;line-height:1.8;">答：鬼知道。</p>
+                <svg class="red-cross" viewBox="0 0 100 100">
+                    <line x1="15" y1="15" x2="85" y2="85" stroke="red" stroke-width="5" />
+                    <line x1="85" y1="15" x2="15" y2="85" stroke="red" stroke-width="5" />
+                </svg>
+            </div>
+        </div>
+        <h1 class="article-title">心底独白</h1>
+        <div class="article-content">
+            <p>你到底要看多少屁股 才会觉得我的屁股最可爱</p>
+            <div class="article-meta">作者：玖染 &nbsp;|&nbsp; 发布时间：2026-07-10</div>
+        </div>
+        <div class="article-content">
+            <p>“你总说以后一定会让我过上好日子 你哪知道 和你在一起的每一天都是好日子</p>
+            <div class="article-meta">作者：玖染 &nbsp;|&nbsp; 发布时间：2026-07-13</div>
+        </div>
+        <div class="article-content">
+            <p>很久很久以后 你或许会突然意识到 谁对谁错 何是何非 由爱生疑 由疑生恨 或者难以释怀的背弃 无法谅解的谎言 生命中会突然刺痛你的 使你感到遗憾 伤痛的 不论是一首歌曲 一张照片 又或是一个你再也无法见到的人 事过境迁 你心中留下的 或许还是那句话：我总是祝福着你。</p>
+            <p>读到这里不自觉的笑了一下，青春真的太美好了，但好像注定要有点痛、有点茫然才能让它显得足够深刻，一群十六七岁的孩子躲学校老师、躲家里父母、躲教室监控，唯独躲不过时间。我想，那段美好时光里的悸动和遗憾都是幸福的，一直想为那段时光写点什么，但是总怕落笔太重更怕落笔太轻，人们总是对遗憾和错过的事物而遮遮掩掩，年轻的思想太过于在意皮囊的体面，以至于总是比较着想象与现实里的一切。人类最后都会走向各自的痛苦。时间会让瓷器入土，破碎，然后也让赝品成为了真迹，这时候人们也会一边欣赏一边口是心非的赞颂。而我一定会在某个深夜和我的爱人分享我们彼此青春的遗憾，然后哈哈大笑的睡去…因为比起十几岁的悸动如今的成熟让我们更幸福更懂爱。</p>
+            <div class="article-meta">作者：玖染 &nbsp;|&nbsp; 发布时间：2026-07-15</div>
+        </div>
+        <div class="article-content">
+            <p style="text-align:center;font-size:24px;font-weight:bold;">遗憾</p>
+            <p>我的遗憾挺多的 怎么说呢 此时止刻 我最大的遗憾就是遗憾这两字不会写 手机还给我没收了 哎 好像很久没有像现在这样安靜地坐着想事情了 上一次应该还是在学校的晚自习 和老师干了一架翻墙跑了 之后纹了身 染了头 左青龙右白虎 当时觉得我最牛 现在想想真后悔 年少不知纹身贵 老来望臂空流泪说得真对 SKR 六年级暑假那会儿 我在网上刷到各种纹身图案 心痒得不行 为凑钱骗家里说要买手机 我爸一个月挣四千咬牙给了我两千我转头就进了纹身店 纹身师还说加个下山虎更霸气 现在想想他就是想多挣我几百 开学后学校不让露纹身大夏天的别人穿短袖我得穿长袖 捂得一身汗 同学问我热不热我说不热 可汗珠子顺着脖子往下淌摘在地上一摘一个印 初中没读完我就辍学了 做过服务员 老板见我胳膊上有纹身说客人看了害怕 又去学了计算机编程干了两个月头发都快给我敲秃了跑路了 后来面试好几家 人家一看我胳膊就皱眉头 想去当兵 体检直接给我刷下来了 当初纹的时候谁也没告诉我以后找工作当兵这条路都给堵死了 现在想想纹身还不是我最遗憾的事 纹身可以洗 胳膊上的疤能淡 可回不去的日子是真回不去了 我最后悔的是没好好上学 读技校那年翻墙出去上网 坐在网吧里觉得自己挺牛现在才明白那点牛气啥也不是 要是当时坐在教室里多听两节课 哪怕就两节 今天也不至干啥都不会 想起初中的时候 老师在黑板上写未来两个字 我在底下偷偷画小人 现在小人画了一堆未来却没了 想回学校 可那扇门已经关了 我羡慕那些穿校服的学生 他们见校服丑 我却连穿的资格都没有 你逃的不是课是人生 你翻的不是墙是底线 当时看到这句话觉得太中二了 现在想想中二的是我自己 要是能重来一回我一定坐在教室里把该念的书念完 把该做的题做了哪怕考不上大学至少脑子里有点东西手上有点本事 不至于像现在这样空着一双手不知道该往哪放 上初中时爸爸总是告诉我 打喷嚏是有人在想我 我反反复复猜了又猜 唯独没有猜到是现在的自己 哎…</p>
+            <div class="article-meta">作者：玖染 &nbsp;|&nbsp; 发布时间：2026-08-11</div>
+        </div>
+        <div class="tag-box">
+            <span class="tag">#Markdown</span>
+            <span class="tag">#代码示例</span>
+            <span class="tag">#博客开发</span>
+        </div>
+    </div>
+    <div class="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})"></div>
+    <div class="footer-box"></div>
+
+    <script>
+        function createSnow(canvasId, num) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext("2d");
+            let w, h, flakes = [];
+
+            function resize() {
+                w = window.innerWidth;
+                h = window.innerHeight;
+                canvas.width = w;
+                canvas.height = h;
+            }
+            window.addEventListener("resize", resize);
+            resize();
+            class SnowFlake {
+                constructor() {
+                    this.x = Math.random() * w;
+                    this.y = Math.random() * -h;
+                    this.r = Math.random() * 2 + 1;
+                    this.speed = Math.random() * 0.8 + 0.3;
+                    this.angle = Math.random() * Math.PI * 2;
+                    this.angleSpeed = Math.random() * 0.012 + 0.008;
+                    this.offsetX = Math.random() * 0.3 - 0.15;
+                }
+                update() {
+                    this.angle += this.angleSpeed;
+                    this.x += Math.cos(this.angle) * 0.5 + this.offsetX;
+                    this.y += this.speed;
+                    if (this.y > h + 10) this.reset();
+                }
+                reset() {
+                    this.x = Math.random() * w;
+                    this.y = Math.random() * -50;
+                }
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255,255,255,${0.35 + this.r / 3})`;
+                    ctx.fill();
+                }
+            }
+            for (let i = 0; i < num; i++) flakes.push(new SnowFlake());
+
+            function loop() {
+                ctx.clearRect(0, 0, w, h);
+                flakes.forEach(item => { item.update();
+                    item.draw(); })
+                requestAnimationFrame(loop);
+            }
+            loop();
+        }
+        let context, starList = [],
+            starCount = 300;
+        // 流星相关变量已移除
+        const particlesWrap = document.getElementById("particles");
+        const colors = ["#0099ff", "#0000ff", "#9900ff", "#ff66cc", "#2ee0b0"];
+
+        window.onload = function() {
+            initStarCanvas();
+            for (let i = 0; i < starCount; i++) starList.push(new Star());
+            // 流星循环已移除
+            renderStar();
+            createSnow("snowCanvas", 180);
+        }
+        document.addEventListener("click", e => createParticle(e.clientX, e.clientY));
+
+        function createParticle(x, y) {
+            for (let i = 0; i < 18; i++) {
+                const p = document.createElement("div");
+                p.className = "particle";
+                const size = Math.random() * 10 + 6;
+                const angle = (Math.PI * 2 / 18) * i + Math.random() * 0.5;
+                const dis = Math.random() * 100 + 50;
+                const tx = Math.cos(angle) * dis;
+                const ty = Math.sin(angle) * dis;
+                p.style.left = x + "px";
+                p.style.top = y + "px";
+                p.style.width = size + "px";
+                p.style.height = size + "px";
+                p.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                p.style.setProperty("--tx", tx + "px");
+                p.style.setProperty("--ty", ty + "px");
+                particlesWrap.appendChild(p);
+                setTimeout(() => p.remove(), 600);
+            }
+        }
+
+        function initStarCanvas() {
+            const canvas = document.getElementById("stars");
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            context = canvas.getContext("2d");
+        }
+
+        function Star() {
+            this.x = Math.random() * window.innerWidth;
+            this.y = Math.random() * window.innerHeight;
+            this.dot = ".";
+            this.color = "#ffffff";
+            this.draw = () => {
+                context.fillStyle = this.color;
+                context.fillText(this.dot, this.x, this.y);
+            }
+        }
+
+        function renderStar() {
+            context.clearRect(0, 0, window.innerWidth, window.innerHeight);
+            starList.forEach(s => s.draw());
+            setTimeout(renderStar, 150);
+        }
+
+        // 流星相关函数已全部移除
+
+        // ========== 右键禁用提示框逻辑 ==========
+        let rightTipTimer;
+        document.addEventListener('contextmenu', e => {
+            e.preventDefault();
+            const tip = document.getElementById('rightTipTop');
+            if (tip) {
+                tip.classList.remove('float-tip-out');
+                tip.classList.add('show');
+                clearTimeout(rightTipTimer);
+                rightTipTimer = setTimeout(() => {
+                    tip.classList.add('float-tip-out');
+                    setTimeout(() => {
+                        tip.classList.remove('show', 'float-tip-out');
+                    }, 350);
+                }, 2500);
+            }
+        });
+
+        // ========== 自定义白色光标脚本（已优化灵敏度） ==========
+        (function() {
+            const cursor = document.getElementById('cursor');
+            // 移动端不启用
+            if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+            let mouseX = innerWidth / 2, mouseY = innerHeight / 2;
+            let curX = mouseX, curY = mouseY;
+            let visible = false;
+            let lastTime = performance.now();
+
+            document.addEventListener('mousemove', e => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+                if (!visible) {
+                    // 首次移动直接定位，避免从中心滑入
+                    curX = mouseX;
+                    curY = mouseY;
+                    cursor.classList.remove('hidden');
+                    visible = true;
+                }
+            });
+
+            document.addEventListener('mouseleave', () => {
+                cursor.classList.add('hidden');
+                visible = false;
+            });
+
+            // 点击放大
+            document.addEventListener('mousedown', () => {
+                cursor.style.width = '20px';
+                cursor.style.height = '20px';
+                cursor.style.marginLeft = '-10px';
+                cursor.style.marginTop = '-10px';
+            });
+            document.addEventListener('mouseup', () => {
+                cursor.style.width = '16px';
+                cursor.style.height = '16px';
+                cursor.style.marginLeft = '-8px';
+                cursor.style.marginTop = '-8px';
+            });
+
+            // 平滑跟随（帧率无关，灵敏度可调）
+            function animate(now) {
+                const dt = Math.min((now - lastTime) / 1000, 0.1);
+                lastTime = now;
+                // 灵敏度：建议 10~30，越大越灵敏
+                const smoothing = 18;
+                const t = 1 - Math.exp(-smoothing * dt);
+                curX += (mouseX - curX) * t;
+                curY += (mouseY - curY) * t;
+                cursor.style.left = curX + 'px';
+                cursor.style.top = curY + 'px';
+                requestAnimationFrame(animate);
+            }
+            requestAnimationFrame(animate);
+        })();
+        // ========== 光标脚本结束 ==========
+    </script>
+</body>
+</html>
