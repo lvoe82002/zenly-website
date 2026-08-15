@@ -1424,12 +1424,12 @@
         #cursor {
             position: fixed;
             pointer-events: none;
-            z-index: 100000; /* 提高层级，确保在最上层 */
+            z-index: 100000;
             width: 16px;
             height: 16px;
             margin-left: -8px;
             margin-top: -8px;
-            border: 1.5px solid #fff;      /* 纯白外圈 */
+            border: 1.5px solid #fff;
             border-radius: 50%;
             background: transparent;
             display: flex;
@@ -1438,22 +1438,19 @@
             transition: width 0.15s, height 0.15s, margin-left 0.15s, margin-top 0.15s;
         }
 
-        /* 内圆：纯白实心小点 */
         #cursor::after {
             content: '';
             width: 8px;
             height: 8px;
-            background: #fff;              /* 纯白内圆 */
+            background: #fff;
             border-radius: 50%;
             transition: width 0.15s, height 0.15s;
         }
 
-        /* 通用隐藏类（用于光标初始隐藏） */
         .hidden {
             display: none !important;
         }
 
-        /* 移动端隐藏自定义光标，恢复系统光标 */
         @media (hover: none), (max-width: 768px) {
             #cursor {
                 display: none !important;
@@ -1516,7 +1513,6 @@
     <canvas id="snowFullScreen"></canvas>
     <canvas id="stars"></canvas>
 
-    <!-- 自定义光标元素（合并自第二个片段） -->
     <div id="cursor" class="xs-hidden hidden"></div>
 
     <div class="content clearfix">
@@ -2358,7 +2354,7 @@ console.log('脚本结束');</textarea>
         })();
     </script>
 
-    <!-- 时光胶囊：只能通过卡片切换，遮罩不响应关闭 -->
+    <!-- 时光胶囊脚本 -->
     <script>
         (function() {
             const siteBadge = document.getElementById('siteBadge');
@@ -2437,12 +2433,11 @@ console.log('脚本结束');</textarea>
         })();
     </script>
 
-    <!-- ========== 自定义白色光标脚本（已优化灵敏度） ========== -->
+    <!-- 自定义光标脚本 -->
     <script>
         (function() {
             const cursor = document.getElementById('cursor');
             if (!cursor) return;
-            // 移动端不启用
             if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
 
             let mouseX = innerWidth / 2, mouseY = innerHeight / 2;
@@ -2454,7 +2449,6 @@ console.log('脚本结束');</textarea>
                 mouseX = e.clientX;
                 mouseY = e.clientY;
                 if (!visible) {
-                    // 首次移动直接定位，避免从中心滑入
                     curX = mouseX;
                     curY = mouseY;
                     cursor.classList.remove('hidden');
@@ -2467,7 +2461,6 @@ console.log('脚本结束');</textarea>
                 visible = false;
             });
 
-            // 点击放大
             document.addEventListener('mousedown', () => {
                 cursor.style.width = '20px';
                 cursor.style.height = '20px';
@@ -2481,11 +2474,9 @@ console.log('脚本结束');</textarea>
                 cursor.style.marginTop = '-8px';
             });
 
-            // 平滑跟随（帧率无关，灵敏度可调）
             function animate(now) {
                 const dt = Math.min((now - lastTime) / 1000, 0.1);
                 lastTime = now;
-                // 灵敏度：建议 10~30，越大越灵敏
                 const smoothing = 18;
                 const t = 1 - Math.exp(-smoothing * dt);
                 curX += (mouseX - curX) * t;
@@ -2495,6 +2486,74 @@ console.log('脚本结束');</textarea>
                 requestAnimationFrame(animate);
             }
             requestAnimationFrame(animate);
+        })();
+    </script>
+
+    <!-- ========== 天气实时同步脚本（Open-Meteo 免Key方案，适用于本地测试） ========== -->
+    <script>
+        (function() {
+            const weatherEl = document.getElementById('clockWeather');
+            // 湛江市的经纬度
+            const LAT = 21.2707;
+            const LON = 110.3594;
+
+            function getWeatherText(code) {
+                const map = {
+                    0: '晴', 1: '多云', 2: '多云', 3: '阴', 45: '雾', 48: '雾凇',
+                    51: '毛毛雨', 53: '小雨', 55: '中雨', 61: '小雨', 63: '中雨', 65: '大雨',
+                    71: '小雪', 73: '中雪', 75: '大雪', 80: '阵雨', 81: '阵雨', 82: '强阵雨',
+                    95: '雷暴', 96: '雷暴伴有冰雹', 99: '雷暴伴有冰雹'
+                };
+                return map[code] || '未知';
+            }
+
+            function getWindDirection(deg) {
+                const dirs = ['北风', '东北风', '东风', '东南风', '南风', '西南风', '西风', '西北风'];
+                return dirs[Math.round(deg / 45) % 8];
+            }
+
+            function getWindScale(kmh) {
+                if (kmh < 1) return '0级';
+                if (kmh < 5) return '1级';
+                if (kmh < 11) return '2级';
+                if (kmh < 19) return '3级';
+                if (kmh < 28) return '4级';
+                if (kmh < 38) return '5级';
+                if (kmh < 49) return '6级';
+                if (kmh < 61) return '7级';
+                if (kmh < 74) return '8级';
+                if (kmh < 88) return '9级';
+                if (kmh < 102) return '10级';
+                if (kmh < 117) return '11级';
+                return '12级';
+            }
+
+            async function updateWeather() {
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true`;
+                try {
+                    const res = await fetch(url);
+                    const data = await res.json();
+                    console.log('[天气] Open-Meteo返回:', data);
+                    const cw = data.current_weather;
+                    if (cw) {
+                        const temp = Math.round(cw.temperature);
+                        const code = cw.weathercode;
+                        const windDir = getWindDirection(cw.winddirection);
+                        const windScale = getWindScale(cw.windspeed);
+                        const weatherText = getWeatherText(code);
+                        weatherEl.textContent = `湛江市 ${weatherText} ${temp}℃ ${windDir} ${windScale}`;
+                    } else {
+                        weatherEl.textContent = '天气获取失败，请检查网络';
+                    }
+                } catch (err) {
+                    console.error('[天气] 请求异常:', err);
+                    weatherEl.textContent = '天气获取失败，请检查网络';
+                }
+            }
+
+            // 立即更新，然后每30分钟更新
+            updateWeather();
+            setInterval(updateWeather, 30 * 60 * 1000);
         })();
     </script>
 </body>
