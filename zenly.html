@@ -120,16 +120,13 @@
             min-height: 100vh;
             overflow-x: hidden;
             font-family: "宋体";
-            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(https://t.mwm.moe/ycy/) no-repeat center top!important;
-            background-size: cover!important;
-            background-attachment: fixed!important;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(https://t.mwm.moe/ycy/) no-repeat center top;
+            background-size: cover;
+            background-attachment: fixed;
             transition: all 0.5s ease;
         }
-        #snowFullScreen,
-        #stars,
-        .particles {
-            pointer-events: none;
-        }
+
+        /* 特效画布样式 */
         #snowFullScreen {
             position: fixed;
             top: 0;
@@ -137,14 +134,25 @@
             width: 100vw;
             height: 100vh;
             z-index: 0;
+            pointer-events: none;
         }
-        #stars {
+        #rainCanvas {
             position: fixed;
             top: 0;
             left: 0;
-            z-index: -2;
-            background: rgba(14, 23, 41, 0.6);
             width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        #lightningCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
         }
 
         .content {
@@ -255,7 +263,7 @@
             height: 170px;
             display: block;
             margin-bottom: 6px;
-            filter: none!important;
+            filter: none !important;
         }
         .qrc-tip p {
             color: #333;
@@ -302,12 +310,10 @@
             text-shadow: 0 0 16px rgba(255, 255, 255, 0.95), 0 0 30px rgba(255, 200, 200, 0.5);
         }
 
-        /* 顶部留空 */
         .top-empty-space {
             height: 160px;
         }
 
-        /* 移动到 Hello World 框上方的 logo 样式 —— 左对齐，不居中 */
         .center-logo-flow.moved-logo {
             position: absolute;
             left: 4%;
@@ -331,15 +337,15 @@
             font-size: 50px;
             letter-spacing: 10px;
             display: inline-block;
-            position: relative;   /* 添加这行 */
-            top: -10px;           /* 添加这行，这个数值控制上下移动 */
+            position: relative;
+            top: -10px;
         }
-        /* 让 .top 后缀变小，并紧贴前面的文字 */
         .center-logo-flow.moved-logo .name .bg .top-small {
             font-size: 0.5em;
             letter-spacing: 0;
             display: inline-block;
-            margin-left: -10px;
+            margin-left: -8px;
+            vertical-align: baseline;
         }
 
         .project-wrap {
@@ -410,7 +416,7 @@
             position: relative;
             z-index: 1;
             margin-top: 20px;
-            background: transparent!important;
+            background: transparent !important;
         }
 
         .bottom-area-wrapper {
@@ -511,6 +517,7 @@
             font-family: 'Inter', -apple-system, sans-serif;
             cursor: default;
             pointer-events: auto;
+            position: relative;
         }
         .capsule-header {
             display: flex;
@@ -520,6 +527,7 @@
             margin-bottom: 20px;
             padding-bottom: 15px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
         }
         .capsule-header .capsule-title {
             display: flex;
@@ -529,6 +537,39 @@
         .capsule-header .capsule-title i {
             font-size: 18px;
         }
+        .capsule-actions {
+            display: flex;
+            gap: 10px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+        .capsule-inner:hover .capsule-actions {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .capsule-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+            font-size: 16px;
+        }
+        .capsule-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: scale(1.05);
+        }
+
         .capsule-item {
             margin-bottom: 18px;
         }
@@ -567,6 +608,254 @@
             letter-spacing: 0.5px;
         }
 
+        /* 大控制面板（半透明玻璃） */
+        #settingsModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            z-index: 999999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        #settingsModal.open {
+            display: flex;
+            opacity: 1;
+        }
+        .settings-modal-box {
+            width: 85%;
+            max-width: 1000px;
+            max-height: 85vh;
+            background: rgba(255, 255, 255, 0.14);
+            backdrop-filter: blur(28px) saturate(180%);
+            -webkit-backdrop-filter: blur(28px) saturate(180%);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.32);
+            padding: 35px 40px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+            overflow: hidden;
+        }
+        .settings-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.75);
+            font-size: 24px;
+            transition: 0.3s;
+            z-index: 20;
+        }
+        .settings-modal-close:hover {
+            color: #fff;
+            transform: scale(1.1);
+        }
+        .settings-modal-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-shrink: 0;
+        }
+        .settings-modal-header .logo {
+            font-family: 'Dancing Script', cursive;
+            font-size: 38px;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 12px rgba(255,255,255,0.4);
+            transform: translateY(-10px);   /* 在这里调整上下位置 */
+        }
+        .settings-modal-header .logo .bg {
+            font-family: 'Dancing Script', cursive;
+            font-size: 38px;
+            font-weight: 700;
+            letter-spacing: 6px;
+            background: linear-gradient(120deg, #ffffff, #ffe8ef);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 16px rgba(255, 255, 255, 0.95), 0 0 30px rgba(255, 200, 200, 0.5);
+            white-space: nowrap;
+        }
+        .settings-modal-header .logo .bg .top-small {
+            font-size: 0.5em;
+            letter-spacing: 0;
+            display: inline-block;
+            margin-left: -8px;
+            vertical-align: baseline;
+        }
+        .settings-modal-version {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 22px;
+            font-weight: 700;
+            color: #fff;
+            margin-left: -5px;
+            text-shadow: 0 0 12px rgba(255,255,255,0.3);
+        }
+        /* GitHub 链接：悬停显示玻璃标签，标签在图标右侧 */
+        .github-icon {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            color: #fff;
+            text-decoration: none;
+            margin-left: 4px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .github-icon .github-label {
+            position: absolute;
+            left: calc(100% + 12px);
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 13px;
+            font-weight: 400;
+            color: #fff;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
+            z-index: 30;
+        }
+        .github-icon:hover .github-label {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .settings-modal-body {
+            display: flex;
+            gap: 30px;
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 5px;
+            color: #fff;
+        }
+        .settings-modal-body::-webkit-scrollbar {
+            width: 4px;
+        }
+        .settings-modal-body::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.25);
+            border-radius: 4px;
+        }
+
+        .settings-col-left { flex: 1.2; min-width: 240px; }
+        .settings-col-right { flex: 1.8; min-width: 280px; display: flex; flex-direction: column; }
+
+        .settings-update-log h4 {
+            color: #fff;
+            font-size: 16px;
+            margin-bottom: 15px;
+            font-weight: normal;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+        }
+        .settings-update-log ul {
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 10px;
+            padding: 18px 20px;
+            list-style: none;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #fff;
+        }
+        .settings-update-log li {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .settings-update-log li:last-child { margin-bottom: 0; }
+
+        .settings-update-log li i.fa-plus-circle { color: #aaffaa; }
+        .settings-update-log li i.fa-wrench { color: #ffccaa; }
+        .settings-update-log li i.fa-cube { color: #99ddff; }
+
+        .settings-item-title {
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+        }
+        .settings-content-box {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 18px 20px;
+            margin-bottom: 20px;
+        }
+        .settings-sub-title {
+            color: #fff;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        .settings-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .settings-option {
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            padding: 6px 16px 6px 12px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #fff;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .settings-option.active {
+            border-color: #fff;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.18);
+        }
+        .settings-option .radio-btn {
+            width: 14px; height: 14px; border-radius: 50%;
+            border: 1px solid #ccc; box-sizing: border-box;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .settings-option.active .radio-btn { border-color: #fff; }
+        .settings-option.active .radio-btn.selected { background: #fff; }
+
+        .settings-list-item {
+            color: #fff; font-size: 14px; padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex; justify-content: space-between; cursor: pointer; transition: 0.2s;
+        }
+        .settings-list-item:last-child { border-bottom: none; }
+        .settings-list-item:hover { color: #fff; padding-left: 5px; }
+
+        body.settings-open .fixed-side,
+        body.settings-open .center-logo-flow,
+        body.settings-open .content,
+        body.settings-open .project-wrap,
+        body.settings-open .ev-wrap,
+        body.settings-open .social,
+        body.settings-open .footer-box>.copyright-bar,
+        body.settings-open .nav-group-cards { display: none !important; }
+
         body.capsule-open .fixed-side,
         body.capsule-open .center-logo-flow,
         body.capsule-open .content,
@@ -574,21 +863,10 @@
         body.capsule-open .ev-wrap,
         body.capsule-open .social,
         body.capsule-open .footer-box>.copyright-bar,
-        body.capsule-open .nav-group-cards {
-            display: none !important;
-        }
-        body.capsule-open .bottom-area-wrapper .digital-clock-card {
-            opacity: 0.15;
-            transition: opacity 0.3s;
-        }
-        body.capsule-open #particles,
-        body.capsule-open #stars {
-            opacity: 0.4;
-        }
-        body.capsule-open .interactive-badge {
-            z-index: 100000 !important;
-            pointer-events: auto !important;
-        }
+        body.capsule-open .nav-group-cards { display: none !important; }
+        body.capsule-open .bottom-area-wrapper .digital-clock-card { opacity: 0.15; }
+        body.capsule-open #particles, body.capsule-open #stars { opacity: 0.4; }
+        body.capsule-open .interactive-badge { z-index: 100000 !important; pointer-events: auto !important; }
 
         .digital-clock-card {
             position: relative;
@@ -722,7 +1000,6 @@
             font-weight: 600;
         }
 
-        /* 底部图标改为左对齐，与 Hello World 框对齐 */
         .social {
             display: flex;
             justify-content: flex-start;
@@ -763,15 +1040,12 @@
             align-items: center;
             width: 42px;
             height: 42px;
-            border-radius: 0;   /* 去掉了圆形框 */
+            border-radius: 0;
             transition: transform 0.12s;
             color: #fff;
             cursor: pointer;
             user-select: none;
             flex-shrink: 0;
-        }
-        .icon-item:hover {
-            /* 去掉了圆形背景 */
         }
         .icon-item:active {
             transform: scale(0.92);
@@ -792,7 +1066,6 @@
             stroke-linecap: round;
             stroke-linejoin: round;
         }
-        /* 文字默认隐藏，鼠标悬停链接栏时显示，靠右 */
         .bar-text {
             position: absolute;
             right: 10px;
@@ -1417,7 +1690,7 @@
             .center-logo-flow.moved-logo { left: 5%; top: -210px; max-width: 340px; }
             .center-logo-flow.moved-logo .logo-img { width: 50px; height: 50px; }
             .center-logo-flow.moved-logo .name .bg { font-size: 30px; letter-spacing: 1px; }
-            .center-logo-flow.moved-logo .name .bg .top-small { margin-left: -1px; }
+            .center-logo-flow.moved-logo .name .bg .top-small { margin-left: -2px; }
             .top-empty-space { height: 120px; }
 
             .social { padding-left: 5%; }
@@ -1448,7 +1721,7 @@
             .float-tip-top { font-size: 12px !important; padding: 4px 14px 4px 12px !important; top: 12px !important; gap: 6px !important; }
             .float-tip-top .tip-icon { width: 16px !important; height: 16px !important; font-size: 12px !important; }
             .bottom-area-wrapper { position: relative; min-height: auto; flex-direction: column; gap: 20px; padding: 10px 0; align-items: center; }
-            .digital-clock-card { position: relative !important; left: auto !important; transform: none !important; width: 100%; max-width: 100%; margin: 0 auto!important; }
+            .digital-clock-card { position: relative !important; left: auto !important; transform: none !important; width: 100%; max-width: 100%; margin: 0 auto !important; }
             .nav-group-cards { position: relative; left: auto; transform: none; width: 100%; justify-content: center; flex-wrap: wrap; }
             .wrap { margin: 90px auto; }
             .interactive-badge { position: relative; top: auto; left: auto; transform: none; margin-bottom: 20px; width: 90%; max-width: 360px; margin-left: auto; margin-right: auto; }
@@ -1477,7 +1750,6 @@
             .wrap { margin: 70px auto; }
         }
 
-        /* ========== 自定义白色光标样式 ========== */
         @media (hover: hover) and (pointer: fine) {
             body, a, button, * {
                 cursor: none !important;
@@ -1566,7 +1838,8 @@
     </div>
 
     <canvas id="snowFullScreen"></canvas>
-    <canvas id="stars"></canvas>
+    <canvas id="rainCanvas"></canvas>
+    <canvas id="lightningCanvas"></canvas>
 
     <div id="cursor" class="xs-hidden hidden"></div>
 
@@ -1689,7 +1962,6 @@ console.log('脚本结束');</textarea>
 
     <div class="footer-box">
         <div class="bottom-area-wrapper">
-            <!-- 修改后：logo 文字改为 zenlydsp.top，左对齐，放在 Hello World 框上方 -->
             <div class="center-logo-flow moved-logo">
                 <div class="logo">
                     <img class="logo-img" src="https://www.renkonti.top/images/icon/favicon.png" alt="logo">
@@ -1712,7 +1984,12 @@ console.log('脚本结束');</textarea>
                         <div class="capsule-title">
                             <i class="fa-solid fa-box-open"></i> 时光胶囊
                         </div>
+                        <div class="capsule-actions">
+                            <div class="capsule-btn setting-btn" title="设置"><i class="fa-solid fa-gear"></i></div>
+                            <div class="capsule-btn close-btn" title="关闭"><i class="fa-solid fa-xmark"></i></div>
+                        </div>
                     </div>
+
                     <div class="capsule-body">
                         <div class="capsule-item">
                             <div class="capsule-label" id="statHours">今日已经度过了 0 小时</div>
@@ -1731,6 +2008,69 @@ console.log('脚本结束');</textarea>
                             <div class="progress-track"><div class="progress-fill" id="progYear">0%</div></div>
                         </div>
                         <div class="capsule-footer" id="statAge">本站已经苟活了 -- 年 -- 月 -- 天</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 半透明玻璃大窗口面板 -->
+            <div id="settingsModal">
+                <div class="settings-modal-box">
+                    <div class="settings-modal-close"><i class="fa-solid fa-xmark"></i></div>
+
+                    <div class="settings-modal-header">
+                        <div class="logo">
+                            <span class="bg">zenlydsp<span class="top-small">.top</span></span>
+                        </div>
+                        <div class="settings-modal-version">
+                            <i class="fa-brands fa-vuejs"></i> 4.0.3
+                            <a class="github-icon" href="https://github.com/lvoe82002/zenly-website" target="_blank" rel="noopener noreferrer">
+                                <i class="fa-brands fa-github"></i>
+                                <span class="github-label">Github源代码仓库</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="settings-modal-body">
+                        <div class="settings-col-left">
+                            <div class="settings-update-log">
+                                <h4>更新日志</h4>
+                                <ul>
+                                    <li><i class="fa-solid fa-plus-circle"></i> 采用 Vue 进行重构</li>
+                                    <li><i class="fa-solid fa-plus-circle"></i> 壁纸支持个性化设置</li>
+                                    <li><i class="fa-solid fa-wrench"></i> 修复天气 API</li>
+                                    <li><i class="fa-solid fa-wrench"></i> 时光胶囊显示错误</li>
+                                    <li><i class="fa-solid fa-wrench"></i> 移动端动画及细节</li>
+                                    <li><i class="fa-solid fa-cube"></i> 图标更换为 IconPark</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="settings-col-right">
+                            <div class="settings-item">
+                                <div class="settings-item-title"><i class="fa-regular fa-sun"></i> 全局设置</div>
+                                <div class="settings-content-box">
+                                    <div class="settings-sub-title">壁纸设置</div>
+                                    <div class="settings-options" id="wallpaperOptions">
+                                        <div class="settings-option" data-wallpaper="default"><div class="radio-btn"></div> 默认壁纸</div>
+                                        <div class="settings-option" data-wallpaper="daily"><div class="radio-btn"></div> 每日一图</div>
+                                        <div class="settings-option" data-wallpaper="scenery"><div class="radio-btn"></div> 随机风景</div>
+                                        <div class="settings-option active" data-wallpaper="anime"><div class="radio-btn selected"></div> 随机动漫</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="settings-item">
+                                <div class="settings-content-box">
+                                    <div class="settings-sub-title">特效设置</div>
+                                    <div class="settings-options" id="effectOptions">
+                                        <div class="settings-option" data-effect="snow"><div class="radio-btn"></div> 雪花</div>
+                                        <div class="settings-option" data-effect="rain"><div class="radio-btn"></div> 下雨</div>
+                                        <div class="settings-option" data-effect="thunder"><div class="radio-btn"></div> 打雷</div>
+                                        <div class="settings-option" data-effect="rainThunder"><div class="radio-btn selected"></div> 下雨+打雷</div>
+                                        <div class="settings-option" data-effect="all"><div class="radio-btn"></div> 全部</div>
+                                        <div class="settings-option" data-effect="none"><div class="radio-btn"></div> 无</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1760,7 +2100,6 @@ console.log('脚本结束');</textarea>
                 </div>
             </div>
 
-            <!-- 底部所有图标，放在 Hello World 框下面，非居中（左对齐） -->
             <div class="social">
                 <div class="link-bar" id="linkBar">
                     <a class="icon-item" href="https://github.com/lvoe82002" target="_blank" data-tooltip="去Github看看吧">
@@ -1817,7 +2156,6 @@ console.log('脚本结束');</textarea>
                 </div>
             </div>
 
-            <!-- 时钟放下来 -->
             <div class="digital-clock-card">
                 <div class="clock-date" id="clockDate">2026年08月07日 星期五</div>
                 <div class="clock-time-row">
@@ -1916,8 +2254,6 @@ console.log('脚本结束');</textarea>
         });
 
         var context, windowWidth, windowHeight;
-        var arr = [],
-            starCount = 800;
         const particlesWrap = document.getElementById("particles");
         const colors = ["#ff0000", "#ff9900", "#ffff00", "#00ff00", "#0099ff", "#0000ff", "#9900ff", "#ff66cc"];
         const projectItems = document.querySelectorAll(".project-item");
@@ -1934,6 +2270,7 @@ console.log('脚本结束');</textarea>
             }
         }
 
+        // ========== 雪花特效（保留） ==========
         function createSnowCanvas(canvasId, snowNum) {
             const canvas = document.getElementById(canvasId);
             const ctx = canvas.getContext("2d");
@@ -1970,7 +2307,7 @@ console.log('脚本结束');</textarea>
                 draw() {
                     ctx.beginPath();
                     ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-                    ctx.fillStyle = `rgba(255,255,255,${0.4 + this.r/3})`;
+                    ctx.fillStyle = `rgba(255,255,255,${0.4 + this.r / 3})`;
                     ctx.fill();
                 }
             }
@@ -1978,6 +2315,10 @@ console.log('脚本结束');</textarea>
 
             function render() {
                 ctx.clearRect(0, 0, width, height);
+                if (!window.__snowActive) {
+                    requestAnimationFrame(render);
+                    return;
+                }
                 flakes.forEach(s => { s.update(); s.draw(); });
                 requestAnimationFrame(render);
             }
@@ -1985,17 +2326,9 @@ console.log('脚本结束');</textarea>
         }
 
         window.onload = function() {
-            init();
-            for (var i = 0; i < starCount; i++) {
-                var star = new Star();
-                star.init();
-                star.draw();
-                arr.push(star);
-            }
-            playStars();
+            createSnowCanvas("snowFullScreen", 180);
             checkScrollShow();
             typeWrite();
-            createSnowCanvas("snowFullScreen", 180);
         };
 
         document.addEventListener("click", e => createParticle(e.clientX, e.clientY));
@@ -2037,36 +2370,6 @@ console.log('脚本结束');</textarea>
             });
         }
         window.addEventListener("scroll", checkScrollShow);
-
-        function init() {
-            var stars = document.getElementById("stars");
-            windowWidth = window.innerWidth;
-            windowHeight = window.innerHeight;
-            stars.width = windowWidth;
-            stars.height = windowHeight;
-            context = stars.getContext("2d");
-        }
-        var Star = function() {
-            this.x = windowWidth * Math.random();
-            this.y = windowHeight * Math.random();
-            this.text = ".";
-            this.color = "#fff";
-            this.getColor = function() { this.color = Math.random() < 0.5 ? "#333" : "#fff"; }
-            this.init = function() { this.getColor(); }
-            this.draw = function() {
-                context.fillStyle = this.color;
-                context.fillText(this.text, this.x, this.y);
-            }
-        }
-
-        function playStars() {
-            context.clearRect(0, 0, windowWidth, windowHeight);
-            for (var n = 0; n < starCount; n++) {
-                arr[n].getColor();
-                arr[n].draw();
-            }
-            setTimeout(playStars, 100);
-        }
     </script>
     <script>
         const segMap = [
@@ -2498,7 +2801,367 @@ console.log('脚本结束');</textarea>
 
             siteBadge.addEventListener('click', toggleCapsule);
 
+            const capsuleCloseBtn = document.querySelector('.close-btn');
+            if (capsuleCloseBtn) {
+                capsuleCloseBtn.addEventListener('click', toggleCapsule);
+            }
+
+            const settingsModal = document.getElementById('settingsModal');
+            const settingBtn = document.querySelector('.setting-btn');
+            const modalCloseBtn = document.querySelector('.settings-modal-close');
+
+            function openSettings() {
+                settingsModal.classList.add('open');
+            }
+
+            function closeSettings() {
+                settingsModal.classList.remove('open');
+            }
+
+            if (settingBtn) {
+                settingBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    openSettings();
+                });
+            }
+            if (modalCloseBtn) {
+                modalCloseBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    closeSettings();
+                });
+            }
+
+            // ========== 特效设置（修改后） ==========
+            const snowCanvas = document.getElementById('snowFullScreen');
+            const rainCanvas = document.getElementById('rainCanvas');
+            const lightningCanvas = document.getElementById('lightningCanvas');
+            const effectOptions = document.getElementById('effectOptions');
+            let currentEffect = localStorage.getItem('siteEffect') || 'rainThunder';
+
+            // 全局开关，供特效脚本使用
+            window.__snowActive = false;
+            window.__rainActive = false;
+            window.__thunderMode = false;
+
+            function setCanvasVisibility(el, show) {
+                if (!el) return;
+                el.style.opacity = show ? '1' : '0';
+                el.style.visibility = show ? 'visible' : 'hidden';
+            }
+
+            function applyEffect(effect) {
+                const all = effect === 'all';
+                const snow = effect === 'snow' || all;
+                const rain = effect === 'rain' || effect === 'rainThunder' || all;
+                const thunder = effect === 'thunder' || effect === 'rainThunder' || all;
+                const rainVisible = rain || thunder;
+
+                setCanvasVisibility(snowCanvas, snow);
+                setCanvasVisibility(rainCanvas, rainVisible);
+                setCanvasVisibility(lightningCanvas, thunder);
+
+                window.__snowActive = snow;
+                window.__rainActive = rain;
+                window.__thunderMode = thunder;
+
+                if (effectOptions) {
+                    effectOptions.querySelectorAll('.settings-option').forEach(opt => {
+                        const isActive = opt.dataset.effect === effect;
+                        opt.classList.toggle('active', isActive);
+                        const rb = opt.querySelector('.radio-btn');
+                        if (rb) rb.classList.toggle('selected', isActive);
+                    });
+                }
+                localStorage.setItem('siteEffect', effect);
+            }
+
+            if (effectOptions) {
+                effectOptions.querySelectorAll('.settings-option').forEach(opt => {
+                    opt.addEventListener('click', () => {
+                        applyEffect(opt.dataset.effect);
+                    });
+                });
+                applyEffect(currentEffect);
+            }
+
+            // 壁纸设置
+            const wallpaperOptions = document.getElementById('wallpaperOptions');
+            let currentWallpaper = localStorage.getItem('siteWallpaper') || 'anime';
+
+            const wallpapers = {
+                default: 'https://t.mwm.moe/ycy/',
+                daily: 'https://picsum.photos/1920/1080?random=1',
+                scenery: 'https://picsum.photos/1920/1080?random=2',
+                anime: 'https://t.mwm.moe/ycy/'
+            };
+
+            function applyWallpaper(type) {
+                const url = wallpapers[type] || wallpapers.default;
+                document.body.style.background = `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${url}) no-repeat center top`;
+                document.body.style.backgroundSize = 'cover';
+                document.body.style.backgroundAttachment = 'fixed';
+
+                if (wallpaperOptions) {
+                    wallpaperOptions.querySelectorAll('.settings-option').forEach(opt => {
+                        const isActive = opt.dataset.wallpaper === type;
+                        opt.classList.toggle('active', isActive);
+                        const rb = opt.querySelector('.radio-btn');
+                        if (rb) rb.classList.toggle('selected', isActive);
+                    });
+                }
+                localStorage.setItem('siteWallpaper', type);
+            }
+
+            if (wallpaperOptions) {
+                wallpaperOptions.querySelectorAll('.settings-option').forEach(opt => {
+                    opt.addEventListener('click', () => {
+                        applyWallpaper(opt.dataset.wallpaper);
+                    });
+                });
+                applyWallpaper(currentWallpaper);
+            }
+
             updateCapsuleStats();
+        })();
+    </script>
+
+    <!-- 新的下雨特效脚本 -->
+    <script>
+        (function() {
+            const canvas = document.getElementById('rainCanvas');
+            const ctx = canvas.getContext('2d');
+            let raindrops = [];
+            let ripples = [];
+
+            // 可调参数
+            const RAIN_COUNT = 180;
+            const WIND = 1.5;
+            const GRAVITY = 0.08;
+            const MIN_SPEED = 6;
+            const MAX_SPEED = 14;
+            const LENGTH_FACTOR = 0.8;
+            const RIPPLE_MAX_RADIUS = 18;
+            const RIPPLE_LIFE = 40;
+            const COLOR = '174, 194, 224';
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            resizeCanvas();
+            window.addEventListener('resize', () => {
+                resizeCanvas();
+                for (const drop of raindrops) {
+                    drop.x = Math.random() * canvas.width;
+                    drop.y = Math.random() * -canvas.height;
+                }
+            });
+
+            class Raindrop {
+                constructor() {
+                    this.reset();
+                }
+
+                reset() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * -canvas.height;
+                    this.vx = WIND + (Math.random() - 0.5) * 0.8;
+                    this.vy = MIN_SPEED + Math.random() * (MAX_SPEED - MIN_SPEED);
+                    this.length = this.vy * LENGTH_FACTOR;
+                    this.opacity = 0.35 + Math.random() * 0.45;
+                    this.thickness = 0.6 + Math.random() * 0.8;
+                }
+
+                update() {
+                    this.vy += GRAVITY;
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    this.length = this.vy * LENGTH_FACTOR;
+
+                    if (this.y > canvas.height + this.length) {
+                        ripples.push({
+                            x: this.x,
+                            y: canvas.height - 2,
+                            radius: 1,
+                            opacity: 0.5,
+                            life: 0
+                        });
+                        this.reset();
+                        this.y = -this.length;
+                    }
+                }
+
+                draw() {
+                    const tailX = this.x - this.vx * this.length * 0.15;
+                    const tailY = this.y - this.vy * this.length * 0.15;
+
+                    ctx.beginPath();
+                    ctx.moveTo(this.x, this.y);
+                    ctx.lineTo(tailX, tailY);
+                    ctx.strokeStyle = `rgba(${COLOR}, ${this.opacity})`;
+                    ctx.lineWidth = this.thickness;
+                    ctx.lineCap = 'round';
+                    ctx.stroke();
+                }
+            }
+
+            for (let i = 0; i < RAIN_COUNT; i++) {
+                raindrops.push(new Raindrop());
+            }
+
+            function drawRipples() {
+                for (let i = ripples.length - 1; i >= 0; i--) {
+                    const r = ripples[i];
+                    r.life++;
+                    if (r.life > RIPPLE_LIFE) {
+                        ripples.splice(i, 1);
+                        continue;
+                    }
+                    r.radius = 1 + (r.life / RIPPLE_LIFE) * RIPPLE_MAX_RADIUS;
+                    r.opacity = 0.5 * (1 - r.life / RIPPLE_LIFE);
+
+                    ctx.beginPath();
+                    ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
+                    ctx.strokeStyle = `rgba(${COLOR}, ${r.opacity})`;
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+            }
+
+            function animateRain() {
+                requestAnimationFrame(animateRain);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                if (!window.__rainActive) {
+                    return;
+                }
+
+                for (const drop of raindrops) {
+                    drop.update();
+                    drop.draw();
+                }
+
+                drawRipples();
+            }
+            animateRain();
+        })();
+    </script>
+
+    <!-- 新的闪电特效脚本 -->
+    <script>
+        (function() {
+            const canvas = document.getElementById('lightningCanvas');
+            const ctx = canvas.getContext('2d');
+            let lightningActive = false;
+            let lightningAlpha = 0;
+            let flashAlpha = 0;
+            let lightningPaths = [];
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            function generateLightning() {
+                if (lightningActive || !window.__thunderMode) return;
+                lightningActive = true;
+                lightningAlpha = 1;
+                flashAlpha = 0.6;
+
+                lightningPaths = [];
+                const startX = Math.random() * canvas.width;
+                const startY = 0;
+                const segments = 20 + Math.random() * 20;
+                let x = startX;
+                let y = startY;
+                const mainPoints = [{x, y}];
+                for (let i = 1; i <= segments; i++) {
+                    x += (Math.random() - 0.5) * 60;
+                    y += (canvas.height / segments) * (1 + Math.random() * 0.5);
+                    mainPoints.push({x, y});
+
+                    if (Math.random() < 0.3) {
+                        const branchLength = 5 + Math.random() * 15;
+                        const branchPoints = [];
+                        let bx = x;
+                        let by = y;
+                        for (let j = 0; j < branchLength; j++) {
+                            bx += (Math.random() - 0.5) * 30;
+                            by += Math.random() * 15;
+                            branchPoints.push({x: bx, y: by});
+                        }
+                        lightningPaths.push({points: branchPoints, alpha: 0.7});
+                    }
+                }
+                lightningPaths.push({points: mainPoints, alpha: 1});
+
+                setTimeout(() => {
+                    lightningActive = false;
+                    lightningAlpha = 0;
+                    flashAlpha = 0;
+                }, 150);
+            }
+
+            function drawLightning() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                if (!lightningActive) return;
+
+                if (flashAlpha > 0) {
+                    ctx.fillStyle = `rgba(255, 255, 255, ${flashAlpha})`;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                }
+
+                ctx.save();
+                ctx.shadowColor = 'rgba(255,255,255,0.8)';
+                ctx.shadowBlur = 15;
+                ctx.lineWidth = 2;
+                ctx.lineJoin = 'round';
+                ctx.lineCap = 'round';
+
+                for (const path of lightningPaths) {
+                    ctx.beginPath();
+                    ctx.moveTo(path.points[0].x, path.points[0].y);
+                    for (let i = 1; i < path.points.length; i++) {
+                        ctx.lineTo(path.points[i].x, path.points[i].y);
+                    }
+                    ctx.strokeStyle = `rgba(255, 255, 255, ${lightningAlpha * path.alpha})`;
+                    ctx.stroke();
+                }
+                ctx.restore();
+
+                if (flashAlpha > 0) {
+                    flashAlpha -= 0.05;
+                    if (flashAlpha < 0) flashAlpha = 0;
+                }
+            }
+
+            function scheduleLightning() {
+                if (!window.__thunderMode) {
+                    requestAnimationFrame(() => {
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        setTimeout(scheduleLightning, 500);
+                    });
+                    return;
+                }
+                const delay = 3000 + Math.random() * 7000;
+                setTimeout(() => {
+                    generateLightning();
+                    scheduleLightning();
+                }, delay);
+            }
+            scheduleLightning();
+
+            function animate() {
+                requestAnimationFrame(animate);
+                if (window.__thunderMode) {
+                    drawLightning();
+                } else {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            }
+            animate();
         })();
     </script>
 
@@ -2545,7 +3208,7 @@ console.log('脚本结束');</textarea>
             function animate(now) {
                 const dt = Math.min((now - lastTime) / 1000, 0.1);
                 lastTime = now;
-                const smoothing = 18;
+                const smoothing = 100;
                 const t = 1 - Math.exp(-smoothing * dt);
                 curX += (mouseX - curX) * t;
                 curY += (mouseY - curY) * t;
@@ -2599,7 +3262,6 @@ console.log('脚本结束');</textarea>
                 try {
                     const res = await fetch(url);
                     const data = await res.json();
-                    console.log('[天气] Open-Meteo返回:', data);
                     const cw = data.current_weather;
                     if (cw) {
                         const temp = Math.round(cw.temperature);
@@ -2612,7 +3274,6 @@ console.log('脚本结束');</textarea>
                         weatherEl.textContent = '天气获取失败，请检查网络';
                     }
                 } catch (err) {
-                    console.error('[天气] 请求异常:', err);
                     weatherEl.textContent = '天气获取失败，请检查网络';
                 }
             }
