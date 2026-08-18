@@ -45,6 +45,17 @@
             pointer-events: none;
             z-index: 0;
         }
+        /* 下雨和闪电画布样式 */
+        #rainCanvas,
+        #lightningCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
         .back-btn {
             position: fixed;
             top: 30px;
@@ -189,32 +200,6 @@
                 transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0.5);
             }
         }
-        /* 评论区样式 */
-        .comment-box {
-            margin-top: 60px;
-            padding-top: 30px;
-            border-top: 1px solid rgba(0, 0, 0, 0.15);
-        }
-        .comment-title {
-            font-size: 26px;
-            margin-bottom: 30px;
-            color: #111;
-        }
-        .comment-item {
-            padding: 16px 20px;
-            background: rgba(255, 255, 255, 0.25);
-            border-radius: 12px;
-            margin-bottom: 20px;
-        }
-        .comment-author {
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: #000;
-        }
-        .comment-text {
-            line-height: 1.8;
-            color: #222;
-        }
 
         /* ========== 右键禁用提示框样式 ========== */
         .float-tip-top {
@@ -286,23 +271,21 @@
         }
 
         /* ========== 自定义白色光标样式 ========== */
-        /* 桌面端隐藏系统光标 */
         @media (hover: hover) and (pointer: fine) {
             body, a, button, * {
                 cursor: none !important;
             }
         }
 
-        /* 自定义光标：纯白外圈 + 纯白内圆 */
         #cursor {
             position: fixed;
             pointer-events: none;
-            z-index: 100000; /* 提高层级，确保在最上层 */
+            z-index: 100000;
             width: 16px;
             height: 16px;
             margin-left: -8px;
             margin-top: -8px;
-            border: 1.5px solid #fff;      /* 纯白外圈 */
+            border: 1.5px solid #fff;
             border-radius: 50%;
             background: transparent;
             display: flex;
@@ -310,23 +293,17 @@
             justify-content: center;
             transition: width 0.15s, height 0.15s, margin-left 0.15s, margin-top 0.15s;
         }
-
-        /* 内圆：纯白实心小点 */
         #cursor::after {
             content: '';
             width: 8px;
             height: 8px;
-            background: #fff;              /* 纯白内圆 */
+            background: #fff;
             border-radius: 50%;
             transition: width 0.15s, height 0.15s;
         }
-
-        /* 通用隐藏类（用于光标初始隐藏） */
         .hidden {
             display: none !important;
         }
-
-        /* 移动端隐藏自定义光标，恢复系统光标 */
         @media (hover: none), (max-width: 768px) {
             #cursor {
                 display: none !important;
@@ -335,12 +312,13 @@
                 cursor: auto !important;
             }
         }
-        /* ========== 光标样式结束 ========== */
     </style>
 </head>
 <body>
-    <!-- 雪花画布 -->
+    <!-- 三个特效画布 -->
     <canvas id="snowFullScreen"></canvas>
+    <canvas id="rainCanvas"></canvas>
+    <canvas id="lightningCanvas"></canvas>
     <div class="particles" id="particles"></div>
 
     <!-- 右键禁用提示框 -->
@@ -349,7 +327,7 @@
         <span>为了浏览体验，本站禁用右键</span>
     </div>
 
-    <!-- 自定义光标元素（整合自第二段代码） -->
+    <!-- 自定义光标 -->
     <div id="cursor" class="xs-hidden hidden"></div>
 
     <a href="zenly.html" class="back-btn">← 返回首页</a>
@@ -406,13 +384,11 @@
             Would you be willing, once your first certificate is successfully issued, to share your email address with the Electronic Frontier Foundation, a founding partner of the Let's Encrypt project and the non-profit organization that develops Certbot? We'd like to send you email about our work encrypting the web, EFF news, campaigns, and ways to support digital freedom. (Y)es/ (N)o: y
             Account registered.
         Requesting a certificate for yun-mi-manchi.top and admin.yun-mi-manchi.top</div>
-        <!-- 图1：证书申请交互截图 -->
         <div class="img-box">
             <img class="article-cover" src="https://cdn-us.imgs.moe/2026/07/10/110d2ec7af156421da774e216ee95c0c.jpg" alt="certbot申请证书交互日志">
         </div>
         <p>安装完之后可以看到证书存放路径：/etc/letsencrypt/live/ssl/</p>
         <p>目录内文件：cert.pem、chain.pem、fullchain.pem、privkey.pem、README</p>
-        <!-- 图2：ssl证书目录文件截图 -->
         <div class="img-box">
             <img class="article-cover" src="https://cdn-us.imgs.moe/2026/07/10/d98c686a39effb4f1829f62a05b45c80.jpg" alt="/etc/letsencrypt/live/ssl 文件列表">
         </div>
@@ -668,7 +644,6 @@
         <p>先找到你前端项目存放的根目录</p>
         <p>前台 yun-mi-manchi.top >>> /home/yun_blog_vue/blog/dist</p>
         <p>后台 admin.yun-mi-manchi.top >>> /home/yun_blog_vue/admin/dist</p>
-        <!-- 图3：前端项目根目录截图 -->
         <div class="img-box">
             <img class="article-cover" src="https://cdn-us.imgs.moe/2026/08/13/45ba4c2ac5dbe1e076c950b23107d83b.png" alt="项目根目录 yun_blog_vue">
         </div>
@@ -681,12 +656,10 @@
         <div class="code-block">sudo certbot certonly --webroot -d yun-mi-manchi.top
         sudo certbot certonly --webroot -d admin.yun-mi-manchi.top</div>
         <p>这样证书就会被创建在默认路径下 /etc/letsencrypt/live/</p>
-        <!-- 图5：live目录多域名证书文件夹 -->
         <div class="img-box">
             <img class="article-cover" src="https://cdn-us.imgs.moe/2026/07/10/c8f21e28b031e2c512eaec5b662f6b7b.jpg" alt="/etc/letsencrypt/live 多域名证书文件夹">
         </div>
         <p>然后找到证书的配置文件 /etc/letsencrypt/renewal/</p>
-        <!-- 图6：renewal目录续约配置文件 -->
         <div class="img-box">
             <img class="article-cover" src="https://cdn-us.imgs.moe/2026/07/10/94e554e3255ce151e5b0513dd37511e9.jpg" alt="/etc/letsencrypt/renewal 配置文件列表">
         </div>
@@ -705,7 +678,6 @@
             server = https://acme-v02.api.letsencrypt.org/directory
             key_type = ecdsa
         [[webroot_map]]</div>
-        <!-- 图7：前台续约配置内容 -->
         <div class="img-box">
             <img class="article-cover" src="https://cdn-us.imgs.moe/2026/07/10/04fe41b842a65fff410c6bfb2e1d48a4.jpg" alt="yun-mi-manchi.top.conf 配置内容">
         </div>
@@ -723,7 +695,6 @@
             server = https://acme-v02.api.letsencrypt.org/directory
             key_type = ecdsa
         [[webroot_map]]</div>
-        <!-- 图8：后台续约配置内容 -->
         <div class="img-box">
             <img class="article-cover" src="https://cdn-us.imgs.moe/2026/07/10/2b00cb1beceb4fa3ec4a3e45632fc77f.jpg" alt="admin.yun-mi-manchi.top.conf 配置内容">
         </div>
@@ -935,7 +906,6 @@
             networks:
         blog_network:</div>
         <p>重新构建镜像和运行服务</p>
-        <!-- 图9：docker容器列表截图 -->
         <div class="img-box">
             <img class="article-cover" src="https://cdn-us.imgs.moe/2026/07/10/e60e8b8ef61c5bf13f73f217826877e1.jpg" alt="docker ps 容器列表">
         </div>
@@ -955,7 +925,6 @@
             Congratulations, all simulated renewals succeeded: 
             /etc/letsencrypt/live/admin.yun-mi-manchi.top/fullchain.pem (success)
         /etc/letsencrypt/live/yun-mi-manchi.top/fullchain.pem (success)</div>
-        <!-- 图10：dry-run模拟续约成功截图 -->
         <div class="img-box">
             <img class="article-cover" src="https://cdn-us.imgs.moe/2026/07/10/0f207cbe66222032da6682d966f669d8.jpg" alt="certbot renew --dry-run 模拟续约成功">
         </div>
@@ -964,7 +933,6 @@
         <p>因为我们的 nginx 在 Docker 里的</p>
         <p>所以要先找出前端工程的容器是哪个</p>
         <div class="code-block">docker ps</div>
-        <!-- 图11：前端容器名称标注截图 -->
         <div class="img-box">
             <img class="article-cover" src="https://cdn-us.imgs.moe/2026/07/10/bf569227e4ba9f04af5353824df61061.jpg" alt="前端容器名称">
         </div>
@@ -973,14 +941,12 @@
         <p>输出ok代表配置无错误：</p>
         <div class="code-block">nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
         nginx: configuration file /etc/nginx/nginx.conf test is successful</div>
-        <!-- 图12：nginx -t 校验成功截图 -->
         <div class="img-box">
             <img class="article-cover" src="https://cdn-us.imgs.moe/2026/07/10/c60cd67496a4650de31fa7b65a98a740.jpg" alt="nginx -t 配置校验通过">
         </div>
         <p>手动测试重载命令</p>
         <div class="code-block">docker exec yun_blog_compose-yun_blog_vue-1 nginx -s reload</div>
         <p>输出 signal process started 说明重载正常。</p>
-        <!-- 图13：nginx重载执行日志截图 -->
         <div class="img-box">
             <img class="article-cover" src="https://cdn-us.imgs.moe/2026/07/10/b6c85006a37752ee1d1c4d46a920a758.jpg" alt="nginx -s reload 重载成功">
         </div>
@@ -998,7 +964,6 @@
             --force-renewal \
         --deploy-hook "docker exec yun_blog_compose-yun_blog_vue-1 nginx -s reload"</div>
         <p>执行后输入 echo $?，返回0代表全部流程执行成功。</p>
-        <!-- 图14：强制续约完整执行截图 -->
         <div class="img-box">
             <img class="article-cover" src="https://cdn-us.imgs.moe/2026/07/10/5a7840c1fa89df7fe75600b42f924de6.jpg" alt="--force-renewal 强制续约完整输出">
         </div>
@@ -1012,38 +977,36 @@
         <span class="tag">#docker</span>
         <span class="tag">#nginx</span>
     </div>
-    <!-- 评论区域 -->
-    <div class="comment-box">
-        <h3 class="comment-title">评论区</h3>
-        <div class="comment-item">
-            <div class="comment-author">游客小明</div>
-            <div class="comment-text">博主写得太详细了，之前用standalone每次续约都要停nginx容器，换成webroot模式后不用停机，踩坑解决了！</div>
-        </div>
-        <div class="comment-item">
-            <div class="comment-author">玖染（作者）</div>
-            <div class="comment-text">感谢支持，docker挂载letsencrypt完整目录是关键，live软链接直接挂载会读不到证书，很多人卡在这一步。</div>
-        </div>
-        <div class="comment-item">
-            <div class="comment-author">后端小菜鸡</div>
-            <div class="comment-text">请问多域名分开申请证书后，nginx配置需要分别写ssl路径吗？</div>
-        </div>
-        <div class="comment-item">
-            <div class="comment-author">玖染（作者）</div>
-            <div class="comment-text">是的，每个域名对应自己live下的证书文件，不要混用，方便后期单独更换域名证书。</div>
-        </div>
-        <div class="comment-item">
-            <div class="comment-author">运维阿泽</div>
-            <div class="comment-text">定时任务deploy-hook比post-hook更合理，无续约时不会频繁重载nginx，生产环境推荐。</div>
-        </div>
-    </div>
 </div>
 <div class="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})"></div>
 <div class="footer-box"></div>
 <script>
+    // ========== 初始化特效设置（读取主页保存的选择） ==========
+    (function() {
+        window.__snowActive = false;
+        window.__rainActive = false;
+        window.__thunderMode = false;
+
+        const effect = localStorage.getItem('siteEffect') || 'rainThunder'; // 默认与主页一致
+        window.__snowActive = effect === 'snow' || effect === 'all';
+        window.__rainActive = effect === 'rain' || effect === 'rainThunder' || effect === 'all';
+        window.__thunderMode = effect === 'thunder' || effect === 'rainThunder' || effect === 'all';
+
+        function setCanvasVisibility(el, show) {
+            if (!el) return;
+            el.style.opacity = show ? '1' : '0';
+            el.style.visibility = show ? 'visible' : 'hidden';
+        }
+
+        setCanvasVisibility(document.getElementById('snowFullScreen'), window.__snowActive);
+        setCanvasVisibility(document.getElementById('rainCanvas'), window.__rainActive || window.__thunderMode);
+        setCanvasVisibility(document.getElementById('lightningCanvas'), window.__thunderMode);
+    })();
+
+    // ========== 雪花特效（根据 __snowActive 控制） ==========
     const particlesWrap = document.getElementById("particles");
     const colors = ["#0099ff", "#0000ff", "#9900ff", "#ff66cc"];
 
-    // 雪花函数（无月亮、无流星）
     function createSnowCanvas(canvasId, snowNum) {
         const canvas = document.getElementById(canvasId);
         const ctx = canvas.getContext("2d");
@@ -1058,6 +1021,7 @@
         }
         window.addEventListener("resize", resize);
         resize();
+
         class Snow {
             constructor() {
                 this.x = Math.random() * width;
@@ -1087,24 +1051,240 @@
                 ctx.fill();
             }
         }
+
         for (let i = 0; i < snowNum; i++) flakes.push(new Snow());
 
         function render() {
             ctx.clearRect(0, 0, width, height);
-            flakes.forEach(s => {
-                s.update();
-                s.draw();
-            })
+            if (window.__snowActive) {
+                flakes.forEach(s => {
+                    s.update();
+                    s.draw();
+                });
+            }
             requestAnimationFrame(render);
         }
         render();
     }
 
-    window.onload = function() {
+    window.addEventListener('load', function() {
         createSnowCanvas("snowFullScreen", 180);
-    };
+    });
 
-    // 点击粒子特效（保留）
+    // ========== 下雨特效（根据 __rainActive 控制） ==========
+    (function() {
+        const canvas = document.getElementById('rainCanvas');
+        const ctx = canvas.getContext('2d');
+        let raindrops = [];
+        let ripples = [];
+
+        const RAIN_COUNT = 180;
+        const WIND = 1.5;
+        const GRAVITY = 0.08;
+        const MIN_SPEED = 6;
+        const MAX_SPEED = 14;
+        const LENGTH_FACTOR = 0.8;
+        const RIPPLE_MAX_RADIUS = 18;
+        const RIPPLE_LIFE = 40;
+        const COLOR = '174, 194, 224';
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            for (const drop of raindrops) {
+                drop.x = Math.random() * canvas.width;
+                drop.y = Math.random() * -canvas.height;
+            }
+        });
+
+        class Raindrop {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * -canvas.height;
+                this.vx = WIND + (Math.random() - 0.5) * 0.8;
+                this.vy = MIN_SPEED + Math.random() * (MAX_SPEED - MIN_SPEED);
+                this.length = this.vy * LENGTH_FACTOR;
+                this.opacity = 0.35 + Math.random() * 0.45;
+                this.thickness = 0.6 + Math.random() * 0.8;
+            }
+            update() {
+                this.vy += GRAVITY;
+                this.x += this.vx;
+                this.y += this.vy;
+                this.length = this.vy * LENGTH_FACTOR;
+                if (this.y > canvas.height + this.length) {
+                    ripples.push({
+                        x: this.x,
+                        y: canvas.height - 2,
+                        radius: 1,
+                        opacity: 0.5,
+                        life: 0
+                    });
+                    this.reset();
+                    this.y = -this.length;
+                }
+            }
+            draw() {
+                const tailX = this.x - this.vx * this.length * 0.15;
+                const tailY = this.y - this.vy * this.length * 0.15;
+                ctx.beginPath();
+                ctx.moveTo(this.x, this.y);
+                ctx.lineTo(tailX, tailY);
+                ctx.strokeStyle = `rgba(${COLOR}, ${this.opacity})`;
+                ctx.lineWidth = this.thickness;
+                ctx.lineCap = 'round';
+                ctx.stroke();
+            }
+        }
+
+        for (let i = 0; i < RAIN_COUNT; i++) raindrops.push(new Raindrop());
+
+        function drawRipples() {
+            for (let i = ripples.length - 1; i >= 0; i--) {
+                const r = ripples[i];
+                r.life++;
+                if (r.life > RIPPLE_LIFE) {
+                    ripples.splice(i, 1);
+                    continue;
+                }
+                r.radius = 1 + (r.life / RIPPLE_LIFE) * RIPPLE_MAX_RADIUS;
+                r.opacity = 0.5 * (1 - r.life / RIPPLE_LIFE);
+                ctx.beginPath();
+                ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
+                ctx.strokeStyle = `rgba(${COLOR}, ${r.opacity})`;
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
+        }
+
+        function animateRain() {
+            requestAnimationFrame(animateRain);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (!window.__rainActive) return;
+            for (const drop of raindrops) {
+                drop.update();
+                drop.draw();
+            }
+            drawRipples();
+        }
+        animateRain();
+    })();
+
+    // ========== 闪电特效（根据 __thunderMode 控制） ==========
+    (function() {
+        const canvas = document.getElementById('lightningCanvas');
+        const ctx = canvas.getContext('2d');
+        let lightningActive = false;
+        let lightningAlpha = 0;
+        let flashAlpha = 0;
+        let lightningPaths = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        function generateLightning() {
+            if (lightningActive || !window.__thunderMode) return;
+            lightningActive = true;
+            lightningAlpha = 1;
+            flashAlpha = 0.6;
+            lightningPaths = [];
+            const startX = Math.random() * canvas.width;
+            const startY = 0;
+            const segments = 20 + Math.random() * 20;
+            let x = startX;
+            let y = startY;
+            const mainPoints = [{x, y}];
+            for (let i = 1; i <= segments; i++) {
+                x += (Math.random() - 0.5) * 60;
+                y += (canvas.height / segments) * (1 + Math.random() * 0.5);
+                mainPoints.push({x, y});
+                if (Math.random() < 0.3) {
+                    const branchLength = 5 + Math.random() * 15;
+                    const branchPoints = [];
+                    let bx = x;
+                    let by = y;
+                    for (let j = 0; j < branchLength; j++) {
+                        bx += (Math.random() - 0.5) * 30;
+                        by += Math.random() * 15;
+                        branchPoints.push({x: bx, y: by});
+                    }
+                    lightningPaths.push({points: branchPoints, alpha: 0.7});
+                }
+            }
+            lightningPaths.push({points: mainPoints, alpha: 1});
+            setTimeout(() => {
+                lightningActive = false;
+                lightningAlpha = 0;
+                flashAlpha = 0;
+            }, 150);
+        }
+
+        function drawLightning() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (!lightningActive) return;
+            if (flashAlpha > 0) {
+                ctx.fillStyle = `rgba(255, 255, 255, ${flashAlpha})`;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+            ctx.save();
+            ctx.shadowColor = 'rgba(255,255,255,0.8)';
+            ctx.shadowBlur = 15;
+            ctx.lineWidth = 2;
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+            for (const path of lightningPaths) {
+                ctx.beginPath();
+                ctx.moveTo(path.points[0].x, path.points[0].y);
+                for (let i = 1; i < path.points.length; i++) {
+                    ctx.lineTo(path.points[i].x, path.points[i].y);
+                }
+                ctx.strokeStyle = `rgba(255, 255, 255, ${lightningAlpha * path.alpha})`;
+                ctx.stroke();
+            }
+            ctx.restore();
+            if (flashAlpha > 0) {
+                flashAlpha -= 0.05;
+                if (flashAlpha < 0) flashAlpha = 0;
+            }
+        }
+
+        function scheduleLightning() {
+            if (!window.__thunderMode) {
+                requestAnimationFrame(() => {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    setTimeout(scheduleLightning, 500);
+                });
+                return;
+            }
+            const delay = 3000 + Math.random() * 7000;
+            setTimeout(() => {
+                generateLightning();
+                scheduleLightning();
+            }, delay);
+        }
+        scheduleLightning();
+
+        function animate() {
+            requestAnimationFrame(animate);
+            if (window.__thunderMode) {
+                drawLightning();
+            } else {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+        animate();
+    })();
+
+    // ========== 点击粒子特效（保留） ==========
     document.addEventListener("click", function(e) {
         for (let i = 0; i < 10; i++) {
             const p = document.createElement("div");
@@ -1144,11 +1324,10 @@
         }
     });
 
-    // ========== 自定义白色光标脚本（已优化灵敏度） ==========
+    // ========== 自定义白色光标脚本 ==========
     (function() {
         const cursor = document.getElementById('cursor');
         if (!cursor) return;
-        // 移动端不启用
         if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
 
         let mouseX = innerWidth / 2, mouseY = innerHeight / 2;
@@ -1160,7 +1339,6 @@
             mouseX = e.clientX;
             mouseY = e.clientY;
             if (!visible) {
-                // 首次移动直接定位，避免从中心滑入
                 curX = mouseX;
                 curY = mouseY;
                 cursor.classList.remove('hidden');
@@ -1173,7 +1351,6 @@
             visible = false;
         });
 
-        // 点击放大
         document.addEventListener('mousedown', () => {
             cursor.style.width = '20px';
             cursor.style.height = '20px';
@@ -1187,11 +1364,9 @@
             cursor.style.marginTop = '-8px';
         });
 
-        // 平滑跟随（帧率无关，灵敏度可调）
         function animate(now) {
             const dt = Math.min((now - lastTime) / 1000, 0.1);
             lastTime = now;
-            // 灵敏度：建议 10~30，越大越灵敏
             const smoothing = 100;
             const t = 1 - Math.exp(-smoothing * dt);
             curX += (mouseX - curX) * t;
@@ -1202,7 +1377,6 @@
         }
         requestAnimationFrame(animate);
     })();
-    // ========== 光标脚本结束 ==========
 </script>
 </body>
 </html>

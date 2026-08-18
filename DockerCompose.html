@@ -44,6 +44,17 @@
             pointer-events: none;
             z-index: 0;
         }
+        /* 新增：下雨和闪电画布样式 */
+        #rainCanvas,
+        #lightningCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
         #stars {
             position: fixed;
             top: 0;
@@ -53,7 +64,6 @@
             height: 100vh;
             background: rgba(14, 23, 41, 0.6);
         }
-        /* 月亮和流星相关样式已移除 */
         .back-btn {
             position: fixed;
             top: 30px;
@@ -206,95 +216,6 @@
             }
         }
 
-        /* 评论区样式 */
-        .comment-box {
-            margin-top: 60px;
-            padding-top: 30px;
-            border-top: 1px solid rgba(0, 0, 0, 0.15);
-        }
-        .comment-title {
-            font-size: 26px;
-            margin-bottom: 30px;
-            color: #111;
-        }
-        .comment-input-panel {
-            background: rgba(255, 255, 255, 0.25);
-            border-radius: 12px;
-            padding: 22px;
-            margin-bottom: 24px;
-        }
-        .comment-row-top {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-bottom: 14px;
-            align-items: center;
-        }
-        .comment-row-top input {
-            padding: 9px 12px;
-            border-radius: 8px;
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            background: rgba(255, 255, 255, 0.7);
-            outline: none;
-            font-size: 15px;
-        }
-        .tag-required {
-            color: #dd3333;
-            font-size: 13px;
-        }
-        .tag-optional {
-            color: #666;
-            font-size: 13px;
-        }
-        .inp-content {
-            width: 100%;
-            min-height: 110px;
-            border-radius: 8px;
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            background: rgba(255, 255, 255, 0.7);
-            padding: 12px;
-            resize: none;
-            outline: none;
-            font-size: 15px;
-            margin-bottom: 10px;
-        }
-        .input-bottom-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .emoji-btn {
-            font-size: 19px;
-            cursor: pointer;
-        }
-        .word-count {
-            color: #555;
-            font-size: 14px;
-        }
-        .btn-group {
-            display: flex;
-            gap: 10px;
-        }
-        .btn-preview {
-            padding: 7px 18px;
-            border-radius: 7px;
-            border: 1px solid #ddd;
-            background: #fff;
-            cursor: pointer;
-        }
-        .btn-send {
-            padding: 7px 18px;
-            border-radius: 7px;
-            border: none;
-            background: #72b8f5;
-            color: white;
-            cursor: pointer;
-        }
-        .empty-tip {
-            color: #444;
-            font-size: 15px;
-        }
-
         /* 右键禁用提示框样式 */
         .float-tip-top {
             position: fixed;
@@ -413,10 +334,11 @@
     </style>
 </head>
 <body>
-    <!-- 首页同款雪花画布 -->
+    <!-- 三个特效画布 -->
     <canvas id="snowFullScreen"></canvas>
+    <canvas id="rainCanvas"></canvas>
+    <canvas id="lightningCanvas"></canvas>
     <canvas id="stars"></canvas>
-    <!-- 月亮 div 已移除 -->
     <div class="particles" id="particles"></div>
 
     <!-- 自定义光标元素 -->
@@ -686,43 +608,38 @@ docker compose up -d --build</div>
     <span class="tag">#docker</span>
     <span class="tag">#nginx</span>
 </div>
-<!-- 评论区 -->
-<div class="comment-box">
-    <h3 class="comment-title">评论区</h3>
-    <div class="comment-input-panel">
-        <div class="comment-row-top">
-            <input type="text" placeholder="昵称" class="inp-nick" required>
-            <span class="tag-required">必填</span>
-            <input type="email" placeholder="邮箱" class="inp-mail" required>
-            <span class="tag-required">必填</span>
-            <input type="url" placeholder="个人网址" class="inp-site">
-            <span class="tag-optional">选填</span>
-        </div>
-        <textarea maxlength="500" placeholder="说点什么吧~" class="inp-content"></textarea>
-        <div class="input-bottom-bar">
-            <span class="emoji-btn">😊</span>
-            <span class="word-count"><span id="cur-num">0</span>/500</span>
-            <div class="btn-group">
-                <button class="btn-preview">预览</button>
-                <button class="btn-send">发送</button>
-            </div>
-        </div>
-    </div>
-    <div class="comment-list">
-        <p class="empty-tip">0 条评论</p>
-    </div>
-</div>
+<!-- 评论区已删除 -->
 </div>
 <div class="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})"></div>
 <div class="footer-box"></div>
 <script>
-    let context, arr = [],
-        starCount = 300;
-    // 流星相关的 rains 数组和 rainCount 已移除
+    // ========== 初始化特效设置（读取主页保存的选择） ==========
+    (function() {
+        window.__snowActive = false;
+        window.__rainActive = false;
+        window.__thunderMode = false;
+
+        const effect = localStorage.getItem('siteEffect') || 'rainThunder'; // 默认与主页一致
+        window.__snowActive = effect === 'snow' || effect === 'all';
+        window.__rainActive = effect === 'rain' || effect === 'rainThunder' || effect === 'all';
+        window.__thunderMode = effect === 'thunder' || effect === 'rainThunder' || effect === 'all';
+
+        function setCanvasVisibility(el, show) {
+            if (!el) return;
+            el.style.opacity = show ? '1' : '0';
+            el.style.visibility = show ? 'visible' : 'hidden';
+        }
+
+        setCanvasVisibility(document.getElementById('snowFullScreen'), window.__snowActive);
+        setCanvasVisibility(document.getElementById('rainCanvas'), window.__rainActive || window.__thunderMode);
+        setCanvasVisibility(document.getElementById('lightningCanvas'), window.__thunderMode);
+    })();
+
+    let context, arr = [], starCount = 300;
     const particlesWrap = document.getElementById("particles");
     const colors = ["#0099ff", "#0000ff", "#9900ff", "#ff66cc"];
 
-    // 首页同款雪花函数
+    // ========== 雪花特效（根据 __snowActive 控制） ==========
     function createSnowCanvas(canvasId, snowNum) {
         const canvas = document.getElementById(canvasId);
         const ctx = canvas.getContext("2d");
@@ -770,17 +687,44 @@ docker compose up -d --build</div>
 
         function render() {
             ctx.clearRect(0, 0, width, height);
-            flakes.forEach(s => {
-                s.update();
-                s.draw();
-            })
+            if (window.__snowActive) {
+                flakes.forEach(s => {
+                    s.update();
+                    s.draw();
+                });
+            }
             requestAnimationFrame(render);
         }
         render();
     }
 
+    // ========== 星空特效（保留） ==========
+    function init() {
+        const canvas = document.getElementById("stars");
+        canvas.width = innerWidth;
+        canvas.height = innerHeight;
+        context = canvas.getContext("2d");
+    }
+    function Star() {
+        this.x = Math.random() * innerWidth;
+        this.y = Math.random() * innerHeight;
+        this.txt = ".";
+        this.color = "#fff";
+        this.init = () => {};
+        this.draw = () => {
+            context.fillStyle = this.color;
+            context.fillText(this.txt, this.x, this.y);
+        };
+    }
+    function playStars() {
+        context.clearRect(0, 0, innerWidth, innerHeight);
+        arr.forEach(s => {
+            s.draw();
+        });
+        setTimeout(playStars, 150);
+    }
+
     window.onload = function() {
-        // 初始化雪花
         createSnowCanvas("snowFullScreen", 180);
         init();
         for (let i = 0; i < starCount; i++) {
@@ -789,11 +733,223 @@ docker compose up -d --build</div>
             s.draw();
             arr.push(s);
         }
-        // 流星循环已移除
         playStars();
-        // playRains() 调用已移除
     };
 
+    // ========== 下雨特效（根据 __rainActive 控制） ==========
+    (function() {
+        const canvas = document.getElementById('rainCanvas');
+        const ctx = canvas.getContext('2d');
+        let raindrops = [];
+        let ripples = [];
+
+        const RAIN_COUNT = 180;
+        const WIND = 1.5;
+        const GRAVITY = 0.08;
+        const MIN_SPEED = 6;
+        const MAX_SPEED = 14;
+        const LENGTH_FACTOR = 0.8;
+        const RIPPLE_MAX_RADIUS = 18;
+        const RIPPLE_LIFE = 40;
+        const COLOR = '174, 194, 224';
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            for (const drop of raindrops) {
+                drop.x = Math.random() * canvas.width;
+                drop.y = Math.random() * -canvas.height;
+            }
+        });
+
+        class Raindrop {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * -canvas.height;
+                this.vx = WIND + (Math.random() - 0.5) * 0.8;
+                this.vy = MIN_SPEED + Math.random() * (MAX_SPEED - MIN_SPEED);
+                this.length = this.vy * LENGTH_FACTOR;
+                this.opacity = 0.35 + Math.random() * 0.45;
+                this.thickness = 0.6 + Math.random() * 0.8;
+            }
+            update() {
+                this.vy += GRAVITY;
+                this.x += this.vx;
+                this.y += this.vy;
+                this.length = this.vy * LENGTH_FACTOR;
+                if (this.y > canvas.height + this.length) {
+                    ripples.push({
+                        x: this.x,
+                        y: canvas.height - 2,
+                        radius: 1,
+                        opacity: 0.5,
+                        life: 0
+                    });
+                    this.reset();
+                    this.y = -this.length;
+                }
+            }
+            draw() {
+                const tailX = this.x - this.vx * this.length * 0.15;
+                const tailY = this.y - this.vy * this.length * 0.15;
+                ctx.beginPath();
+                ctx.moveTo(this.x, this.y);
+                ctx.lineTo(tailX, tailY);
+                ctx.strokeStyle = `rgba(${COLOR}, ${this.opacity})`;
+                ctx.lineWidth = this.thickness;
+                ctx.lineCap = 'round';
+                ctx.stroke();
+            }
+        }
+
+        for (let i = 0; i < RAIN_COUNT; i++) raindrops.push(new Raindrop());
+
+        function drawRipples() {
+            for (let i = ripples.length - 1; i >= 0; i--) {
+                const r = ripples[i];
+                r.life++;
+                if (r.life > RIPPLE_LIFE) {
+                    ripples.splice(i, 1);
+                    continue;
+                }
+                r.radius = 1 + (r.life / RIPPLE_LIFE) * RIPPLE_MAX_RADIUS;
+                r.opacity = 0.5 * (1 - r.life / RIPPLE_LIFE);
+                ctx.beginPath();
+                ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
+                ctx.strokeStyle = `rgba(${COLOR}, ${r.opacity})`;
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
+        }
+
+        function animateRain() {
+            requestAnimationFrame(animateRain);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (!window.__rainActive) return;
+            for (const drop of raindrops) {
+                drop.update();
+                drop.draw();
+            }
+            drawRipples();
+        }
+        animateRain();
+    })();
+
+    // ========== 闪电特效（根据 __thunderMode 控制） ==========
+    (function() {
+        const canvas = document.getElementById('lightningCanvas');
+        const ctx = canvas.getContext('2d');
+        let lightningActive = false;
+        let lightningAlpha = 0;
+        let flashAlpha = 0;
+        let lightningPaths = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        function generateLightning() {
+            if (lightningActive || !window.__thunderMode) return;
+            lightningActive = true;
+            lightningAlpha = 1;
+            flashAlpha = 0.6;
+            lightningPaths = [];
+            const startX = Math.random() * canvas.width;
+            const startY = 0;
+            const segments = 20 + Math.random() * 20;
+            let x = startX;
+            let y = startY;
+            const mainPoints = [{x, y}];
+            for (let i = 1; i <= segments; i++) {
+                x += (Math.random() - 0.5) * 60;
+                y += (canvas.height / segments) * (1 + Math.random() * 0.5);
+                mainPoints.push({x, y});
+                if (Math.random() < 0.3) {
+                    const branchLength = 5 + Math.random() * 15;
+                    const branchPoints = [];
+                    let bx = x;
+                    let by = y;
+                    for (let j = 0; j < branchLength; j++) {
+                        bx += (Math.random() - 0.5) * 30;
+                        by += Math.random() * 15;
+                        branchPoints.push({x: bx, y: by});
+                    }
+                    lightningPaths.push({points: branchPoints, alpha: 0.7});
+                }
+            }
+            lightningPaths.push({points: mainPoints, alpha: 1});
+            setTimeout(() => {
+                lightningActive = false;
+                lightningAlpha = 0;
+                flashAlpha = 0;
+            }, 150);
+        }
+
+        function drawLightning() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (!lightningActive) return;
+            if (flashAlpha > 0) {
+                ctx.fillStyle = `rgba(255, 255, 255, ${flashAlpha})`;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+            ctx.save();
+            ctx.shadowColor = 'rgba(255,255,255,0.8)';
+            ctx.shadowBlur = 15;
+            ctx.lineWidth = 2;
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+            for (const path of lightningPaths) {
+                ctx.beginPath();
+                ctx.moveTo(path.points[0].x, path.points[0].y);
+                for (let i = 1; i < path.points.length; i++) {
+                    ctx.lineTo(path.points[i].x, path.points[i].y);
+                }
+                ctx.strokeStyle = `rgba(255, 255, 255, ${lightningAlpha * path.alpha})`;
+                ctx.stroke();
+            }
+            ctx.restore();
+            if (flashAlpha > 0) {
+                flashAlpha -= 0.05;
+                if (flashAlpha < 0) flashAlpha = 0;
+            }
+        }
+
+        function scheduleLightning() {
+            if (!window.__thunderMode) {
+                requestAnimationFrame(() => {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    setTimeout(scheduleLightning, 500);
+                });
+                return;
+            }
+            const delay = 3000 + Math.random() * 7000;
+            setTimeout(() => {
+                generateLightning();
+                scheduleLightning();
+            }, delay);
+        }
+        scheduleLightning();
+
+        function animate() {
+            requestAnimationFrame(animate);
+            if (window.__thunderMode) {
+                drawLightning();
+            } else {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+        animate();
+    })();
+
+    // ========== 点击粒子特效（保留） ==========
     document.addEventListener("click", function(e) {
         for (let i = 0; i < 10; i++) {
             const p = document.createElement("div");
@@ -815,43 +971,7 @@ docker compose up -d --build</div>
         }
     });
 
-    function init() {
-        const canvas = document.getElementById("stars");
-        canvas.width = innerWidth;
-        canvas.height = innerHeight;
-        context = canvas.getContext("2d");
-    }
-
-    function Star() {
-        this.x = Math.random() * innerWidth;
-        this.y = Math.random() * innerHeight;
-        this.txt = ".";
-        this.color = "#fff";
-        this.init = () => {};
-        this.draw = () => {
-            context.fillStyle = this.color;
-            context.fillText(this.txt, this.x, this.y);
-        };
-    }
-
-    function playStars() {
-        context.clearRect(0, 0, innerWidth, innerHeight);
-        arr.forEach(s => {
-            s.draw();
-        });
-        setTimeout(playStars, 150);
-    }
-
-    // 流星相关的 MeteorRain 类和 playRains 函数已完全移除
-
-    // 评论区字数统计
-    const textArea = document.querySelector(".inp-content");
-    const numDom = document.getElementById("cur-num");
-    textArea.addEventListener("input", () => {
-        numDom.innerText = textArea.value.length;
-    });
-
-    // 右键禁用提示框逻辑
+    // ========== 右键禁用提示框逻辑 ==========
     let rightTipTimer;
     document.addEventListener('contextmenu', e => {
         e.preventDefault();
@@ -869,11 +989,10 @@ docker compose up -d --build</div>
         }
     });
 
-    // ========== 自定义白色光标脚本（已优化灵敏度） ==========
+    // ========== 自定义白色光标脚本 ==========
     (function() {
         const cursor = document.getElementById('cursor');
         if (!cursor) return;
-        // 移动端不启用
         if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
 
         let mouseX = innerWidth / 2, mouseY = innerHeight / 2;
@@ -885,7 +1004,6 @@ docker compose up -d --build</div>
             mouseX = e.clientX;
             mouseY = e.clientY;
             if (!visible) {
-                // 首次移动直接定位，避免从中心滑入
                 curX = mouseX;
                 curY = mouseY;
                 cursor.classList.remove('hidden');
@@ -898,7 +1016,6 @@ docker compose up -d --build</div>
             visible = false;
         });
 
-        // 点击放大
         document.addEventListener('mousedown', () => {
             cursor.style.width = '20px';
             cursor.style.height = '20px';
@@ -912,11 +1029,9 @@ docker compose up -d --build</div>
             cursor.style.marginTop = '-8px';
         });
 
-        // 平滑跟随（帧率无关，灵敏度可调）
         function animate(now) {
             const dt = Math.min((now - lastTime) / 1000, 0.1);
             lastTime = now;
-            // 灵敏度：建议 10~30，越大越灵敏
             const smoothing = 100;
             const t = 1 - Math.exp(-smoothing * dt);
             curX += (mouseX - curX) * t;
@@ -927,7 +1042,6 @@ docker compose up -d --build</div>
         }
         requestAnimationFrame(animate);
     })();
-    // ========== 光标脚本结束 ==========
 </script>
 </body>
 </html>
