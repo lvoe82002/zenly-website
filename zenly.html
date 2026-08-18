@@ -1794,6 +1794,51 @@
                 cursor: auto !important;
             }
         }
+
+        /* ========== 贪吃蛇新增样式 ========== */
+        .snake-game-container {
+            position: absolute;
+            left: 2%;
+            bottom: 60px;         /* 上移：从10px改为50px */
+            z-index: 15;
+            width: auto;
+            text-align: center;
+            pointer-events: none;
+            background: transparent;
+        }
+        #snakeCanvas {
+            display: block;
+            background: transparent !important;
+            width: 100%;
+            height: auto;
+            border-radius: 6px;
+        }
+        .snake-progress {
+            width: auto;               /* 宽度自动 */
+            margin: 4px 24px 0;        /* 左右缩进24px，与游戏区域对齐 */
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .snake-bar {
+            height: 100%;
+            width: 0%;
+            background: #4caf50;
+            border-radius: 4px;
+            transition: width 0.5s;
+        }
+
+        @media (max-width: 768px) {
+            .snake-game-container {
+                position: relative;
+                left: auto;
+                bottom: auto;
+                margin: 20px auto;
+                width: 90%;
+                max-width: 320px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1976,6 +2021,12 @@ console.log('脚本结束');</textarea>
                 <span class="q-right">"</span>
                 <div class="badge-title" id="badgeTitle">Hello World !</div>
                 <div class="badge-text" id="badgeText">一个建立于 21 世纪的小破站，存活于三次元的边缘</div>
+            </div>
+
+            <!-- 贪吃蛇游戏容器（插入在这里） -->
+            <div class="snake-game-container" id="snakeGameContainer">
+                <canvas id="snakeCanvas"></canvas>
+                <div class="snake-progress"><div class="snake-bar" id="snakeBar"></div></div>
             </div>
 
             <div id="capsuleOverlay">
@@ -2838,7 +2889,6 @@ console.log('脚本结束');</textarea>
             const effectOptions = document.getElementById('effectOptions');
             let currentEffect = localStorage.getItem('siteEffect') || 'rainThunder';
 
-            // 全局开关，供特效脚本使用
             window.__snowActive = false;
             window.__rainActive = false;
             window.__thunderMode = false;
@@ -2933,7 +2983,6 @@ console.log('脚本结束');</textarea>
             let raindrops = [];
             let ripples = [];
 
-            // 可调参数
             const RAIN_COUNT = 180;
             const WIND = 1.5;
             const GRAVITY = 0.08;
@@ -3280,6 +3329,171 @@ console.log('脚本结束');</textarea>
 
             updateWeather();
             setInterval(updateWeather, 30 * 60 * 1000);
+        })();
+    </script>
+
+    <!-- 贪吃蛇游戏脚本（自动运行，透明背景） -->
+    <script>
+        (function() {
+            const COLS = 42;        // 修改为 32，宽度增加
+            const ROWS = 8;         // 高度不变
+            const CELL_SIZE = 12;
+            const MARGIN_CELLS = 2;
+            const TARGET = 30;
+            const FOOD_MAX = 4;
+            const SNAKE_FIXED = 5;
+            const SPEED = 120;
+
+            const WORLD_COLS = COLS + MARGIN_CELLS * 2;
+            const WORLD_ROWS = ROWS + MARGIN_CELLS * 2;
+
+            const canvas = document.getElementById('snakeCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = WORLD_COLS * CELL_SIZE;
+            canvas.height = WORLD_ROWS * CELL_SIZE;
+            const barEl = document.getElementById('snakeBar');
+
+            let snake = [];
+            let foods = [];
+            let dir = { dx: 1, dy: 0 };
+            let score = 0;
+            let loopId = null;
+
+            function drawWhiteGrid() {
+                const offsetX = MARGIN_CELLS * CELL_SIZE;
+                const offsetY = MARGIN_CELLS * CELL_SIZE;
+                ctx.fillStyle = '#d0d5db';
+                for (let y = 0; y < ROWS; y++) {
+                    for (let x = 0; x < COLS; x++) {
+                        ctx.fillRect(
+                            offsetX + x * CELL_SIZE + 1,
+                            offsetY + y * CELL_SIZE + 1,
+                            CELL_SIZE - 2,
+                            CELL_SIZE - 2
+                        );
+                    }
+                }
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                drawWhiteGrid();
+
+                for (let f of foods) {
+                    ctx.fillStyle = '#9c27b0';
+                    ctx.fillRect(f.x * CELL_SIZE + 1, f.y * CELL_SIZE + 1, CELL_SIZE - 2, CELL_SIZE - 2);
+                }
+
+                for (let s of snake) {
+                    ctx.fillStyle = '#4caf50';
+                    ctx.fillRect(s.x * CELL_SIZE + 1, s.y * CELL_SIZE + 1, CELL_SIZE - 2, CELL_SIZE - 2);
+                }
+            }
+
+            function spawnFood() {
+                const occupied = new Set(snake.map(s => `${s.x},${s.y}`));
+                foods.forEach(f => occupied.add(`${f.x},${f.y}`));
+                const free = [];
+                for (let y = MARGIN_CELLS; y < MARGIN_CELLS + ROWS; y++) {
+                    for (let x = MARGIN_CELLS; x < MARGIN_CELLS + COLS; x++) {
+                        if (!occupied.has(`${x},${y}`)) free.push({ x, y });
+                    }
+                }
+                if (free.length === 0) return false;
+                foods.push(free[Math.floor(Math.random() * free.length)]);
+                return true;
+            }
+
+            function calcDirection() {
+                const head = snake[0];
+                let target = null, minD = Infinity;
+                for (let f of foods) {
+                    const d = Math.abs(head.x - f.x) + Math.abs(head.y - f.y);
+                    if (d < minD) { minD = d; target = f; }
+                }
+                if (!target) return null;
+
+                const dirs = [
+                    { dx: 0, dy: -1 }, { dx: 0, dy: 1 },
+                    { dx: -1, dy: 0 }, { dx: 1, dy: 0 }
+                ];
+                const safe = [];
+                for (let d of dirs) {
+                    const nx = head.x + d.dx;
+                    const ny = head.y + d.dy;
+                    if (nx < 0 || nx >= WORLD_COLS || ny < 0 || ny >= WORLD_ROWS) continue;
+
+                    const future = [{ x: nx, y: ny }, ...snake];
+                    future.pop();
+                    let hit = false;
+                    for (let i = 1; i < future.length; i++) {
+                        if (future[i].x === nx && future[i].y === ny) { hit = true; break; }
+                    }
+                    if (!hit) safe.push(d);
+                }
+                if (safe.length === 0) return null;
+
+                let best = safe[0], bestDist = Infinity;
+                for (let d of safe) {
+                    const nx = head.x + d.dx, ny = head.y + d.dy;
+                    const dist = Math.abs(nx - target.x) + Math.abs(ny - target.y);
+                    const wobble = Math.random() * 2;
+                    if (dist + wobble < bestDist) { bestDist = dist + wobble; best = d; }
+                }
+                return best;
+            }
+
+            function update() {
+                const next = calcDirection();
+                if (!next) { reset(); return; }
+                dir = next;
+                const head = snake[0];
+                const newHead = { x: head.x + dir.dx, y: head.y + dir.dy };
+
+                let eatIdx = -1;
+                for (let i = 0; i < foods.length; i++) {
+                    if (newHead.x === foods[i].x && newHead.y === foods[i].y) { eatIdx = i; break; }
+                }
+
+                snake = [newHead, ...snake];
+
+                if (eatIdx !== -1) {
+                    foods.splice(eatIdx, 1);
+                    score++;
+                    barEl.style.width = Math.min(100, (score / TARGET) * 100) + '%';
+                    spawnFood();
+                    if (score >= TARGET) {
+                        draw();
+                        clearInterval(loopId);
+                        loopId = null;
+                        setTimeout(reset, 3000);
+                        return;
+                    }
+                }
+
+                while (snake.length > SNAKE_FIXED) snake.pop();
+                while (foods.length < FOOD_MAX) {
+                    if (!spawnFood()) break;
+                }
+                draw();
+            }
+
+            function reset() {
+                if (loopId) clearInterval(loopId);
+                const startX = MARGIN_CELLS + Math.floor(COLS / 2) - 2;
+                const startY = MARGIN_CELLS + Math.floor(ROWS / 2);
+                snake = [];
+                for (let i = 0; i < SNAKE_FIXED; i++) snake.push({ x: startX + i, y: startY });
+                dir = { dx: 1, dy: 0 };
+                score = 0;
+                barEl.style.width = '0%';
+                foods = [];
+                for (let i = 0; i < FOOD_MAX; i++) spawnFood();
+                draw();
+                loopId = setInterval(update, SPEED);
+            }
+
+            reset();
         })();
     </script>
 </body>
