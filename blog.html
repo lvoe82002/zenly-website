@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>Mi Manchi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        a {
+            text-decoration: none;
+        }
+        html,
+        body {
+            width: 100%;
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-family: "宋体";
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(https://t.mwm.moe/ycy/) no-repeat center top;
+            background-size: cover;
+            background-attachment: fixed;
+            transition: all 0.5s ease;
+        }
+
+        /* 特效画布样式 */
+        #snowFullScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+        #rainCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        #lightningCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .project-wrap {
+            width: 1400px;
+            max-width: 96%;
+            margin: 100px auto 120px;
+            position: relative;
+            z-index: 1;
+        }
+        .project-title {
+            text-align: center;
+            font-size: 28px;
+            color: #fff;
+            text-shadow: 0 0 14px #fff;
+            margin-bottom: 45px;
+            letter-spacing: 2px;
+        }
+        .project-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 40px;
+            list-style: none;
+        }
+        .project-item {
+            background: rgba(255, 255, 255, 0.36);
+            border-radius: 14px;
+            padding: 20px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .project-item:hover {
+            transform: translateY(-10px) scale(1.01);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.65);
+        }
+        .project-item:active {
+            transform: translateY(0) scale(0.98);
+        }
+        .project-item img {
+            width: 100%;
+            height: 420px;
+            object-fit: cover;
+            border-radius: 10px;
+            background: #e0e0e0;
+            opacity: 0;
+            transition: opacity 0.6s ease;
+        }
+        .project-item img.loaded {
+            opacity: 1;
+        }
+        .project-item h3 {
+            margin: 18px 0 10px;
+            color: #111;
+            font-size: 22px;
+            font-weight: 500;
+            text-align: center;
+        }
+        .project-item .date {
+            color: #444;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        /* 大控制面板（半透明玻璃） */
+        #settingsModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.55);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            z-index: 999999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        #settingsModal.open {
+            display: flex;
+            opacity: 1;
+        }
+        .settings-modal-box {
+            width: 85%;
+            max-width: 1000px;
+            max-height: 85vh;
+            background: rgba(255, 255, 255, 0.14);
+            backdrop-filter: blur(28px) saturate(180%);
+            -webkit-backdrop-filter: blur(28px) saturate(180%);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.32);
+            padding: 35px 40px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+            overflow: hidden;
+        }
+        .settings-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.75);
+            font-size: 24px;
+            transition: 0.3s;
+            z-index: 20;
+        }
+        .settings-modal-close:hover {
+            color: #fff;
+            transform: scale(1.1);
+        }
+        .settings-modal-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-shrink: 0;
+        }
+        .settings-modal-version {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 22px;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 12px rgba(255,255,255,0.3);
+        }
+        .github-icon {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            color: #fff;
+            text-decoration: none;
+            margin-left: 4px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .github-icon .github-label {
+            position: absolute;
+            left: calc(100% + 12px);
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 13px;
+            font-weight: 400;
+            color: #fff;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
+            z-index: 30;
+        }
+        .github-icon:hover .github-label {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .settings-modal-body {
+            display: flex;
+            gap: 30px;
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 5px;
+            color: #fff;
+        }
+        .settings-modal-body::-webkit-scrollbar {
+            width: 4px;
+        }
+        .settings-modal-body::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.25);
+            border-radius: 4px;
+        }
+
+        .settings-col-left { flex: 1.2; min-width: 240px; }
+        .settings-col-right { flex: 1.8; min-width: 280px; display: flex; flex-direction: column; }
+
+        .settings-update-log h4 {
+            color: #fff;
+            font-size: 16px;
+            margin-bottom: 15px;
+            font-weight: normal;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+        }
+        .settings-update-log ul {
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 10px;
+            padding: 18px 20px;
+            list-style: none;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #fff;
+        }
+        .settings-update-log li {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .settings-update-log li:last-child { margin-bottom: 0; }
+
+        .settings-update-log li i.fa-plus-circle { color: #aaffaa; }
+        .settings-update-log li i.fa-wrench { color: #ffccaa; }
+        .settings-update-log li i.fa-cube { color: #99ddff; }
+
+        .settings-item-title {
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+        }
+        .settings-content-box {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 18px 20px;
+            margin-bottom: 20px;
+        }
+        .settings-sub-title {
+            color: #fff;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        .settings-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .settings-option {
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            padding: 6px 16px 6px 12px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #fff;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .settings-option.active {
+            border-color: #fff;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.18);
+        }
+        .settings-option .radio-btn {
+            width: 14px; height: 14px; border-radius: 50%;
+            border: 1px solid #ccc; box-sizing: border-box;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .settings-option.active .radio-btn { border-color: #fff; }
+        .settings-option.active .radio-btn.selected { background: #fff; }
+
+        /* 右键提示浮动条 */
+        .float-tip-top {
+            position: fixed;
+            top: 26px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(30, 30, 30, 0.75) !important;
+            backdrop-filter: blur(6px) !important;
+            -webkit-backdrop-filter: blur(6px) !important;
+            border-radius: 50px !important;
+            padding: 6px 22px 6px 20px !important;
+            display: none !important;
+            align-items: center !important;
+            gap: 10px !important;
+            color: #ffffff !important;
+            font-size: 14px !important;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+            z-index: 99999 !important;
+            white-space: nowrap !important;
+            pointer-events: none !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+            border: none !important;
+            animation: floatTipIn 0.35s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+        }
+        .float-tip-top.show {
+            display: flex !important;
+        }
+        .float-tip-top.float-tip-out {
+            animation: floatTipOut 0.3s ease-in forwards;
+        }
+        @keyframes floatTipIn {
+            0% { opacity: 0; transform: translateX(-50%) translateY(-14px) scale(0.92); }
+            100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+        }
+        @keyframes floatTipOut {
+            0% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-10px) scale(0.94); }
+        }
+        .float-tip-top .tip-icon {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 20px !important;
+            height: 20px !important;
+            border-radius: 50% !important;
+            background: #ffffff !important;
+            color: #1f1f1f !important;
+            font-family: 'Times New Roman', Times, serif !important;
+            font-style: italic !important;
+            font-weight: 700 !important;
+            font-size: 15px !important;
+            line-height: 1 !important;
+            flex-shrink: 0 !important;
+            padding-bottom: 2px !important;
+            box-sizing: border-box !important;
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            pointer-events: none;
+            z-index: 9998;
+        }
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: particle-burst 0.6s ease-out forwards;
+        }
+        @keyframes particle-burst {
+            0% { opacity: 1; transform: translate(-50%, -50%) scale(1) }
+            100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0.5) }
+        }
+
+        /* ========== 新的返回主页按钮样式（顶部居中） ========== */
+        .back-btn {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 8px 18px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            background: rgba(255, 255, 255, 0.28);
+            font-size: 17px;
+            color: #fff;
+            z-index: 9999;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            transition: 0.24s ease;
+        }
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.45);
+            box-shadow: 0 0 18px rgba(255, 255, 255, 0.35);
+        }
+
+        @media (max-width: 1024px) {
+            .project-item img { height: 260px; }
+        }
+        @media (max-width: 768px) {
+            .project-item img { height: auto; }
+            .float-tip-top { top: 12px !important; font-size: 12px !important; padding: 4px 14px 4px 12px !important; gap: 6px !important; }
+            .float-tip-top .tip-icon { width: 16px !important; height: 16px !important; font-size: 12px !important; }
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            body, a, button, * {
+                cursor: none !important;
+            }
+        }
+
+        #cursor {
+            position: fixed;
+            pointer-events: none;
+            z-index: 100000;
+            width: 16px;
+            height: 16px;
+            margin-left: -8px;
+            margin-top: -8px;
+            border: 1.5px solid #fff;
+            border-radius: 50%;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: width 0.15s, height 0.15s, margin-left 0.15s, margin-top 0.15s;
+        }
+
+        #cursor::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: #fff;
+            border-radius: 50%;
+            transition: width 0.15s, height 0.15s;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (hover: none), (max-width: 768px) {
+            #cursor {
+                display: none !important;
+            }
+            body, a, button, * {
+                cursor: auto !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="snowFullScreen"></canvas>
+    <canvas id="rainCanvas"></canvas>
+    <canvas id="lightningCanvas"></canvas>
+
+    <div id="cursor" class="xs-hidden hidden"></div>
+
+    <!-- 禁用右键提示 -->
+    <div class="float-tip-top" id="rightTipTop">
+        <span class="tip-icon">i</span>
+        <span>为了浏览体验，本站禁用右键</span>
+    </div>
+
+    <!-- 返回主页按钮（新样式，链接指向 zenly.html） -->
+    <a href="zenly.html" class="back-btn">← 返回主页</a>
+
+    <div class="project-wrap">
+        <h2 class="project-title">我的开发项目</h2>
+        <ul class="project-list" id="projectList">
+            <li class="project-item" data-href="Find source of income.html"><img src="https://cdn-us.imgs.moe/2026/07/09/0783cfaffd7c65f9d2dd17502d78adf0.jpg" alt="项目图片"><h3>感谢开源 | 玖染 开源博客主页</h3><div class="date">2026-06-25</div></li>
+            <li class="project-item" data-href="SSL.html"><img src="https://cdn-us.imgs.moe/2026/07/09/8f45aa97d11597a6c8b8f002abf7d392.jpg" alt="项目图片"><h3>项目部署——为域名安装 SSL 证书</h3><div class="date">2026-06-23</div></li>
+            <li class="project-item" data-href="DockerCompose.html"><img src="https://cdn-us.imgs.moe/2026/07/07/93ae65dcb1801e62fdc12604aff8125d.png" alt="项目图片"><h3>项目部署——使用 DockerCompose 部署</h3><div class="date">2026-06-23</div></li>
+            <li class="project-item" data-href="DockerFile.html"><img src="https://cdn-us.imgs.moe/2026/07/09/1359b8cefafbaab5d721e48b6bbb9c13.jpg" alt="项目图片"><h3>项目部署——使用 DockerFile 部署</h3><div class="date">2026-06-23</div></li>
+            <li class="project-item" data-href="Project deployment.html"><img src="https://cdn-us.imgs.moe/2026/07/07/f1e1d7524f0ca114ffbdd3e1915b970f.png" alt="项目图片"><h3>项目部署——基础篇</h3><div class="date">2026-06-23</div></li>
+            <li class="project-item" data-href="Markdown.html"><img src="https://cdn-us.imgs.moe/2026/07/09/e79d8c7c957391482e625b391b409eed.jpg" alt="项目图片"><h3>Markdown 语法与多语言代码汇总示例</h3><div class="date">2026-06-05</div></li>
+            <li class="project-item" data-href="try your best.html"><img src="https://cdn-us.imgs.moe/2026/07/08/abdf8514efb8522674dee4e93287bad7.jpg" alt="项目图片"><h3>try your best</h3><div class="date">2026-07-09</div></li>
+        </ul>
+    </div>
+
+    <div id="settingsModal">
+        <div class="settings-modal-box">
+            <div class="settings-modal-close"><i class="fa-solid fa-xmark"></i></div>
+
+            <div class="settings-modal-header">
+                <div class="settings-modal-version">
+                    <i class="fa-brands fa-vuejs"></i> 4.0.3
+                    <a class="github-icon" href="https://github.com/lvoe82002/zenly-website" target="_blank" rel="noopener noreferrer">
+                        <i class="fa-brands fa-github"></i>
+                        <span class="github-label">Github源代码仓库</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="settings-modal-body">
+                <div class="settings-col-left">
+                    <div class="settings-update-log">
+                        <h4>更新日志</h4>
+                        <ul>
+                            <li><i class="fa-solid fa-plus-circle"></i> 采用 Vue 进行重构</li>
+                            <li><i class="fa-solid fa-plus-circle"></i> 壁纸支持个性化设置</li>
+                            <li><i class="fa-solid fa-wrench"></i> 修复天气 API</li>
+                            <li><i class="fa-solid fa-wrench"></i> 时光胶囊显示错误</li>
+                            <li><i class="fa-solid fa-wrench"></i> 移动端动画及细节</li>
+                            <li><i class="fa-solid fa-cube"></i> 图标更换为 IconPark</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="settings-col-right">
+                    <div class="settings-item">
+                        <div class="settings-item-title"><i class="fa-regular fa-sun"></i> 全局设置</div>
+                        <div class="settings-content-box">
+                            <div class="settings-sub-title">壁纸设置</div>
+                            <div class="settings-options" id="wallpaperOptions">
+                                <div class="settings-option" data-wallpaper="default"><div class="radio-btn"></div> 默认壁纸</div>
+                                <div class="settings-option" data-wallpaper="daily"><div class="radio-btn"></div> 每日一图</div>
+                                <div class="settings-option" data-wallpaper="scenery"><div class="radio-btn"></div> 随机风景</div>
+                                <div class="settings-option active" data-wallpaper="anime"><div class="radio-btn selected"></div> 随机动漫</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="settings-item">
+                        <div class="settings-content-box">
+                            <div class="settings-sub-title">特效设置</div>
+                            <div class="settings-options" id="effectOptions">
+                                <div class="settings-option" data-effect="snow"><div class="radio-btn"></div> 雪花</div>
+                                <div class="settings-option" data-effect="rain"><div class="radio-btn"></div> 下雨</div>
+                                <div class="settings-option" data-effect="thunder"><div class="radio-btn"></div> 打雷</div>
+                                <div class="settings-option" data-effect="rainThunder"><div class="radio-btn selected"></div> 下雨+打雷</div>
+                                <div class="settings-option" data-effect="all"><div class="radio-btn"></div> 全部</div>
+                                <div class="settings-option" data-effect="none"><div class="radio-btn"></div> 无</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="particles" id="particles"></div>
+
+    <script>
+        var context, windowWidth, windowHeight;
+        const particlesWrap = document.getElementById("particles");
+        const colors = ["#ff0000", "#ff9900", "#ffff00", "#00ff00", "#0099ff", "#0000ff", "#9900ff", "#ff66cc"];
+        const projectItems = document.querySelectorAll(".project-item");
+
+        function createSnowCanvas(canvasId, snowNum) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext("2d");
+            let width, height, flakes = [];
+
+            function resize() {
+                width = canvas.offsetWidth;
+                height = canvas.offsetHeight;
+                canvas.width = width;
+                canvas.height = height;
+            }
+            window.addEventListener("resize", resize);
+            resize();
+            class Snow {
+                constructor() {
+                    this.x = Math.random() * width;
+                    this.y = Math.random() * -height;
+                    this.r = Math.random() * 2 + 1;
+                    this.speed = Math.random() * 0.8 + 0.3;
+                    this.swing = Math.random() * Math.PI * 2;
+                    this.swingSpeed = Math.random() * 0.015 + 0.01;
+                    this.wind = Math.random() * 0.3 - 0.15;
+                }
+                update() {
+                    this.swing += this.swingSpeed;
+                    this.x += Math.cos(this.swing) * 0.6 + this.wind;
+                    this.y += this.speed;
+                    if (this.y > height + 10) this.reset();
+                }
+                reset() {
+                    this.x = Math.random() * width;
+                    this.y = Math.random() * -50;
+                }
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255,255,255,${0.4 + this.r / 3})`;
+                    ctx.fill();
+                }
+            }
+            for (let i = 0; i < snowNum; i++) flakes.push(new Snow());
+
+            function render() {
+                ctx.clearRect(0, 0, width, height);
+                if (!window.__snowActive) {
+                    requestAnimationFrame(render);
+                    return;
+                }
+                flakes.forEach(s => { s.update(); s.draw(); });
+                requestAnimationFrame(render);
+            }
+            render();
+        }
+
+        window.onload = function() {
+            createSnowCanvas("snowFullScreen", 180);
+        };
+
+        document.addEventListener("click", e => createParticle(e.clientX, e.clientY));
+
+        function createParticle(x, y) {
+            for (let i = 0; i < 18; i++) {
+                const p = document.createElement("div");
+                p.className = "particle";
+                const size = Math.random() * 10 + 6;
+                const angle = (Math.PI * 2 / 18) * i + Math.random() * 0.5;
+                const dis = Math.random() * 100 + 50;
+                const tx = Math.cos(angle) * dis,
+                    ty = Math.sin(angle) * dis;
+                p.style.left = x + "px";
+                p.style.top = y + "px";
+                p.style.width = size + "px";
+                p.style.height = size + "px";
+                p.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                p.style.setProperty("--tx", tx + "px");
+                p.style.setProperty("--ty", ty + "px");
+                particlesWrap.appendChild(p);
+                setTimeout(() => p.remove(), 600);
+            }
+        }
+
+        projectItems.forEach(item => {
+            item.addEventListener("click", () => {
+                const link = item.dataset.href;
+                setTimeout(() => location.href = link, 300);
+            });
+        });
+
+        // 图片加载完成淡入
+        document.querySelectorAll('.project-item img').forEach(img => {
+            if (img.complete) {
+                img.classList.add('loaded');
+            } else {
+                img.addEventListener('load', () => img.classList.add('loaded'));
+                img.addEventListener('error', () => img.classList.add('loaded'));
+            }
+        });
+    </script>
+
+    <script>
+        (function() {
+            // 禁用右键菜单
+            let rightTipTimer;
+            document.addEventListener('contextmenu', e => {
+                e.preventDefault();
+                const tip = document.getElementById('rightTipTop');
+                if (tip) {
+                    tip.classList.remove('float-tip-out');
+                    tip.classList.add('show');
+                    clearTimeout(rightTipTimer);
+                    rightTipTimer = setTimeout(() => {
+                        tip.classList.add('float-tip-out');
+                        setTimeout(() => {
+                            tip.classList.remove('show', 'float-tip-out');
+                        }, 350);
+                    }, 2500);
+                }
+            });
+
+            // 特效设置
+            const snowCanvas = document.getElementById('snowFullScreen');
+            const rainCanvas = document.getElementById('rainCanvas');
+            const lightningCanvas = document.getElementById('lightningCanvas');
+            const effectOptions = document.getElementById('effectOptions');
+            let currentEffect = localStorage.getItem('siteEffect') || 'rainThunder';
+
+            window.__snowActive = false;
+            window.__rainActive = false;
+            window.__thunderMode = false;
+
+            function setCanvasVisibility(el, show) {
+                if (!el) return;
+                el.style.opacity = show ? '1' : '0';
+                el.style.visibility = show ? 'visible' : 'hidden';
+            }
+
+            function applyEffect(effect) {
+                const all = effect === 'all';
+                const snow = effect === 'snow' || all;
+                const rain = effect === 'rain' || effect === 'rainThunder' || all;
+                const thunder = effect === 'thunder' || effect === 'rainThunder' || all;
+                const rainVisible = rain || thunder;
+
+                setCanvasVisibility(snowCanvas, snow);
+                setCanvasVisibility(rainCanvas, rainVisible);
+                setCanvasVisibility(lightningCanvas, thunder);
+
+                window.__snowActive = snow;
+                window.__rainActive = rain;
+                window.__thunderMode = thunder;
+
+                if (effectOptions) {
+                    effectOptions.querySelectorAll('.settings-option').forEach(opt => {
+                        const isActive = opt.dataset.effect === effect;
+                        opt.classList.toggle('active', isActive);
+                        const rb = opt.querySelector('.radio-btn');
+                        if (rb) rb.classList.toggle('selected', isActive);
+                    });
+                }
+                localStorage.setItem('siteEffect', effect);
+            }
+
+            if (effectOptions) {
+                effectOptions.querySelectorAll('.settings-option').forEach(opt => {
+                    opt.addEventListener('click', () => {
+                        applyEffect(opt.dataset.effect);
+                    });
+                });
+                applyEffect(currentEffect);
+            }
+
+            // 壁纸设置
+            const wallpaperOptions = document.getElementById('wallpaperOptions');
+            let currentWallpaper = localStorage.getItem('siteWallpaper') || 'anime';
+
+            const wallpapers = {
+                default: 'https://t.mwm.moe/ycy/',
+                daily: 'https://picsum.photos/1920/1080?random=1',
+                scenery: 'https://picsum.photos/1920/1080?random=2',
+                anime: 'https://t.mwm.moe/ycy/'
+            };
+
+            function applyWallpaper(type) {
+                const url = wallpapers[type] || wallpapers.default;
+                document.body.style.background = `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${url}) no-repeat center top`;
+                document.body.style.backgroundSize = 'cover';
+                document.body.style.backgroundAttachment = 'fixed';
+
+                if (wallpaperOptions) {
+                    wallpaperOptions.querySelectorAll('.settings-option').forEach(opt => {
+                        const isActive = opt.dataset.wallpaper === type;
+                        opt.classList.toggle('active', isActive);
+                        const rb = opt.querySelector('.radio-btn');
+                        if (rb) rb.classList.toggle('selected', isActive);
+                    });
+                }
+                localStorage.setItem('siteWallpaper', type);
+            }
+
+            if (wallpaperOptions) {
+                wallpaperOptions.querySelectorAll('.settings-option').forEach(opt => {
+                    opt.addEventListener('click', () => {
+                        applyWallpaper(opt.dataset.wallpaper);
+                    });
+                });
+                applyWallpaper(currentWallpaper);
+            }
+        })();
+    </script>
+
+    <script>
+        (function() {
+            const canvas = document.getElementById('rainCanvas');
+            const ctx = canvas.getContext('2d');
+            let raindrops = [];
+            let ripples = [];
+
+            const RAIN_COUNT = 180;
+            const WIND = 1.5;
+            const GRAVITY = 0.08;
+            const MIN_SPEED = 6;
+            const MAX_SPEED = 14;
+            const LENGTH_FACTOR = 0.8;
+            const RIPPLE_MAX_RADIUS = 18;
+            const RIPPLE_LIFE = 40;
+            const COLOR = '174, 194, 224';
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            resizeCanvas();
+            window.addEventListener('resize', () => {
+                resizeCanvas();
+                for (const drop of raindrops) {
+                    drop.x = Math.random() * canvas.width;
+                    drop.y = Math.random() * -canvas.height;
+                }
+            });
+
+            class Raindrop {
+                constructor() {
+                    this.reset();
+                }
+
+                reset() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * -canvas.height;
+                    this.vx = WIND + (Math.random() - 0.5) * 0.8;
+                    this.vy = MIN_SPEED + Math.random() * (MAX_SPEED - MIN_SPEED);
+                    this.length = this.vy * LENGTH_FACTOR;
+                    this.opacity = 0.35 + Math.random() * 0.45;
+                    this.thickness = 0.6 + Math.random() * 0.8;
+                }
+
+                update() {
+                    this.vy += GRAVITY;
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    this.length = this.vy * LENGTH_FACTOR;
+
+                    if (this.y > canvas.height + this.length) {
+                        ripples.push({
+                            x: this.x,
+                            y: canvas.height - 2,
+                            radius: 1,
+                            opacity: 0.5,
+                            life: 0
+                        });
+                        this.reset();
+                        this.y = -this.length;
+                    }
+                }
+
+                draw() {
+                    const tailX = this.x - this.vx * this.length * 0.15;
+                    const tailY = this.y - this.vy * this.length * 0.15;
+
+                    ctx.beginPath();
+                    ctx.moveTo(this.x, this.y);
+                    ctx.lineTo(tailX, tailY);
+                    ctx.strokeStyle = `rgba(${COLOR}, ${this.opacity})`;
+                    ctx.lineWidth = this.thickness;
+                    ctx.lineCap = 'round';
+                    ctx.stroke();
+                }
+            }
+
+            for (let i = 0; i < RAIN_COUNT; i++) {
+                raindrops.push(new Raindrop());
+            }
+
+            function drawRipples() {
+                for (let i = ripples.length - 1; i >= 0; i--) {
+                    const r = ripples[i];
+                    r.life++;
+                    if (r.life > RIPPLE_LIFE) {
+                        ripples.splice(i, 1);
+                        continue;
+                    }
+                    r.radius = 1 + (r.life / RIPPLE_LIFE) * RIPPLE_MAX_RADIUS;
+                    r.opacity = 0.5 * (1 - r.life / RIPPLE_LIFE);
+
+                    ctx.beginPath();
+                    ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
+                    ctx.strokeStyle = `rgba(${COLOR}, ${r.opacity})`;
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+            }
+
+            function animateRain() {
+                requestAnimationFrame(animateRain);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                if (!window.__rainActive) {
+                    return;
+                }
+
+                for (const drop of raindrops) {
+                    drop.update();
+                    drop.draw();
+                }
+
+                drawRipples();
+            }
+            animateRain();
+        })();
+    </script>
+
+    <script>
+        (function() {
+            const canvas = document.getElementById('lightningCanvas');
+            const ctx = canvas.getContext('2d');
+            let lightningActive = false;
+            let lightningAlpha = 0;
+            let flashAlpha = 0;
+            let lightningPaths = [];
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            function generateLightning() {
+                if (lightningActive || !window.__thunderMode) return;
+                lightningActive = true;
+                lightningAlpha = 1;
+                flashAlpha = 0.6;
+
+                lightningPaths = [];
+                const startX = Math.random() * canvas.width;
+                const startY = 0;
+                const segments = 20 + Math.random() * 20;
+                let x = startX;
+                let y = startY;
+                const mainPoints = [{x, y}];
+                for (let i = 1; i <= segments; i++) {
+                    x += (Math.random() - 0.5) * 60;
+                    y += (canvas.height / segments) * (1 + Math.random() * 0.5);
+                    mainPoints.push({x, y});
+
+                    if (Math.random() < 0.3) {
+                        const branchLength = 5 + Math.random() * 15;
+                        const branchPoints = [];
+                        let bx = x;
+                        let by = y;
+                        for (let j = 0; j < branchLength; j++) {
+                            bx += (Math.random() - 0.5) * 30;
+                            by += Math.random() * 15;
+                            branchPoints.push({x: bx, y: by});
+                        }
+                        lightningPaths.push({points: branchPoints, alpha: 0.7});
+                    }
+                }
+                lightningPaths.push({points: mainPoints, alpha: 1});
+
+                setTimeout(() => {
+                    lightningActive = false;
+                    lightningAlpha = 0;
+                    flashAlpha = 0;
+                }, 150);
+            }
+
+            function drawLightning() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                if (!lightningActive) return;
+
+                if (flashAlpha > 0) {
+                    ctx.fillStyle = `rgba(255, 255, 255, ${flashAlpha})`;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                }
+
+                ctx.save();
+                ctx.shadowColor = 'rgba(255,255,255,0.8)';
+                ctx.shadowBlur = 15;
+                ctx.lineWidth = 2;
+                ctx.lineJoin = 'round';
+                ctx.lineCap = 'round';
+
+                for (const path of lightningPaths) {
+                    ctx.beginPath();
+                    ctx.moveTo(path.points[0].x, path.points[0].y);
+                    for (let i = 1; i < path.points.length; i++) {
+                        ctx.lineTo(path.points[i].x, path.points[i].y);
+                    }
+                    ctx.strokeStyle = `rgba(255, 255, 255, ${lightningAlpha * path.alpha})`;
+                    ctx.stroke();
+                }
+                ctx.restore();
+
+                if (flashAlpha > 0) {
+                    flashAlpha -= 0.05;
+                    if (flashAlpha < 0) flashAlpha = 0;
+                }
+            }
+
+            function scheduleLightning() {
+                if (!window.__thunderMode) {
+                    requestAnimationFrame(() => {
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        setTimeout(scheduleLightning, 500);
+                    });
+                    return;
+                }
+                const delay = 3000 + Math.random() * 7000;
+                setTimeout(() => {
+                    generateLightning();
+                    scheduleLightning();
+                }, delay);
+            }
+            scheduleLightning();
+
+            function animate() {
+                requestAnimationFrame(animate);
+                if (window.__thunderMode) {
+                    drawLightning();
+                } else {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                }
+            }
+            animate();
+        })();
+    </script>
+
+    <script>
+        (function() {
+            const cursor = document.getElementById('cursor');
+            if (!cursor) return;
+            if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+            let mouseX = innerWidth / 2, mouseY = innerHeight / 2;
+            let curX = mouseX, curY = mouseY;
+            let visible = false;
+            let lastTime = performance.now();
+
+            document.addEventListener('mousemove', e => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+                if (!visible) {
+                    curX = mouseX;
+                    curY = mouseY;
+                    cursor.classList.remove('hidden');
+                    visible = true;
+                }
+            });
+
+            document.addEventListener('mouseleave', () => {
+                cursor.classList.add('hidden');
+                visible = false;
+            });
+
+            document.addEventListener('mousedown', () => {
+                cursor.style.width = '20px';
+                cursor.style.height = '20px';
+                cursor.style.marginLeft = '-10px';
+                cursor.style.marginTop = '-10px';
+            });
+            document.addEventListener('mouseup', () => {
+                cursor.style.width = '16px';
+                cursor.style.height = '16px';
+                cursor.style.marginLeft = '-8px';
+                cursor.style.marginTop = '-8px';
+            });
+
+            function animate(now) {
+                const dt = Math.min((now - lastTime) / 1000, 0.1);
+                lastTime = now;
+                const smoothing = 100;
+                const t = 1 - Math.exp(-smoothing * dt);
+                curX += (mouseX - curX) * t;
+                curY += (mouseY - curY) * t;
+                cursor.style.left = curX + 'px';
+                cursor.style.top = curY + 'px';
+                requestAnimationFrame(animate);
+            }
+            requestAnimationFrame(animate);
+        })();
+    </script>
+</body>
+</html>
