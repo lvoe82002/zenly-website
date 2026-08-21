@@ -2,6 +2,7 @@
 <html lang="zh">
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mi Manchi</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -1298,6 +1299,296 @@
                 max-width: 320px;
             }
         }
+
+        /* ========== 手机端专属布局（仿 renkonti.top 风格） ========== */
+        .mobile-menu-toggle {
+            display: none;
+        }
+        @media (max-width: 768px) {
+            html, body {
+                overflow: hidden !important;
+                height: 100vh !important;
+                width: 100vw !important;
+            }
+            /* 隐藏桌面端/不需要的元素 */
+            .fixed-side,
+            .wrap,
+            .snake-game-container,
+            .copyright-bar,
+            .top-empty-space,
+            .float-tip-top {
+                display: none !important;
+            }
+            /* 主容器占满全屏，垂直居中 */
+            .footer-box {
+                position: relative !important;
+                height: 100vh !important;
+                width: 100vw !important;
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: center !important;
+                align-items: center !important;
+                padding: 0 20px !important;
+                margin: 0 !important;
+            }
+            .bottom-area-wrapper {
+                position: relative !important;
+                width: 100% !important;
+                min-height: 0 !important;
+                flex: none !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 0 !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            /* ===== 顶部 Logo：头像 + 大标题（在Hello World框上面左边） ===== */
+            .center-logo-flow.moved-logo {
+                position: relative !important;
+                top: auto !important;
+                left: auto !important;
+                right: auto !important;
+                width: auto !important;
+                max-width: calc(100vw - 48px) !important;
+                margin: 0 0 18px 0 !important;
+                z-index: 10 !important;
+                transform: none !important;
+                align-self: flex-start !important;
+                order: 1 !important;
+            }
+            .center-logo-flow.moved-logo .logo {
+                gap: 14px !important;
+                align-items: center !important;
+            }
+            .center-logo-flow.moved-logo .logo-img {
+                width: 58px !important;
+                height: 58px !important;
+                border-radius: 50% !important;
+                border: 2px solid rgba(255,255,255,0.35) !important;
+                object-fit: cover !important;
+            }
+            .center-logo-flow.moved-logo .name .bg {
+                font-size: 42px !important;
+                letter-spacing: 2px !important;
+                top: 0 !important;
+            }
+            /* ===== Hello World 毛玻璃卡片 ===== */
+            .interactive-badge {
+                position: relative !important;
+                top: auto !important;
+                left: auto !important;
+                transform: none !important;
+                width: 100% !important;
+                max-width: 440px !important;
+                min-width: 0 !important;
+                margin: 0 auto !important;
+                padding: 26px 30px !important;
+                background: rgba(0,0,0,0.35) !important;
+                backdrop-filter: blur(10px) !important;
+                -webkit-backdrop-filter: blur(10px) !important;
+                order: 2 !important;
+            }
+            .interactive-badge .badge-title {
+                font-size: 26px !important;
+                margin-left: 20px !important;
+            }
+            .interactive-badge .badge-text {
+                font-size: 15px !important;
+                margin-left: 20px !important;
+                line-height: 1.6 !important;
+            }
+            .interactive-badge .q-left,
+            .interactive-badge .q-right {
+                font-size: 36px !important;
+            }
+            /* ===== 社交图标栏（在Hello World框下面） ===== */
+            .social {
+                position: relative !important;
+                bottom: auto !important;
+                left: auto !important;
+                right: auto !important;
+                padding: 0 !important;
+                margin: 18px 0 0 0 !important;
+                justify-content: center !important;
+                z-index: 10 !important;
+                order: 3 !important;
+            }
+            .link-bar {
+                width: auto !important;
+                max-width: none !important;
+                min-width: 0 !important;
+                margin-top: 0 !important;
+                justify-content: center !important;
+                gap: 2px !important;
+                padding: 6px 14px !important;
+                background: rgba(255,255,255,0.12) !important;
+                backdrop-filter: blur(8px) !important;
+                -webkit-backdrop-filter: blur(8px) !important;
+                border-radius: 30px !important;
+            }
+            .icon-item {
+                width: 38px !important;
+                height: 38px !important;
+            }
+            .icon-item svg, .icon-item img {
+                width: 20px !important;
+                height: 20px !important;
+            }
+            .bar-text {
+                display: none !important;
+            }
+            /* ===== 时钟和网站列表：默认隐藏 ===== */
+            .digital-clock-card,
+            .nav-group-cards {
+                display: none !important;
+            }
+            /* ===== 汉堡菜单按钮 ===== */
+            .mobile-menu-toggle {
+                display: flex !important;
+                position: fixed !important;
+                bottom: 24px !important;
+                left: 50% !important;
+                transform: translateX(-50%) !important;
+                width: 60px !important;
+                height: 60px !important;
+                background: rgba(255,255,255,0.18) !important;
+                backdrop-filter: blur(12px) !important;
+                -webkit-backdrop-filter: blur(12px) !important;
+                border-radius: 16px !important;
+                align-items: center !important;
+                justify-content: center !important;
+                color: #fff !important;
+                font-size: 24px !important;
+                z-index: 200 !important;
+                cursor: pointer !important;
+                border: 1px solid rgba(255,255,255,0.25) !important;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.3) !important;
+                transition: all 0.3s ease !important;
+                padding: 0 !important;
+            }
+            .mobile-menu-toggle:active {
+                transform: translateX(-50%) scale(0.92) !important;
+            }
+            .mobile-menu-toggle .icon-close {
+                display: none !important;
+            }
+            /* ===== 打开设置时才隐藏底部按钮 ===== */
+            body.settings-open .mobile-menu-toggle {
+                display: none !important;
+            }
+            /* ===== 菜单展开状态 ===== */
+            body.mobile-menu-open .center-logo-flow.moved-logo {
+                top: auto !important;
+                order: 0 !important;
+                margin: 0 0 16px 0 !important;
+                position: relative !important;
+            }
+            body.mobile-menu-open .center-logo-flow.moved-logo .logo-img {
+                display: none !important;
+            }
+            body.mobile-menu-open .center-logo-flow.moved-logo .name .bg {
+                font-size: 34px !important;
+                letter-spacing: 1px !important;
+            }
+            body.mobile-menu-open .interactive-badge,
+            body.mobile-menu-open .social {
+                display: none !important;
+            }
+            body.mobile-menu-open .digital-clock-card {
+                display: block !important;
+                position: relative !important;
+                left: auto !important;
+                transform: none !important;
+                width: 100% !important;
+                max-width: 440px !important;
+                margin: 0 auto 24px !important;
+                padding: 22px 28px !important;
+                order: 1 !important;
+            }
+            body.mobile-menu-open .clock-date {
+                font-size: 17px !important;
+                margin-bottom: 14px !important;
+            }
+            body.mobile-menu-open .clock-weather {
+                font-size: 15px !important;
+                margin-top: 16px !important;
+            }
+            body.mobile-menu-open .nav-group-cards {
+                display: flex !important;
+                position: relative !important;
+                top: auto !important;
+                left: auto !important;
+                transform: none !important;
+                width: 100% !important;
+                max-width: 440px !important;
+                margin: 0 auto !important;
+                gap: 10px !important;
+                order: 2 !important;
+            }
+            body.mobile-menu-open .nav-title {
+                font-size: 16px !important;
+                margin-bottom: 14px !important;
+            }
+            body.mobile-menu-open .nav-buttons {
+                gap: 12px !important;
+            }
+            body.mobile-menu-open .nav-btn {
+                min-width: 90px !important;
+                height: 70px !important;
+            }
+            body.mobile-menu-open .mobile-menu-toggle .icon-menu {
+                display: none !important;
+            }
+            body.mobile-menu-open .mobile-menu-toggle .icon-close {
+                display: block !important;
+            }
+            /* 时光胶囊和设置面板在手机端居中 */
+            #capsuleOverlay {
+                padding-right: 0 !important;
+                justify-content: center !important;
+                padding: 20px !important;
+                padding-top: 140px !important;
+            }
+            .capsule-inner {
+                width: 100% !important;
+                max-width: 380px !important;
+            }
+            /* ===== Oops框：显示在时光胶囊上面，独立分开 ===== */
+            body.capsule-open .interactive-badge {
+                position: fixed !important;
+                top: 70px !important;
+                left: 50% !important;
+                transform: translateX(-50%) !important;
+                width: 90% !important;
+                max-width: 380px !important;
+                margin: 0 !important;
+                z-index: 100000 !important;
+                pointer-events: auto !important;
+                order: unset !important;
+                background: rgba(0,0,0,0.45) !important;
+            }
+            body.capsule-open .interactive-badge .badge-title {
+                font-size: 24px !important;
+            }
+            body.capsule-open .interactive-badge .badge-text {
+                font-size: 14px !important;
+            }
+            .settings-modal-box {
+                width: 95% !important;
+                padding: 24px 20px !important;
+                max-height: 90vh !important;
+            }
+            .settings-modal-body {
+                flex-direction: column !important;
+                gap: 20px !important;
+            }
+            .settings-col-left, .settings-col-right {
+                flex: none !important;
+                min-width: 0 !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1588,6 +1879,11 @@
     </div>
 
     <div class="particles" id="particles"></div>
+    <!-- 手机端汉堡菜单按钮 -->
+    <div class="mobile-menu-toggle" id="mobileMenuToggle">
+        <i class="fa-solid fa-bars icon-menu"></i>
+        <i class="fa-solid fa-xmark icon-close"></i>
+    </div>
 
     <!-- 所有脚本保持原样，此处省略以节省篇幅，请使用你之前已有的脚本部分 -->
     <script>
@@ -1890,10 +2186,12 @@
 
             function openSettings() {
                 settingsModal.classList.add('open');
+                document.body.classList.add('settings-open');
             }
 
             function closeSettings() {
                 settingsModal.classList.remove('open');
+                document.body.classList.remove('settings-open');
             }
 
             if (settingBtn) {
@@ -2550,6 +2848,19 @@
         if (document.fonts && document.fonts.ready) {
             document.fonts.ready.then(adjustLayout);
         }
+    })();
+    </script>
+    <!-- 手机端汉堡菜单切换 -->
+    <script>
+    (function() {
+        var btn = document.getElementById('mobileMenuToggle');
+        if (!btn) return;
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.body.classList.toggle('mobile-menu-open');
+        });
+        // 点击菜单展开区域外的空白处不关闭（保持与参考图一致，需点X关闭）
     })();
     </script>
 </body>
