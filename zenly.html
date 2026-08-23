@@ -732,13 +732,15 @@
         body.settings-open .center-logo-flow,
         body.settings-open .social,
         body.settings-open .footer-box>.copyright-bar,
-        body.settings-open .nav-group-cards { display: none !important; }
+        body.settings-open .nav-group-cards,
+        body.settings-open .hitokoto-side { display: none !important; }
 
         body.capsule-open .fixed-side,
         body.capsule-open .center-logo-flow,
         body.capsule-open .social,
         body.capsule-open .footer-box>.copyright-bar,
-        body.capsule-open .nav-group-cards { display: none !important; }
+        body.capsule-open .nav-group-cards,
+        body.capsule-open .hitokoto-side { display: none !important; }
         body.capsule-open .bottom-area-wrapper .digital-clock-card { opacity: 0.15; }
         body.capsule-open #particles, body.capsule-open #stars { opacity: 0.4; }
         body.capsule-open .interactive-badge { z-index: 100000 !important; pointer-events: auto !important; }
@@ -834,6 +836,7 @@
             font-size: 14px;
             margin-bottom: 12px;
             height: 30px;
+            align-self: flex-start;
         }
         .nav-buttons {
             display: flex;
@@ -1255,6 +1258,77 @@
             }
         }
 
+        /* ========== 一言卡片（电脑端右侧固定） ========== */
+        .hitokoto-side {
+            position: fixed;
+            right: 117px;
+            top: 74%;
+            transform: translateY(-50%);
+            z-index: 99;
+            pointer-events: auto;
+        }
+        .hitokoto-card {
+            position: relative;
+            width: 320px;
+            min-height: 160px;
+            padding: 24px 22px;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.35);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            color: #fff;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            overflow: hidden;
+        }
+        .hitokoto-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+        }
+        .hitokoto-card:active {
+            transform: scale(0.98);
+        }
+        .hitokoto-card .hitokoto-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+            min-height: 112px;
+        }
+        .hitokoto-card .hitokoto-text {
+            font-size: 15px;
+            line-height: 1.7;
+            word-break: break-all;
+            font-family: "宋体", serif;
+            letter-spacing: 0.5px;
+        }
+        .hitokoto-card .hitokoto-from {
+            margin-top: 12px;
+            font-weight: 700;
+            align-self: flex-end;
+            font-size: 14px;
+            font-family: 'Dancing Script', cursive;
+            opacity: 0.9;
+        }
+        .hitokoto-card .hitokoto-label {
+            position: absolute;
+            top: 10px;
+            left: 14px;
+            font-size: 11px;
+            opacity: 0.5;
+            letter-spacing: 1px;
+            font-family: 'Inter', sans-serif;
+        }
+        @keyframes hitokotoFade {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .hitokoto-fade-in { animation: hitokotoFade 0.5s ease; }
+        /* 手机端隐藏一言卡片 */
+        @media (max-width: 1024px) {
+            .hitokoto-side { display: none !important; }
+        }
         /* ========== 贪吃蛇新增样式 ========== */
         .snake-game-container {
             position: absolute;
@@ -1368,6 +1442,7 @@
                 border-radius: 50% !important;
                 border: 2px solid rgba(255,255,255,0.35) !important;
                 object-fit: cover !important;
+                transform: translateY(10px);  /* ← 新增，可自由调整数值 */
             }
             .center-logo-flow.moved-logo .name .bg {
                 font-size: 42px !important;
@@ -1530,6 +1605,7 @@
             body.mobile-menu-open .nav-title {
                 font-size: 16px !important;
                 margin-bottom: 14px !important;
+                align-self: center !important;
             }
             body.mobile-menu-open .nav-buttons {
                 gap: 12px !important;
@@ -1617,6 +1693,16 @@
         <div class="ziti_box">
             赞赏通道 (｡･ω･｡)
             <div class="qrc-tip"><img src="https://cdn-us.imgs.moe/2026/07/06/6b0caae704b5b7d7d96c26c50f937fb7.jpg"><p>承蒙所有朋友厚爱</p><p>在下感激不尽</p></div>
+        </div>
+    </div>
+
+    <!-- 一言卡片（电脑端右侧） -->
+    <div class="hitokoto-side">
+        <div class="hitokoto-card" id="hitokotoCard">
+            <div class="hitokoto-content" id="hitokotoContent">
+                <span class="hitokoto-text" id="hitokotoText">这里应该显示一句话</span>
+                <span class="hitokoto-from" id="hitokotoFrom">-「 玖染 」</span>
+            </div>
         </div>
     </div>
 
@@ -2861,6 +2947,38 @@
             document.body.classList.toggle('mobile-menu-open');
         });
         // 点击菜单展开区域外的空白处不关闭（保持与参考图一致，需点X关闭）
+    })();
+    </script>
+    <!-- 一言卡片脚本 -->
+    <script>
+    (function() {
+        const textEl = document.getElementById('hitokotoText');
+        const fromEl = document.getElementById('hitokotoFrom');
+        const contentEl = document.getElementById('hitokotoContent');
+        if (!textEl || !fromEl || !contentEl) return;
+        let debounceTimer = null;
+        function fetchHitokoto() {
+            fetch('https://v1.hitokoto.cn?c=d&c=a&c=k')
+                .then(res => res.json())
+                .then(data => {
+                    textEl.textContent = data.hitokoto;
+                    fromEl.textContent = '-「 ' + data.from + ' 」';
+                    contentEl.classList.remove('hitokoto-fade-in');
+                    void contentEl.offsetWidth;
+                    contentEl.classList.add('hitokoto-fade-in');
+                })
+                .catch(() => {
+                    textEl.textContent = '一言获取失败';
+                    fromEl.textContent = '-「 网络错误 」';
+                });
+        }
+        contentEl.addEventListener('click', () => {
+            textEl.textContent = '新的一言正在赶来的路上';
+            fromEl.textContent = '-「 来源加载中 」';
+            if (debounceTimer) clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(fetchHitokoto, 500);
+        });
+        fetchHitokoto();
     })();
     </script>
 </body>
