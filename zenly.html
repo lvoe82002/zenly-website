@@ -9,366 +9,59 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
 
-        #loading-box {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            z-index: 99999;
-        }
-        .loading-left-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 50%;
-            height: 100%;
-            background: #121212;
-            transition: 0.6s cubic-bezier(0.77, 0, 0.175, 1);
-        }
-        .loading-right-bg {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 50%;
-            height: 100%;
-            background: #121212;
-            transition: 0.6s cubic-bezier(0.77, 0, 0.175, 1);
-        }
-        body.loading .loading-left-bg {
-            transform: translateX(-100%);
-        }
-        body.loading .loading-right-bg {
-            transform: translateX(100%);
-        }
-        .spinner-box {
-            width: 300px;
-            height: 300px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-        .loader {
-            width: 64px;
-            height: 64px;
-            position: relative;
-        }
-        .inner {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            position: absolute;
-            border: 3px solid transparent;
-        }
-        .inner.one {
-            border-top-color: #409eff;
-            animation: rotate-one 1s linear infinite;
-        }
-        .inner.two {
-            border-right-color: #409eff;
-            animation: rotate-two 1s linear infinite;
-        }
-        .inner.three {
-            border-bottom-color: #409eff;
-            animation: rotate-three 1s linear infinite;
-        }
-        @keyframes rotate-one {
-            0% { transform: rotateX(35deg) rotateY(-45deg) rotateZ(0deg); }
-            100% { transform: rotateX(35deg) rotateY(-45deg) rotateZ(360deg); }
-        }
-        @keyframes rotate-two {
-            0% { transform: rotateX(50deg) rotateY(10deg) rotateZ(0deg); }
-            100% { transform: rotateX(50deg) rotateY(10deg) rotateZ(360deg); }
-        }
-        @keyframes rotate-three {
-            0% { transform: rotateX(35deg) rotateY(55deg) rotateZ(0deg); }
-            100% { transform: rotateX(35deg) rotateY(55deg) rotateZ(360deg); }
-        }
-        @keyframes rotate {
-            0% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
-            100% { transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg); }
-        }
-        .loading-word {
-            margin-top: 80px;
-            text-align: center;
-            color: #fff;
-            position: absolute;
-        }
-        .loading-title {
-            font-size: 22px;
-            margin-bottom: 6px;
-        }
-        #loading-text {
-            font-size: 14px;
-            opacity: 0.75;
-        }
+        /* ========== 加载动画（保持不变） ========== */
+        #loading-box { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: 99999; }
+        .loading-left-bg { position: absolute; top: 0; left: 0; width: 50%; height: 100%; background: #121212; transition: 0.6s cubic-bezier(0.77, 0, 0.175, 1); }
+        .loading-right-bg { position: absolute; top: 0; right: 0; width: 50%; height: 100%; background: #121212; transition: 0.6s cubic-bezier(0.77, 0, 0.175, 1); }
+        body.loading .loading-left-bg { transform: translateX(-100%); }
+        body.loading .loading-right-bg { transform: translateX(100%); }
+        .spinner-box { width: 300px; height: 300px; display: flex; justify-content: center; align-items: center; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        .loader { width: 64px; height: 64px; position: relative; }
+        .inner { width: 100%; height: 100%; border-radius: 50%; position: absolute; border: 3px solid transparent; }
+        .inner.one { border-top-color: #409eff; animation: rotate-one 1s linear infinite; }
+        .inner.two { border-right-color: #409eff; animation: rotate-two 1s linear infinite; }
+        .inner.three { border-bottom-color: #409eff; animation: rotate-three 1s linear infinite; }
+        @keyframes rotate-one { 0% { transform: rotateX(35deg) rotateY(-45deg) rotateZ(0deg); } 100% { transform: rotateX(35deg) rotateY(-45deg) rotateZ(360deg); } }
+        @keyframes rotate-two { 0% { transform: rotateX(50deg) rotateY(10deg) rotateZ(0deg); } 100% { transform: rotateX(50deg) rotateY(10deg) rotateZ(360deg); } }
+        @keyframes rotate-three { 0% { transform: rotateX(35deg) rotateY(55deg) rotateZ(0deg); } 100% { transform: rotateX(35deg) rotateY(55deg) rotateZ(360deg); } }
+        .loading-word { margin-top: 80px; text-align: center; color: #fff; position: absolute; }
+        .loading-title { font-size: 22px; margin-bottom: 6px; }
+        #loading-text { font-size: 14px; opacity: 0.75; }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        a {
-            text-decoration: none;
-        }
-        html,
-        body {
-            width: 100%;
-            min-height: 100vh;
-            overflow: hidden;
-            font-family: "宋体";
-            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(https://t.mwm.moe/ycy/) no-repeat center top;
-            background-size: cover;
-            background-attachment: fixed;
-            transition: all 0.5s ease;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        a { text-decoration: none; }
+        html, body { width: 100%; min-height: 100vh; overflow: hidden; font-family: "宋体"; background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(https://t.mwm.moe/ycy/) no-repeat center top; background-size: cover; background-attachment: fixed; transition: all 0.5s ease; }
 
-        /* 特效画布样式 */
-        #snowFullScreen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 0;
-            pointer-events: none;
-        }
-        #rainCanvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-        #lightningCanvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
+        /* 特效画布 */
+        #snowFullScreen, #rainCanvas, #lightningCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
 
-        .fixed-side {
-            position: fixed;
-            top: 50px;
-            pointer-events: auto;
-            z-index: 99;
-        }
-        .left-box {
-            left: 15px;
-        }
-        .right-box {
-            right: 15px;
-        }
+        .center-logo-flow { position: relative; z-index: 1; width: 820px; margin: 70px auto 30px; display: flex; justify-content: center; pointer-events: none; }
+        .center-logo-flow .logo { pointer-events: auto; }
+        .logo { display: flex; align-items: center; gap: 20px; }
+        .logo-img { width: 85px; height: 85px; object-fit: contain; border-radius: 6px; }
+        .name .bg { font-family: 'Dancing Script', cursive; font-size: 70px; font-weight: 700; letter-spacing: 14px; background: linear-gradient(120deg, #ffffff, #ffe8ef); -webkit-background-clip: text; background-clip: text; color: transparent; white-space: nowrap; text-shadow: 0 0 16px rgba(255, 255, 255, 0.95), 0 0 30px rgba(255, 200, 200, 0.5); }
+        .top-empty-space { height: 400px; }
 
-        .ziti_box {
-            position: relative;
-            border: 1px solid rgba(255, 255, 255, 0.45);
-            border-radius: 10px;
-            color: #fff;
-            cursor: default;
-            font-family: Zeyada;
-            transition: text-shadow 0.5s;
-            padding: 40px 20px;
-            text-align: center;
-            width: 240px;
-            background: transparent;
-            font-size: 16px;
-            text-shadow: 0 0 8px #fff, 0 0 14px #fff, 0 0 22px #fff;
-        }
-        .ziti_box:hover {
-            text-shadow: 0 0 12px #fff, 0 0 22px #fff, 0 0 35px #fff;
-        }
-        .qrc-tip {
-            visibility: hidden;
-            opacity: 0;
-            position: absolute;
-            left: 50%;
-            top: calc(100% + 10px);
-            transform: translateX(-50%);
-            background: #fff;
-            padding: 12px;
-            border-radius: 12px;
-            text-align: center;
-            z-index: 999;
-            transition: opacity 0.2s;
-        }
-        .qrc-tip img {
-            width: 170px;
-            height: 170px;
-            display: block;
-            margin-bottom: 6px;
-            filter: none !important;
-        }
-        .qrc-tip p {
-            color: #333;
-            font-size: 13px;
-        }
-        .ziti_box:hover .qrc-tip {
-            visibility: visible;
-            opacity: 1;
-        }
+        .center-logo-flow.moved-logo { position: absolute; left: 20%; top: -330px; width: auto; max-width: 380px; margin: 0; z-index: 12; pointer-events: none; transform: none; }
+        .center-logo-flow.moved-logo .logo { gap: 10px; pointer-events: auto; }
+        .center-logo-flow.moved-logo .logo-img { width: 90px; height: 90px; }
+        .center-logo-flow.moved-logo .name .bg { font-size: 65px; letter-spacing: 10px; display: inline-block; position: relative; top: -10px; }
+        .center-logo-flow.moved-logo .name .bg .top-small { font-size: 0.5em; letter-spacing: 0; display: inline-block; margin-left: -8px; vertical-align: baseline; }
 
-        .center-logo-flow {
-            position: relative;
-            z-index: 1;
-            width: 820px;
-            margin: 70px auto 30px;
-            display: flex;
-            justify-content: center;
-            pointer-events: none;
-        }
-        .center-logo-flow .logo {
-            pointer-events: auto;
-        }
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        .logo-img {
-            width: 85px;
-            height: 85px;
-            object-fit: contain;
-            border-radius: 6px;
-        }
-        .name .bg {
-            font-family: 'Dancing Script', cursive;
-            font-size: 70px;
-            font-weight: 700;
-            letter-spacing: 14px;
-            background: linear-gradient(120deg, #ffffff, #ffe8ef);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            white-space: nowrap;
-            text-shadow: 0 0 16px rgba(255, 255, 255, 0.95), 0 0 30px rgba(255, 200, 200, 0.5);
-        }
+        .footer-box { width: 100%; padding: 12px 20px 0; text-align: center; position: relative; z-index: 1; margin-top: 20px; background: transparent !important; }
+        .bottom-area-wrapper { position: relative; width: 100%; min-height: 220px; display: flex; flex-direction: column; align-items: center; margin-bottom: 10px; }
 
-        .top-empty-space {
-            height: 250px;
-        }
+        .interactive-badge { position: absolute; left: 19%; top: -240px; background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(6px); padding: 27px 24px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4); cursor: pointer; color: #fff; z-index: 10; transition: all 0.3s ease; user-select: none; text-align: left; min-width: 500px; max-width: 500px; font-family: "宋体", serif; }
+        .interactive-badge:hover { transform: translateY(-2px) scale(1.02); background: rgba(0, 0, 0, 0.6); }
+        .interactive-badge .q-left, .interactive-badge .q-right { position: absolute; font-size: 40px; opacity: 0.8; font-family: Georgia, serif; line-height: 0.8; color: #fff; }
+        .interactive-badge .q-left { top: 6px; left: 8px; }
+        .interactive-badge .q-right { bottom: 6px; right: 8px; }
+        .interactive-badge .badge-title { font-family: 'Dancing Script', cursive; font-size: 28px; font-weight: 700; margin-left: 24px; margin-bottom: 2px; text-shadow: 0 0 12px rgba(255, 255, 255, 0.2); }
+        .interactive-badge .badge-text { font-size: 16px; letter-spacing: 1px; margin-left: 24px; color: #fff; line-height: 1.4; padding-top: 4px; }
 
-        .center-logo-flow.moved-logo {
-            position: absolute;
-            left: 4%;
-            top: -200px;
-            width: auto;
-            max-width: 380px;
-            margin: 0;
-            z-index: 12;
-            pointer-events: none;
-            transform: none;
-        }
-        .center-logo-flow.moved-logo .logo {
-            gap: 10px;
-            pointer-events: auto;
-        }
-        .center-logo-flow.moved-logo .logo-img {
-            width: 65px;
-            height: 65px;
-        }
-        .center-logo-flow.moved-logo .name .bg {
-            font-size: 50px;
-            letter-spacing: 10px;
-            display: inline-block;
-            position: relative;
-            top: -10px;
-        }
-        .center-logo-flow.moved-logo .name .bg .top-small {
-            font-size: 0.5em;
-            letter-spacing: 0;
-            display: inline-block;
-            margin-left: -8px;
-            vertical-align: baseline;
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .footer-box {
-            width: 100%;
-            padding: 12px 20px 0;
-            text-align: center;
-            position: relative;
-            z-index: 1;
-            margin-top: 20px;
-            background: transparent !important;
-        }
-
-        .bottom-area-wrapper {
-            position: relative;
-            width: 100%;
-            min-height: 220px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .interactive-badge {
-            position: absolute;
-            left: 4%;
-            top: -127px;
-            background: rgba(0, 0, 0, 0.45);
-            backdrop-filter: blur(6px);
-            padding: 18px 24px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-            cursor: pointer;
-            color: #fff;
-            z-index: 10;
-            transition: all 0.3s ease;
-            user-select: none;
-            text-align: left;
-            min-width: 500px;
-            max-width: 500px;
-            font-family: "宋体", serif;
-        }
-        .interactive-badge:hover {
-            transform: translateY(-2px) scale(1.02);
-            background: rgba(0, 0, 0, 0.6);
-        }
-        .interactive-badge .q-left,
-        .interactive-badge .q-right {
-            position: absolute;
-            font-size: 40px;
-            opacity: 0.8;
-            font-family: Georgia, serif;
-            line-height: 0.8;
-            color: #fff;
-        }
-        .interactive-badge .q-left {
-            top: 6px;
-            left: 8px;
-        }
-        .interactive-badge .q-right {
-            bottom: 6px;
-            right: 8px;
-        }
-        .interactive-badge .badge-title {
-            font-family: 'Dancing Script', cursive;
-            font-size: 28px;
-            font-weight: 700;
-            margin-left: 24px;
-            margin-bottom: 2px;
-            text-shadow: 0 0 12px rgba(255, 255, 255, 0.2);
-        }
-        .interactive-badge .badge-text {
-            font-size: 16px;
-            letter-spacing: 1px;
-            margin-left: 24px;
-            color: #fff;
-            line-height: 1.4;
-            padding-top: 4px;
-        }
-
+        /* ========== 时光胶囊：调整为右侧占约60%宽度 ========== */
         #capsuleOverlay {
             display: none;
             position: fixed;
@@ -378,755 +71,155 @@
             height: 100vh;
             background: rgba(0, 0, 0, 0.0);
             z-index: 99999;
-            justify-content: flex-end;
+            justify-content: center;
             align-items: center;
-            padding-right: 10%;
+            padding-left: 45%;   /* 修改：原为50%，现在为40%，胶囊占右侧约60% */
+            padding-right: 5%;   /* 保持不变 */
             transition: all 0.3s ease;
             cursor: default;
         }
-        body.capsule-open #capsuleOverlay {
-            display: flex !important;
-        }
+        body.capsule-open #capsuleOverlay { display: flex !important; }
         .capsule-inner {
-            width: 380px;
-            background: rgba(30, 30, 30, 0.85);
-            backdrop-filter: blur(16px);
-            border-radius: 14px;
-            padding: 28px 30px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
+            width: 70%;        /* 在父容器内容区填充 */
+            height: 80%;
+            background: rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 6px;
+            padding: 30px;
             color: #fff;
             font-family: 'Inter', -apple-system, sans-serif;
             cursor: default;
             pointer-events: auto;
             position: relative;
-        }
-        .capsule-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 20px;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            position: relative;
-        }
-        .capsule-header .capsule-title {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .capsule-header .capsule-title i {
-            font-size: 18px;
-        }
-        .capsule-actions {
-            display: flex;
-            gap: 10px;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-            position: absolute;
-            right: 0;
-            top: 0;
-        }
-        .capsule-inner:hover .capsule-actions {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        .capsule-btn {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.2s;
-            font-size: 16px;
-        }
-        .capsule-btn:hover {
-            background: rgba(255, 255, 255, 0.25);
-            transform: scale(1.05);
-        }
-
-        .capsule-item {
-            margin-bottom: 18px;
-        }
-        .capsule-label {
-            font-size: 15px;
-            margin-bottom: 6px;
-            opacity: 0.9;
-        }
-        .progress-track {
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 20px;
-            height: 22px;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .progress-fill {
-            background: #ffffff;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            font-weight: 700;
-            color: #222;
-            border-radius: 20px;
-            transition: width 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
-        }
-        .capsule-footer {
-            margin-top: 20px;
-            text-align: center;
-            font-size: 16px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            padding-top: 16px;
-            color: #ddd;
-            letter-spacing: 0.5px;
-        }
-
-        /* 大控制面板（半透明玻璃） */
-        #settingsModal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.55);
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
-            z-index: 999999;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        #settingsModal.open {
-            display: flex;
-            opacity: 1;
-        }
-        .settings-modal-box {
-            width: 85%;
-            max-width: 1000px;
-            max-height: 85vh;
-            background: rgba(255, 255, 255, 0.14);
-            backdrop-filter: blur(28px) saturate(180%);
-            -webkit-backdrop-filter: blur(28px) saturate(180%);
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.32);
-            padding: 35px 40px;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
-            overflow: hidden;
-        }
-        .settings-modal-close {
-            position: absolute;
-            top: 20px;
-            right: 25px;
-            cursor: pointer;
-            color: rgba(255, 255, 255, 0.75);
-            font-size: 24px;
-            transition: 0.3s;
-            z-index: 20;
-        }
-        .settings-modal-close:hover {
-            color: #fff;
-            transform: scale(1.1);
-        }
-        .settings-modal-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 25px;
-            flex-shrink: 0;
-        }
-        .settings-modal-header .logo {
-            font-family: 'Dancing Script', cursive;
-            font-size: 38px;
-            font-weight: 700;
-            color: #fff;
-            text-shadow: 0 0 12px rgba(255,255,255,0.4);
-            transform: translateY(-10px);
-        }
-        .settings-modal-header .logo .bg {
-            font-family: 'Dancing Script', cursive;
-            font-size: 38px;
-            font-weight: 700;
-            letter-spacing: 6px;
-            background: linear-gradient(120deg, #ffffff, #ffe8ef);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            text-shadow: 0 0 16px rgba(255, 255, 255, 0.95), 0 0 30px rgba(255, 200, 200, 0.5);
-            white-space: nowrap;
-        }
-        .settings-modal-header .logo .bg .top-small {
-            font-size: 0.5em;
-            letter-spacing: 0;
-            display: inline-block;
-            margin-left: -8px;
-            vertical-align: baseline;
-        }
-        .settings-modal-version {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 22px;
-            font-weight: 700;
-            color: #fff;
-            margin-left: -5px;
-            text-shadow: 0 0 12px rgba(255,255,255,0.3);
-        }
-        .github-icon {
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-            color: #fff;
-            text-decoration: none;
-            margin-left: 4px;
-            font-size: 24px;
-            cursor: pointer;
-        }
-        .github-icon .github-label {
-            position: absolute;
-            left: calc(100% + 12px);
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            padding: 6px 12px;
-            font-size: 13px;
-            font-weight: 400;
-            color: #fff;
-            text-shadow: 0 1px 4px rgba(0,0,0,0.3);
-            white-space: nowrap;
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-            transition: opacity 0.2s ease, visibility 0.2s ease;
-            z-index: 30;
-        }
-        .github-icon:hover .github-label {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .settings-modal-body {
-            display: flex;
-            gap: 30px;
-            flex: 1;
             overflow-y: auto;
-            padding-right: 5px;
-            color: #fff;
+            animation: fadeIn 0.5s ease;
         }
-        .settings-modal-body::-webkit-scrollbar {
-            width: 4px;
-        }
-        .settings-modal-body::-webkit-scrollbar-thumb {
-            background: rgba(255,255,255,0.25);
-            border-radius: 4px;
-        }
+        .capsule-header { display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; margin: 0.2rem 0 1.5rem; position: relative; }
+        .capsule-header .capsule-title { display: flex; align-items: center; gap: 10px; }
+        .capsule-header .capsule-title i { font-size: 24px; margin-right: 6px; }
+        .capsule-actions { display: flex; gap: 14px; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; position: absolute; right: 14px; top: 14px; }
+        .capsule-inner:hover .capsule-actions { opacity: 1; pointer-events: auto; }
+        .capsule-btn { background: transparent; border: none; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; color: rgba(255, 255, 255, 0.4); cursor: pointer; font-size: 20px; transition: background 0.2s, transform 0.2s; font-size: 16px; }
+        .capsule-btn:hover { color: rgba(255, 255, 255, 0.8); transform: scale(1.2); }
+        .capsule-item { margin-bottom: 18px; }
+        .capsule-label { display: block; width: 100%; text-align: left; font-size: 0.95rem; margin: 1rem 0 0.5rem; }
+        .progress-track { background: rgba(0, 0, 0, 0.125); border-radius: 6px; height: 20px; position: relative; overflow: hidden; }
+        .progress-fill { background: #efefef; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; color: #564d59; border-radius: 6px; transition: width 0.4s cubic-bezier(0.22, 0.61, 0.36, 1); }
+        .capsule-footer { display: block; width: 100%; text-align: left; margin: 1rem 0 0.5rem; font-size: 0.95rem; color: #fff; }
 
+        /* 设置面板（保持不变） */
+        #settingsModal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.55); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); z-index: 999999; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; }
+        #settingsModal.open { display: flex; opacity: 1; }
+        .settings-modal-box { width: 85%; max-width: 1000px; max-height: 85vh; background: rgba(255, 255, 255, 0.14); backdrop-filter: blur(28px) saturate(180%); -webkit-backdrop-filter: blur(28px) saturate(180%); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.32); padding: 35px 40px; display: flex; flex-direction: column; position: relative; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35); overflow: hidden; }
+        .settings-modal-close { position: absolute; top: 20px; right: 25px; cursor: pointer; color: rgba(255, 255, 255, 0.75); font-size: 24px; transition: 0.3s; z-index: 20; }
+        .settings-modal-close:hover { color: #fff; transform: scale(1.1); }
+        .settings-modal-header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; flex-shrink: 0; }
+        .settings-modal-header .logo { font-family: 'Dancing Script', cursive; font-size: 38px; font-weight: 700; color: #fff; text-shadow: 0 0 12px rgba(255,255,255,0.4); transform: translateY(-10px); }
+        .settings-modal-header .logo .bg { font-family: 'Dancing Script', cursive; font-size: 38px; font-weight: 700; letter-spacing: 6px; background: linear-gradient(120deg, #ffffff, #ffe8ef); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: 0 0 16px rgba(255, 255, 255, 0.95), 0 0 30px rgba(255, 200, 200, 0.5); white-space: nowrap; }
+        .settings-modal-header .logo .bg .top-small { font-size: 0.5em; letter-spacing: 0; display: inline-block; margin-left: -8px; vertical-align: baseline; }
+        .settings-modal-version { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 700; color: #fff; margin-left: -5px; text-shadow: 0 0 12px rgba(255,255,255,0.3); }
+        .github-icon { position: relative; display: inline-flex; align-items: center; color: #fff; text-decoration: none; margin-left: 4px; font-size: 24px; cursor: pointer; }
+        .github-icon .github-label { position: absolute; left: calc(100% + 12px); top: 50%; transform: translateY(-50%); background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; padding: 6px 12px; font-size: 13px; font-weight: 400; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.3); white-space: nowrap; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.2s ease, visibility 0.2s ease; z-index: 30; }
+        .github-icon:hover .github-label { opacity: 1; visibility: visible; }
+        .settings-modal-body { display: flex; gap: 30px; flex: 1; overflow-y: auto; padding-right: 5px; color: #fff; }
+        .settings-modal-body::-webkit-scrollbar { width: 4px; }
+        .settings-modal-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.25); border-radius: 4px; }
         .settings-col-left { flex: 1.2; min-width: 240px; }
         .settings-col-right { flex: 1.8; min-width: 280px; display: flex; flex-direction: column; }
-
-        .settings-update-log h4 {
-            color: #fff;
-            font-size: 16px;
-            margin-bottom: 15px;
-            font-weight: normal;
-            text-shadow: 0 1px 4px rgba(0,0,0,0.3);
-        }
-        .settings-update-log ul {
-            background: rgba(255, 255, 255, 0.12);
-            border-radius: 10px;
-            padding: 18px 20px;
-            list-style: none;
-            font-size: 14px;
-            line-height: 1.6;
-            color: #fff;
-        }
-        .settings-update-log li {
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+        .settings-update-log h4 { color: #fff; font-size: 16px; margin-bottom: 15px; font-weight: normal; text-shadow: 0 1px 4px rgba(0,0,0,0.3); }
+        .settings-update-log ul { background: rgba(255, 255, 255, 0.12); border-radius: 10px; padding: 18px 20px; list-style: none; font-size: 14px; line-height: 1.6; color: #fff; }
+        .settings-update-log li { margin-bottom: 12px; display: flex; align-items: center; gap: 12px; }
         .settings-update-log li:last-child { margin-bottom: 0; }
-
         .settings-update-log li i.fa-plus-circle { color: #aaffaa; }
         .settings-update-log li i.fa-wrench { color: #ffccaa; }
         .settings-update-log li i.fa-cube { color: #99ddff; }
-
-        .settings-item-title {
-            color: #fff;
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-shadow: 0 1px 4px rgba(0,0,0,0.3);
-        }
-        .settings-content-box {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            padding: 18px 20px;
-            margin-bottom: 20px;
-        }
-        .settings-sub-title {
-            color: #fff;
-            font-size: 14px;
-            margin-bottom: 15px;
-        }
-        .settings-options {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-        .settings-option {
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            padding: 6px 16px 6px 12px;
-            border-radius: 30px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-            color: #fff;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .settings-option.active {
-            border-color: #fff;
-            color: #fff;
-            background: rgba(255, 255, 255, 0.18);
-        }
-        .settings-option .radio-btn {
-            width: 14px; height: 14px; border-radius: 50%;
-            border: 1px solid #ccc; box-sizing: border-box;
-            display: flex; align-items: center; justify-content: center;
-        }
+        .settings-item-title { color: #fff; font-size: 16px; font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; text-shadow: 0 1px 4px rgba(0,0,0,0.3); }
+        .settings-content-box { background: rgba(255, 255, 255, 0.1); border-radius: 10px; padding: 18px 20px; margin-bottom: 20px; }
+        .settings-sub-title { color: #fff; font-size: 14px; margin-bottom: 15px; }
+        .settings-options { display: flex; flex-wrap: wrap; gap: 12px; }
+        .settings-option { border: 1px solid rgba(255, 255, 255, 0.25); padding: 6px 16px 6px 12px; border-radius: 30px; display: flex; align-items: center; gap: 8px; font-size: 13px; color: #fff; cursor: pointer; transition: 0.2s; }
+        .settings-option.active { border-color: #fff; color: #fff; background: rgba(255, 255, 255, 0.18); }
+        .settings-option .radio-btn { width: 14px; height: 14px; border-radius: 50%; border: 1px solid #ccc; box-sizing: border-box; display: flex; align-items: center; justify-content: center; }
         .settings-option.active .radio-btn { border-color: #fff; }
         .settings-option.active .radio-btn.selected { background: #fff; }
-
-        .settings-list-item {
-            color: #fff; font-size: 14px; padding: 12px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            display: flex; justify-content: space-between; cursor: pointer; transition: 0.2s;
-        }
+        .settings-list-item { color: #fff; font-size: 14px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; cursor: pointer; transition: 0.2s; }
         .settings-list-item:last-child { border-bottom: none; }
         .settings-list-item:hover { color: #fff; padding-left: 5px; }
 
-        body.settings-open .fixed-side,
+        /* 隐藏规则：设置打开时隐藏版权等，但胶囊打开时不隐藏版权 */
         body.settings-open .center-logo-flow,
         body.settings-open .social,
         body.settings-open .footer-box>.copyright-bar,
         body.settings-open .nav-group-cards,
         body.settings-open .hitokoto-side { display: none !important; }
 
-        body.capsule-open .fixed-side,
         body.capsule-open .center-logo-flow,
         body.capsule-open .social,
-        body.capsule-open .footer-box>.copyright-bar,
         body.capsule-open .nav-group-cards,
         body.capsule-open .hitokoto-side { display: none !important; }
         body.capsule-open .bottom-area-wrapper .digital-clock-card { opacity: 0.15; }
         body.capsule-open #particles, body.capsule-open #stars { opacity: 0.4; }
         body.capsule-open .interactive-badge { z-index: 100000 !important; pointer-events: auto !important; }
 
-        .digital-clock-card {
-            position: relative;
-            margin: 30px auto 0;
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
-            background: rgba(0, 0, 0, 0.32);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 16px;
-            padding: 28px 36px;
-            color: #fff;
-            font-family: system-ui, sans-serif;
-            max-width: 600px;
-            text-align: center;
-        }
-        .clock-date {
-            font-size: 22px;
-            letter-spacing: 2px;
-            opacity: 0.94;
-            margin-bottom: 18px;
-        }
-        .clock-time-row {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 4px;
-        }
-        .digit-wrap {
-            width: 72px;
-            height: 120px;
-            position: relative;
-        }
-        .seg {
-            position: absolute;
-            background: #fff;
-            opacity: 0.08;
-            border-radius: 2px;
-        }
-        .seg.active {
-            opacity: 1;
-            box-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
-        }
-        .seg-a { top: 0; left: 12px; width: 48px; height: 12px; clip-path: polygon(10% 0, 90% 0, 100% 50%, 90% 100%, 10% 100%, 0 50%); }
-        .seg-b { top: 14px; right: 0; width: 12px; height: 42px; clip-path: polygon(50% 0, 100% 10%, 100% 90%, 50% 100%, 0 90%, 0 10%); }
-        .seg-c { bottom: 14px; right: 0; width: 12px; height: 42px; clip-path: polygon(50% 0, 100% 10%, 100% 90%, 50% 100%, 0 90%, 0 10%); }
-        .seg-d { bottom: 0; left: 12px; width: 48px; height: 12px; clip-path: polygon(10% 0, 90% 0, 100% 50%, 90% 100%, 10% 100%, 0 50%); }
-        .seg-e { bottom: 14px; left: 0; width: 12px; height: 42px; clip-path: polygon(50% 0, 100% 10%, 100% 90%, 50% 100%, 0 90%, 0 10%); }
-        .seg-f { top: 14px; left: 0; width: 12px; height: 42px; clip-path: polygon(50% 0, 100% 10%, 100% 90%, 50% 100%, 0 90%, 0 10%); }
-        .seg-g { top: 54px; left: 12px; width: 48px; height: 12px; clip-path: polygon(10% 0, 90% 0, 100% 50%, 90% 100%, 10% 100%, 0 50%); }
-        .colon-wrap {
-            display: flex;
-            flex-direction: column;
-            gap: 22px;
-            margin: 0 4px;
-        }
-        .colon-dot {
-            width: 12px;
-            height: 12px;
-            background: #fff;
-            border-radius: 50%;
-            animation: colonBlink 1s infinite;
-        }
-        @keyframes colonBlink {
-            0%,49% { opacity: 1; }
-            50%,100% { opacity: 0.1; }
-        }
-        .clock-weather {
-            margin-top: 20px;
-            font-size: 19px;
-            opacity: 0.88;
-            letter-spacing: 1px;
-        }
+        .digital-clock-card { position: absolute; right: 15%; top: -363px; backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); background: rgba(0, 0, 0, 0.32); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 16px; padding: 18px 20px; color: #fff; font-family: system-ui, sans-serif; max-width: 280px; text-align: center; transition: transform 0.3s, box-shadow 0.3s; }
+        .digital-clock-card:hover { transform: scale(1.02); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5); }
+        .clock-date { font-size: 14px; letter-spacing: 2px; opacity: 0.94; margin-bottom: 10px; }
+        .clock-time-row { display: flex; justify-content: center; align-items: center; gap: 4px; }
+        .digit-wrap { width: 30px; height: 52px; position: relative; }
+        .seg { position: absolute; background: #fff; opacity: 0.08; border-radius: 2px; }
+        .seg.active { opacity: 1; box-shadow: 0 0 8px rgba(255, 255, 255, 0.7); }
+        .seg-a { top: 0; left: 5px; width: 20px; height: 5px; clip-path: polygon(10% 0, 90% 0, 100% 50%, 90% 100%, 10% 100%, 0 50%); }
+        .seg-b { top: 6px; right: 0; width: 5px; height: 18px; clip-path: polygon(50% 0, 100% 10%, 100% 90%, 50% 100%, 0 90%, 0 10%); }
+        .seg-c { bottom: 6px; right: 0; width: 5px; height: 18px; clip-path: polygon(50% 0, 100% 10%, 100% 90%, 50% 100%, 0 90%, 0 10%); }
+        .seg-d { bottom: 0; left: 5px; width: 20px; height: 5px; clip-path: polygon(10% 0, 90% 0, 100% 50%, 90% 100%, 10% 100%, 0 50%); }
+        .seg-e { bottom: 6px; left: 0; width: 5px; height: 18px; clip-path: polygon(50% 0, 100% 10%, 100% 90%, 50% 100%, 0 90%, 0 10%); }
+        .seg-f { top: 6px; left: 0; width: 5px; height: 18px; clip-path: polygon(50% 0, 100% 10%, 100% 90%, 50% 100%, 0 90%, 0 10%); }
+        .seg-g { top: 23px; left: 5px; width: 20px; height: 5px; clip-path: polygon(10% 0, 90% 0, 100% 50%, 90% 100%, 10% 100%, 0 50%); }
+        .colon-wrap { display: flex; flex-direction: column; gap: 10px; margin: 0 4px; }
+        .colon-dot { width: 6px; height: 6px; background: #fff; border-radius: 50%; animation: colonBlink 1s infinite; }
+        @keyframes colonBlink { 0%,49% { opacity: 1; } 50%,100% { opacity: 0.1; } }
+        .clock-weather { margin-top: 10px; font-size: 12px; opacity: 0.88; letter-spacing: 1px; }
 
-        /* ========== 网站列表（标题在上，按钮横向排列） ========== */
-        .nav-group-cards {
-            position: absolute;
-            left: 45%;
-            top: 185px;
-            transform: translateX(calc(35% + 340px));
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-        }
-        .nav-title {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #fff;
-            font-size: 14px;
-            margin-bottom: 12px;
-            height: 30px;
-            align-self: flex-start;
-        }
-        .nav-buttons {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        .nav-btn {
-            width: auto;
-            min-width: 100px;
-            height: 75px;
-            background: rgba(50, 50, 50, 0.4);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-            transition: all 0.3s ease;
-            cursor: pointer;
-            padding: 0 20px;
-        }
-        .nav-btn:hover {
-            background: rgba(255, 255, 255, 0.15);
-            transform: translateY(-4px);
-        }
-        .nav-btn i {
-            font-size: 22px;
-            margin-bottom: 6px;
-        }
-        .nav-btn span {
-            font-size: 14px;
-            font-weight: 600;
-        }
+        /* 网站列表 */
+        .nav-group-cards { position: absolute; right: 15%; top: -180px; transform: none; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+        .nav-title { display: flex; align-items: center; gap: 8px; color: #fff; font-size: 14px; margin-bottom: 12px; margin-left: 20px; height: 30px; align-self: flex-start; }
+        .nav-buttons { display: flex; flex-direction: row; align-items: center; gap: 15px; flex-wrap: wrap; justify-content: center; }
+        .nav-btn { width: auto; min-width: 128px; height: 75px; background: rgba(50, 50, 50, 0.4); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; color: white; border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4); transition: all 0.3s ease; cursor: pointer; padding: 0 20px; }
+        .nav-btn:hover { background: rgba(255, 255, 255, 0.15); transform: translateY(-4px); }
+        .nav-btn i { font-size: 22px; margin-bottom: 6px; }
+        .nav-btn span { font-size: 14px; font-weight: 600; }
 
-        .social {
-            display: flex;
-            justify-content: flex-start;
-            align-items: center;
-            margin-bottom: 10px;
-            width: 100%;
-            padding-left: 4%;
-        }
-        .link-bar {
-            display: flex;
-            align-items: center;
-            gap: 1px;
-            background: transparent;
-            backdrop-filter: none;
-            -webkit-backdrop-filter: none;
-            box-shadow: none;
-            border-radius: 30px;
-            padding: 3px 1px;
-            white-space: nowrap;
-            width: 510px;
-            max-width: 510px;
-            min-width: 510px;
-            flex-shrink: 0;
-            margin-top: -23px;
-            position: relative;
-            transition: background 0.35s ease, box-shadow 0.35s ease;
-        }
-        .link-bar:hover {
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
-        }
-        .icon-item {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 42px;
-            height: 42px;
-            border-radius: 0;
-            transition: transform 0.12s;
-            color: #fff;
-            cursor: pointer;
-            user-select: none;
-            flex-shrink: 0;
-        }
-        .icon-item:active {
-            transform: scale(0.92);
-        }
-        .icon-item svg,
-        .icon-item img {
-            width: 22px;
-            height: 22px;
-            display: block;
-        }
-        .icon-item img {
-            filter: invert(1);
-        }
-        .social-icon {
-            fill: none;
-            stroke: currentColor;
-            stroke-width: 1.8;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-        .bar-text {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #ffffff;
-            font-size: 14px;
-            white-space: nowrap;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-            flex-shrink: 0;
-            z-index: 2;
-        }
-        .link-bar:hover .bar-text {
-            opacity: 1;
-        }
+        .social { display: flex; justify-content: flex-start; align-items: center; margin-bottom: 10px; margin-top: -90px; width: 100%; padding-left: 19%; }
+        .link-bar { display: flex; align-items: center; gap: 1px; background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; box-shadow: none; border-radius: 30px; padding: 3px 1px; white-space: nowrap; width: 510px; max-width: 510px; min-width: 510px; flex-shrink: 0; margin-top: -23px; position: relative; transition: background 0.35s ease, box-shadow 0.35s ease; }
+        .link-bar:hover { background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3); }
+        .icon-item { display: flex; justify-content: center; align-items: center; width: 42px; height: 42px; border-radius: 0; transition: transform 0.12s; color: #fff; cursor: pointer; user-select: none; flex-shrink: 0; }
+        .icon-item:active { transform: scale(0.92); }
+        .icon-item svg, .icon-item img { width: 22px; height: 22px; display: block; }
+        .icon-item img { filter: invert(1); }
+        .social-icon { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+        .bar-text { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #ffffff; font-size: 14px; white-space: nowrap; opacity: 0; transition: opacity 0.3s ease; pointer-events: none; flex-shrink: 0; z-index: 2; }
+        .link-bar:hover .bar-text { opacity: 1; }
 
-        .copyright-bar {
-            width: 100vw;
-            position: relative;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.22);
-            backdrop-filter: blur(16px);
-            border-radius: 0;
-            padding: 14px 24px;
-            box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.2);
-            margin-top: 10px;
-            margin-bottom: 0;
-        }
-        .copyright-text {
-            color: #ffffff;
-            opacity: 1;
-            font-size: 16px;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            letter-spacing: 0.5px;
-            font-weight: 400;
-            white-space: nowrap;
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-        }
+        .copyright-bar { width: 100vw; position: relative; left: 50%; transform: translateX(-50%); background: rgba(255, 255, 255, 0.22); backdrop-filter: blur(16px); border-radius: 0; padding: 14px 24px; box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.2); margin-top: 10px; margin-bottom: 0; }
+        .copyright-text { color: #ffffff; opacity: 1; font-size: 16px; font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; letter-spacing: 0.5px; font-weight: 400; white-space: nowrap; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15); }
 
-        .float-tip-top {
-            position: fixed;
-            top: 26px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(30, 30, 30, 0.75) !important;
-            backdrop-filter: blur(6px) !important;
-            -webkit-backdrop-filter: blur(6px) !important;
-            border-radius: 50px !important;
-            padding: 6px 22px 6px 20px !important;
-            display: none !important;
-            align-items: center !important;
-            gap: 10px !important;
-            color: #ffffff !important;
-            font-size: 14px !important;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
-            z-index: 99999 !important;
-            white-space: nowrap !important;
-            pointer-events: none !important;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
-            border: none !important;
-            animation: floatTipIn 0.35s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
-        }
-        .float-tip-top.show {
-            display: flex !important;
-        }
-        .float-tip-top.float-tip-out {
-            animation: floatTipOut 0.3s ease-in forwards;
-        }
-        @keyframes floatTipIn {
-            0% { opacity: 0; transform: translateX(-50%) translateY(-14px) scale(0.92); }
-            100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
-        }
-        @keyframes floatTipOut {
-            0% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
-            100% { opacity: 0; transform: translateX(-50%) translateY(-10px) scale(0.94); }
-        }
-        .float-tip-top .tip-icon {
-            display: inline-flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            width: 20px !important;
-            height: 20px !important;
-            border-radius: 50% !important;
-            background: #ffffff !important;
-            color: #1f1f1f !important;
-            font-family: 'Times New Roman', Times, serif !important;
-            font-style: italic !important;
-            font-weight: 700 !important;
-            font-size: 15px !important;
-            line-height: 1 !important;
-            flex-shrink: 0 !important;
-            padding-bottom: 2px !important;
-            box-sizing: border-box !important;
-        }
+        .float-tip-top { position: fixed; top: 26px; left: 50%; transform: translateX(-50%); background: rgba(30, 30, 30, 0.75) !important; backdrop-filter: blur(6px) !important; -webkit-backdrop-filter: blur(6px) !important; border-radius: 50px !important; padding: 6px 22px 6px 20px !important; display: none !important; align-items: center !important; gap: 10px !important; color: #ffffff !important; font-size: 14px !important; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important; z-index: 99999 !important; white-space: nowrap !important; pointer-events: none !important; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important; border: none !important; animation: floatTipIn 0.35s cubic-bezier(0.22, 0.61, 0.36, 1) forwards; }
+        .float-tip-top.show { display: flex !important; }
+        .float-tip-top.float-tip-out { animation: floatTipOut 0.3s ease-in forwards; }
+        @keyframes floatTipIn { 0% { opacity: 0; transform: translateX(-50%) translateY(-14px) scale(0.92); } 100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); } }
+        @keyframes floatTipOut { 0% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); } 100% { opacity: 0; transform: translateX(-50%) translateY(-10px) scale(0.94); } }
+        .float-tip-top .tip-icon { display: inline-flex !important; align-items: center !important; justify-content: center !important; width: 20px !important; height: 20px !important; border-radius: 50% !important; background: #ffffff !important; color: #1f1f1f !important; font-family: 'Times New Roman', Times, serif !important; font-style: italic !important; font-weight: 700 !important; font-size: 15px !important; line-height: 1 !important; flex-shrink: 0 !important; padding-bottom: 2px !important; box-sizing: border-box !important; }
+        .particles { position: fixed; top: 0; left: 0; width: 100%; pointer-events: none; z-index: 9998; }
+        .particle { position: absolute; border-radius: 50%; transform: translate(-50%, -50%); animation: particle-burst 0.6s ease-out forwards; }
+        @keyframes particle-burst { 0% { opacity: 1; transform: translate(-50%, -50%) scale(1) } 100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0.5) } }
 
-        .wrap {
-            width: 200px;
-            height: 200px;
-            margin: 120px auto 30px;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            perspective: 800px;
-        }
-        .cube {
-            width: 0;
-            height: 0;
-            transform-style: preserve-3d;
-            animation: rotate linear 20s infinite;
-        }
-        .cube div {
-            position: absolute;
-            width: 140px;
-            height: 140px;
-            left: 50%;
-            top: 50%;
-            margin-left: -70px;
-            margin-top: -70px;
-            opacity: 0.8;
-            transition: all .4s;
-        }
-        .pic { width: 140px; height: 140px; }
-        .cube .out_front { transform: rotateY(0deg) translateZ(70px); }
-        .cube .out_back { transform: translateZ(-70px) rotateY(180deg); }
-        .cube .out_left { transform: rotateY(-90deg) translateZ(70px); }
-        .cube .out_right { transform: rotateY(90deg) translateZ(70px); }
-        .cube .out_top { transform: rotateX(90deg) translateZ(70px); }
-        .cube .out_bottom { transform: rotateX(-90deg) translateZ(70px); }
-        .cube span {
-            display: block;
-            width: 70px;
-            height: 70px;
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            margin-left: -35px;
-            margin-top: -35px;
-        }
-        .in_pic { width: 70px; height: 70px; }
-        .cube .in_front { transform: rotateY(0deg) translateZ(35px); }
-        .cube .in_back { transform: translateZ(-35px) rotateY(180deg); }
-        .cube .in_left { transform: rotateY(-90deg) translateZ(35px); }
-        .cube .in_right { transform: rotateY(90deg) translateZ(35px); }
-        .cube .in_top { transform: rotateX(90deg) translateZ(35px); }
-        .cube .in_bottom { transform: rotateX(-90deg) translateZ(35px); }
-        .cube:hover .out_front { transform: rotateY(0deg) translateZ(140px); }
-        .cube:hover .out_back { transform: translateZ(-140px) rotateY(180deg); }
-        .cube:hover .out_left { transform: rotateY(-90deg) translateZ(140px); }
-        .cube:hover .out_right { transform: rotateY(90deg) translateZ(140px); }
-        .cube:hover .out_top { transform: rotateX(90deg) translateZ(140px); }
-        .cube:hover .out_bottom { transform: rotateX(-90deg) translateZ(140px); }
-
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            pointer-events: none;
-            z-index: 9998;
-        }
-        .particle {
-            position: absolute;
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            animation: particle-burst 0.6s ease-out forwards;
-        }
-        @keyframes particle-burst {
-            0% { opacity: 1; transform: translate(-50%, -50%) scale(1) }
-            100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0.5) }
-        }
-
+        /* ========== 响应式（保持不变，但移动端时光胶囊样式会被覆盖，PC端不受影响） ========== */
         @media (max-width: 1024px) {
-            .fixed-side { top: 30px; }
-            .ziti_box { width: 180px; padding: 30px 15px; font-size: 14px; }
-            .qrc-tip img { width: 140px; height: 140px; }
             .center-logo-flow { width: 100%; max-width: 820px; padding: 0 10px; margin-top: 50px; }
             .logo-img { width: 60px; height: 60px; }
             .name .bg { font-size: 56px; letter-spacing: 10px; }
-            .digital-clock-card { max-width: 80%; padding: 20px 24px; margin-top: 20px; }
+            .digital-clock-card { position: relative !important; top: auto !important; right: auto !important; max-width: 80%; padding: 20px 24px; margin-top: 20px; }
             .digit-wrap { width: 50px; height: 90px; }
             .seg-a { top: 0; left: 8px; width: 34px; height: 8px; }
             .seg-b { top: 10px; right: 0; width: 8px; height: 30px; }
@@ -1141,30 +234,20 @@
             .bar-text { font-size: 12px; }
             .float-tip-top { font-size: 13px !important; padding: 5px 18px 5px 16px !important; gap: 8px !important; }
             .float-tip-top .tip-icon { width: 18px !important; height: 18px !important; font-size: 13px !important; }
-            .nav-group-cards { transform: translateX(calc(50% + 260px)); }
+            .nav-group-cards { right: auto; top: auto; transform: translateX(calc(50% + 260px)); }
             .nav-btn { height: 65px; min-width: 80px; }
             .nav-btn i { font-size: 18px; }
             .nav-btn span { font-size: 13px; }
             .bottom-area-wrapper { min-height: 200px; }
-            .wrap { margin: 120px auto; }
             .interactive-badge { left: 5%; min-width: 240px; padding: 14px 18px; }
-
             .center-logo-flow.moved-logo { left: 5%; top: -210px; max-width: 340px; }
             .center-logo-flow.moved-logo .logo-img { width: 50px; height: 50px; }
             .center-logo-flow.moved-logo .name .bg { font-size: 30px; letter-spacing: 1px; }
             .center-logo-flow.moved-logo .name .bg .top-small { margin-left: -2px; }
-
             .top-empty-space { height: 210px; }
-
             .social { padding-left: 5%; }
         }
         @media (max-width: 768px) {
-            .fixed-side { top: 10px; }
-            .left-box { left: 5px; }
-            .right-box { right: 5px; }
-            .ziti_box { width: 120px; padding: 20px 12px; font-size: 11px; }
-            .qrc-tip img { width: 100px; height: 100px; }
-            .qrc-tip p { font-size: 10px; }
             .center-logo-flow { width: 100%; padding: 0 15px; margin-top: 50px; }
             .logo-img { width: 40px; height: 40px; }
             .name .bg { font-size: 32px; letter-spacing: 6px; }
@@ -1183,487 +266,95 @@
             .float-tip-top { font-size: 12px !important; padding: 4px 14px 4px 12px !important; top: 12px !important; gap: 6px !important; }
             .float-tip-top .tip-icon { width: 16px !important; height: 16px !important; font-size: 12px !important; }
             .bottom-area-wrapper { position: relative; min-height: auto; flex-direction: column; gap: 20px; padding: 10px 0; align-items: center; }
-            .digital-clock-card { position: relative !important; left: auto !important; transform: none !important; width: 100%; max-width: 100%; margin: 0 auto !important; }
-            .nav-group-cards { position: relative; left: auto; transform: none; width: 100%; justify-content: center; align-items: center; }
+            .digital-clock-card { position: relative !important; top: auto !important; right: auto !important; left: auto !important; transform: none !important; width: 100%; max-width: 100%; margin: 0 auto !important; }
+            .nav-group-cards { position: relative; top: auto; right: auto; left: auto; transform: none; width: 100%; justify-content: center; align-items: center; }
             .nav-buttons { flex-wrap: wrap; }
-            .wrap { margin: 90px auto; }
             .interactive-badge { position: relative; top: auto; left: auto; transform: none; margin-bottom: 20px; width: 90%; max-width: 360px; margin-left: auto; margin-right: auto; }
             .interactive-badge:hover { transform: scale(1.02); }
             #capsuleOverlay { justify-content: center; padding-right: 0; }
             .capsule-inner { width: 95%; max-width: 380px; }
-            body.capsule-open .interactive-badge {
-                position: relative !important;
-                z-index: 100000 !important;
-                pointer-events: auto !important;
-            }
-
+            body.capsule-open .interactive-badge { position: relative !important; z-index: 100000 !important; pointer-events: auto !important; }
             .center-logo-flow.moved-logo { position: relative; top: auto; left: auto; transform: none; width: 90%; max-width: 340px; margin: 0 auto 10px; }
             .center-logo-flow.moved-logo .logo-img { width: 40px; height: 40px; }
             .center-logo-flow.moved-logo .name .bg { font-size: 24px; letter-spacing: 1px; }
             .center-logo-flow.moved-logo .name .bg .top-small { margin-left: -1px; }
-
             .top-empty-space { height: 170px; }
-
             .social { padding-left: 5%; }
         }
         @media (max-width: 450px) {
             .nav-btn { min-width: 70px; height: 60px; }
             .nav-btn i { font-size: 16px; }
             .nav-btn span { font-size: 11px; }
-            .wrap { margin: 70px auto; }
         }
 
         @media (hover: hover) and (pointer: fine) {
-            body, a, button, * {
-                cursor: none !important;
-            }
+            body, a, button, * { cursor: none !important; }
         }
-
-        #cursor {
-            position: fixed;
-            pointer-events: none;
-            z-index: 100000;
-            width: 16px;
-            height: 16px;
-            margin-left: -8px;
-            margin-top: -8px;
-            border: 1.5px solid #fff;
-            border-radius: 50%;
-            background: transparent;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: width 0.15s, height 0.15s, margin-left 0.15s, margin-top 0.15s;
-        }
-
-        #cursor::after {
-            content: '';
-            width: 8px;
-            height: 8px;
-            background: #fff;
-            border-radius: 50%;
-            transition: width 0.15s, height 0.15s;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
+        #cursor { position: fixed; pointer-events: none; z-index: 100000; width: 16px; height: 16px; margin-left: -8px; margin-top: -8px; border: 1.5px solid #fff; border-radius: 50%; background: transparent; display: flex; align-items: center; justify-content: center; transition: width 0.15s, height 0.15s, margin-left 0.15s, margin-top 0.15s; }
+        #cursor::after { content: ''; width: 8px; height: 8px; background: #fff; border-radius: 50%; transition: width 0.15s, height 0.15s; }
+        .hidden { display: none !important; }
         @media (hover: none), (max-width: 768px) {
-            #cursor {
-                display: none !important;
-            }
-            body, a, button, * {
-                cursor: auto !important;
-            }
+            #cursor { display: none !important; }
+            body, a, button, * { cursor: auto !important; }
         }
 
-        /* ========== 一言卡片（电脑端右侧固定） ========== */
-        .hitokoto-side {
-            position: fixed;
-            right: 117px;
-            top: 74%;
-            transform: translateY(-50%);
-            z-index: 99;
-            pointer-events: auto;
-        }
-        .hitokoto-card {
-            position: relative;
-            width: 320px;
-            min-height: 160px;
-            padding: 24px 22px;
-            border-radius: 12px;
-            background: rgba(0, 0, 0, 0.35);
-            -webkit-backdrop-filter: blur(12px);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-            color: #fff;
-            transition: transform 0.3s, box-shadow 0.3s;
-            cursor: pointer;
-            overflow: hidden;
-        }
-        .hitokoto-card:hover {
-            transform: scale(1.02);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
-        }
-        .hitokoto-card:active {
-            transform: scale(0.98);
-        }
-        .hitokoto-card .hitokoto-content {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-evenly;
-            min-height: 112px;
-        }
-        .hitokoto-card .hitokoto-text {
-            font-size: 15px;
-            line-height: 1.7;
-            word-break: break-all;
-            font-family: "宋体", serif;
-            letter-spacing: 0.5px;
-        }
-        .hitokoto-card .hitokoto-from {
-            margin-top: 12px;
-            font-weight: 700;
-            align-self: flex-end;
-            font-size: 14px;
-            font-family: 'Dancing Script', cursive;
-            opacity: 0.9;
-        }
-        .hitokoto-card .hitokoto-label {
-            position: absolute;
-            top: 10px;
-            left: 14px;
-            font-size: 11px;
-            opacity: 0.5;
-            letter-spacing: 1px;
-            font-family: 'Inter', sans-serif;
-        }
-        @keyframes hitokotoFade {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .hitokoto-fade-in { animation: hitokotoFade 0.5s ease; }
-        /* 手机端隐藏一言卡片 */
-        @media (max-width: 1024px) {
-            .hitokoto-side { display: none !important; }
-        }
-        /* ========== 贪吃蛇新增样式 ========== */
-        .snake-game-container {
-            position: absolute;
-            left: 2%;
-            bottom: 60px;
-            z-index: 15;
-            width: auto;
-            text-align: center;
-            pointer-events: none;
-            background: transparent;
-        }
-        #snakeCanvas {
-            display: block;
-            background: transparent !important;
-            width: 100%;
-            height: auto;
-            border-radius: 6px;
-        }
-        .snake-progress {
-            width: auto;
-            margin: 4px 24px 0;
-            height: 8px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 4px;
-            overflow: hidden;
-        }
-        .snake-bar {
-            height: 100%;
-            width: 0%;
-            background: #4caf50;
-            border-radius: 4px;
-            transition: width 0.5s;
-        }
+        /* 一言卡片：无动画 */
+        .hitokoto-side { position: absolute; right: calc(15% + 310px); top: -361px; transform: none; z-index: 99; pointer-events: auto; }
+        .hitokoto-card { position: relative; width: 255px; min-height: 140px; height: 140px; padding: 18px 16px; border-radius: 12px; background: rgba(0, 0, 0, 0.35); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.12); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); color: #fff; transition: transform 0.3s, box-shadow 0.3s; cursor: pointer; overflow: hidden; }
+        .hitokoto-card:hover { transform: scale(1.02); box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5); }
+        .hitokoto-card:active { transform: scale(0.98); }
+        .hitokoto-card .hitokoto-content { display: flex; flex-direction: column; justify-content: space-evenly; min-height: 112px; }
+        .hitokoto-card .hitokoto-text { font-size: 15px; line-height: 1.7; word-break: break-all; font-family: "宋体", serif; letter-spacing: 0.5px; }
+        .hitokoto-card .hitokoto-from { margin-top: 12px; font-weight: 700; align-self: flex-end; font-size: 14px; font-family: 'Dancing Script', cursive; opacity: 0.9; }
+        .hitokoto-card .hitokoto-label { position: absolute; top: 10px; left: 14px; font-size: 11px; opacity: 0.5; letter-spacing: 1px; font-family: 'Inter', sans-serif; }
+        /* 动画已删除 */
+        @media (max-width: 1024px) { .hitokoto-side { display: none !important; } }
 
+        .mobile-menu-toggle { display: none; }
         @media (max-width: 768px) {
-            .snake-game-container {
-                position: relative;
-                left: auto;
-                bottom: auto;
-                margin: 20px auto;
-                width: 90%;
-                max-width: 320px;
-            }
-        }
-
-        /* ========== 手机端专属布局（仿 renkonti.top 风格） ========== */
-        .mobile-menu-toggle {
-            display: none;
-        }
-        @media (max-width: 768px) {
-            html, body {
-                overflow: hidden !important;
-                height: 100vh !important;
-                width: 100vw !important;
-            }
-            /* 隐藏桌面端/不需要的元素 */
-            .fixed-side,
-            .wrap,
-            .snake-game-container,
-            .copyright-bar,
-            .top-empty-space,
-            .float-tip-top {
-                display: none !important;
-            }
-            /* 主容器占满全屏，垂直居中 */
-            .footer-box {
-                position: relative !important;
-                height: 100vh !important;
-                width: 100vw !important;
-                display: flex !important;
-                flex-direction: column !important;
-                justify-content: center !important;
-                align-items: center !important;
-                padding: 0 20px !important;
-                margin: 0 !important;
-            }
-            .bottom-area-wrapper {
-                position: relative !important;
-                width: 100% !important;
-                min-height: 0 !important;
-                flex: none !important;
-                display: flex !important;
-                flex-direction: column !important;
-                align-items: center !important;
-                justify-content: center !important;
-                gap: 0 !important;
-                padding: 0 !important;
-                margin: 0 !important;
-            }
-            /* ===== 顶部 Logo：头像 + 大标题（在Hello World框上面左边） ===== */
-            .center-logo-flow.moved-logo {
-                position: relative !important;
-                top: auto !important;
-                left: auto !important;
-                right: auto !important;
-                width: auto !important;
-                max-width: calc(100vw - 48px) !important;
-                margin: 0 0 18px 0 !important;
-                z-index: 10 !important;
-                transform: none !important;
-                align-self: flex-start !important;
-                order: 1 !important;
-            }
-            .center-logo-flow.moved-logo .logo {
-                gap: 14px !important;
-                align-items: center !important;
-            }
-            .center-logo-flow.moved-logo .logo-img {
-                width: 58px !important;
-                height: 58px !important;
-                border-radius: 50% !important;
-                border: 2px solid rgba(255,255,255,0.35) !important;
-                object-fit: cover !important;
-                transform: translateY(10px);  /* ← 新增，可自由调整数值 */
-            }
-            .center-logo-flow.moved-logo .name .bg {
-                font-size: 42px !important;
-                letter-spacing: 2px !important;
-                top: 0 !important;
-            }
-            /* ===== Hello World 毛玻璃卡片 ===== */
-            .interactive-badge {
-                position: relative !important;
-                top: auto !important;
-                left: auto !important;
-                transform: none !important;
-                width: 100% !important;
-                max-width: 440px !important;
-                min-width: 0 !important;
-                margin: 0 auto !important;
-                padding: 26px 30px !important;
-                background: rgba(0,0,0,0.35) !important;
-                backdrop-filter: blur(10px) !important;
-                -webkit-backdrop-filter: blur(10px) !important;
-                order: 2 !important;
-            }
-            .interactive-badge .badge-title {
-                font-size: 26px !important;
-                margin-left: 20px !important;
-            }
-            .interactive-badge .badge-text {
-                font-size: 15px !important;
-                margin-left: 20px !important;
-                line-height: 1.6 !important;
-            }
-            .interactive-badge .q-left,
-            .interactive-badge .q-right {
-                font-size: 36px !important;
-            }
-            /* ===== 社交图标栏（在Hello World框下面） ===== */
-            .social {
-                position: relative !important;
-                bottom: auto !important;
-                left: auto !important;
-                right: auto !important;
-                padding: 0 !important;
-                margin: 18px 0 0 0 !important;
-                justify-content: center !important;
-                z-index: 10 !important;
-                order: 3 !important;
-            }
-            .link-bar {
-                width: auto !important;
-                max-width: none !important;
-                min-width: 0 !important;
-                margin-top: 0 !important;
-                justify-content: center !important;
-                gap: 2px !important;
-                padding: 6px 14px !important;
-                background: rgba(255,255,255,0.12) !important;
-                backdrop-filter: blur(8px) !important;
-                -webkit-backdrop-filter: blur(8px) !important;
-                border-radius: 30px !important;
-            }
-            .icon-item {
-                width: 38px !important;
-                height: 38px !important;
-            }
-            .icon-item svg, .icon-item img {
-                width: 20px !important;
-                height: 20px !important;
-            }
-            .bar-text {
-                display: none !important;
-            }
-            /* ===== 时钟和网站列表：默认隐藏 ===== */
-            .digital-clock-card,
-            .nav-group-cards {
-                display: none !important;
-            }
-            /* ===== 汉堡菜单按钮 ===== */
-            .mobile-menu-toggle {
-                display: flex !important;
-                position: fixed !important;
-                bottom: 24px !important;
-                left: 50% !important;
-                transform: translateX(-50%) !important;
-                width: 60px !important;
-                height: 60px !important;
-                background: rgba(255,255,255,0.18) !important;
-                backdrop-filter: blur(12px) !important;
-                -webkit-backdrop-filter: blur(12px) !important;
-                border-radius: 16px !important;
-                align-items: center !important;
-                justify-content: center !important;
-                color: #fff !important;
-                font-size: 24px !important;
-                z-index: 200 !important;
-                cursor: pointer !important;
-                border: 1px solid rgba(255,255,255,0.25) !important;
-                box-shadow: 0 4px 20px rgba(0,0,0,0.3) !important;
-                transition: all 0.3s ease !important;
-                padding: 0 !important;
-            }
-            .mobile-menu-toggle:active {
-                transform: translateX(-50%) scale(0.92) !important;
-            }
-            .mobile-menu-toggle .icon-close {
-                display: none !important;
-            }
-            /* ===== 打开设置时才隐藏底部按钮 ===== */
-            body.settings-open .mobile-menu-toggle {
-                display: none !important;
-            }
-            /* ===== 菜单展开状态 ===== */
-            body.mobile-menu-open .center-logo-flow.moved-logo {
-                top: auto !important;
-                order: 0 !important;
-                margin: 0 0 16px 0 !important;
-                position: relative !important;
-            }
-            body.mobile-menu-open .center-logo-flow.moved-logo .logo-img {
-                display: none !important;
-            }
-            body.mobile-menu-open .center-logo-flow.moved-logo .name .bg {
-                font-size: 34px !important;
-                letter-spacing: 1px !important;
-            }
-            body.mobile-menu-open .interactive-badge,
-            body.mobile-menu-open .social {
-                display: none !important;
-            }
-            body.mobile-menu-open .digital-clock-card {
-                display: block !important;
-                position: relative !important;
-                left: auto !important;
-                transform: none !important;
-                width: 100% !important;
-                max-width: 440px !important;
-                margin: 0 auto 24px !important;
-                padding: 22px 28px !important;
-                order: 1 !important;
-            }
-            body.mobile-menu-open .clock-date {
-                font-size: 17px !important;
-                margin-bottom: 14px !important;
-            }
-            body.mobile-menu-open .clock-weather {
-                font-size: 15px !important;
-                margin-top: 16px !important;
-            }
-            body.mobile-menu-open .nav-group-cards {
-                display: flex !important;
-                position: relative !important;
-                top: auto !important;
-                left: auto !important;
-                transform: none !important;
-                width: 100% !important;
-                max-width: 440px !important;
-                margin: 0 auto !important;
-                gap: 10px !important;
-                order: 2 !important;
-            }
-            body.mobile-menu-open .nav-title {
-                font-size: 16px !important;
-                margin-bottom: 14px !important;
-                align-self: center !important;
-            }
-            body.mobile-menu-open .nav-buttons {
-                gap: 12px !important;
-            }
-            body.mobile-menu-open .nav-btn {
-                min-width: 90px !important;
-                height: 70px !important;
-            }
-            body.mobile-menu-open .mobile-menu-toggle .icon-menu {
-                display: none !important;
-            }
-            body.mobile-menu-open .mobile-menu-toggle .icon-close {
-                display: block !important;
-            }
-            /* 时光胶囊和设置面板在手机端居中 */
-            #capsuleOverlay {
-                padding-right: 0 !important;
-                justify-content: center !important;
-                padding: 20px !important;
-                padding-top: 140px !important;
-            }
-            .capsule-inner {
-                width: 100% !important;
-                max-width: 380px !important;
-            }
-            /* ===== Oops框：显示在时光胶囊上面，独立分开 ===== */
-            body.capsule-open .interactive-badge {
-                position: fixed !important;
-                top: 70px !important;
-                left: 50% !important;
-                transform: translateX(-50%) !important;
-                width: 90% !important;
-                max-width: 380px !important;
-                margin: 0 !important;
-                z-index: 100000 !important;
-                pointer-events: auto !important;
-                order: unset !important;
-                background: rgba(0,0,0,0.45) !important;
-            }
-            body.capsule-open .interactive-badge .badge-title {
-                font-size: 24px !important;
-            }
-            body.capsule-open .interactive-badge .badge-text {
-                font-size: 14px !important;
-            }
-            .settings-modal-box {
-                width: 95% !important;
-                padding: 24px 20px !important;
-                max-height: 90vh !important;
-            }
-            .settings-modal-body {
-                flex-direction: column !important;
-                gap: 20px !important;
-            }
-            .settings-col-left, .settings-col-right {
-                flex: none !important;
-                min-width: 0 !important;
-            }
+            html, body { overflow: hidden !important; height: 100vh !important; width: 100vw !important; }
+            .copyright-bar, .top-empty-space, .float-tip-top { display: none !important; }
+            .footer-box { position: relative !important; height: 100vh !important; width: 100vw !important; display: flex !important; flex-direction: column !important; justify-content: center !important; align-items: center !important; padding: 0 20px !important; margin: 0 !important; }
+            .bottom-area-wrapper { position: relative !important; width: 100% !important; min-height: 0 !important; flex: none !important; display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; gap: 0 !important; padding: 0 !important; margin: 0 !important; }
+            .center-logo-flow.moved-logo { position: relative !important; top: auto !important; left: auto !important; right: auto !important; width: auto !important; max-width: calc(100vw - 48px) !important; margin: 0 0 18px 0 !important; z-index: 10 !important; transform: none !important; align-self: flex-start !important; order: 1 !important; }
+            .center-logo-flow.moved-logo .logo { gap: 14px !important; align-items: center !important; }
+            .center-logo-flow.moved-logo .logo-img { width: 78px !important; height: 78px !important; border-radius: 50% !important; border: 2px solid rgba(255,255,255,0.35) !important; object-fit: cover !important; transform: translateY(10px); }
+            .center-logo-flow.moved-logo .name .bg { font-size: 65px !important; letter-spacing: 2px !important; top: 0 !important; }
+            .interactive-badge { position: relative !important; top: auto !important; left: auto !important; transform: none !important; width: 100% !important; max-width: 440px !important; min-width: 0 !important; margin: 0 auto !important; padding: 26px 30px !important; background: rgba(0,0,0,0.35) !important; backdrop-filter: blur(10px) !important; -webkit-backdrop-filter: blur(10px) !important; order: 2 !important; }
+            .interactive-badge .badge-title { font-size: 26px !important; margin-left: 20px !important; }
+            .interactive-badge .badge-text { font-size: 15px !important; margin-left: 20px !important; line-height: 1.6 !important; }
+            .interactive-badge .q-left, .interactive-badge .q-right { font-size: 36px !important; }
+            .social { position: relative !important; bottom: auto !important; left: auto !important; right: auto !important; padding: 0 !important; margin: 18px 0 0 0 !important; justify-content: center !important; z-index: 10 !important; order: 3 !important; }
+            .link-bar { width: auto !important; max-width: none !important; min-width: 0 !important; margin-top: 0 !important; justify-content: center !important; gap: 2px !important; padding: 6px 14px !important; background: rgba(255,255,255,0.12) !important; backdrop-filter: blur(8px) !important; -webkit-backdrop-filter: blur(8px) !important; border-radius: 30px !important; }
+            .icon-item { width: 38px !important; height: 38px !important; }
+            .icon-item svg, .icon-item img { width: 20px !important; height: 20px !important; }
+            .bar-text { display: none !important; }
+            .digital-clock-card, .nav-group-cards { display: none !important; }
+            .mobile-menu-toggle { display: flex !important; position: fixed !important; bottom: 24px !important; left: 50% !important; transform: translateX(-50%) !important; width: 60px !important; height: 60px !important; background: rgba(255,255,255,0.18) !important; backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; border-radius: 16px !important; align-items: center !important; justify-content: center !important; color: #fff !important; font-size: 24px !important; z-index: 200 !important; cursor: pointer !important; border: 1px solid rgba(255,255,255,0.25) !important; box-shadow: 0 4px 20px rgba(0,0,0,0.3) !important; transition: all 0.3s ease !important; padding: 0 !important; }
+            .mobile-menu-toggle:active { transform: translateX(-50%) scale(0.92) !important; }
+            .mobile-menu-toggle .icon-close { display: none !important; }
+            body.settings-open .mobile-menu-toggle { display: none !important; }
+            body.mobile-menu-open .center-logo-flow.moved-logo { top: auto !important; order: 0 !important; margin: 0 0 16px 0 !important; position: relative !important; }
+            body.mobile-menu-open .center-logo-flow.moved-logo .logo-img { display: none !important; }
+            body.mobile-menu-open .center-logo-flow.moved-logo .name .bg { font-size: 95px !important; letter-spacing: 1px !important; }
+            body.mobile-menu-open .interactive-badge, body.mobile-menu-open .social { display: none !important; }
+            body.mobile-menu-open .digital-clock-card { display: block !important; position: relative !important; top: auto !important; right: auto !important; left: auto !important; transform: none !important; width: 100% !important; max-width: 440px !important; margin: 0 auto 24px !important; padding: 22px 28px !important; order: 1 !important; }
+            body.mobile-menu-open .clock-date { font-size: 17px !important; margin-bottom: 14px !important; }
+            body.mobile-menu-open .clock-weather { font-size: 15px !important; margin-top: 16px !important; }
+            body.mobile-menu-open .nav-group-cards { display: flex !important; position: relative !important; top: auto !important; right: auto !important; left: auto !important; transform: none !important; width: 100% !important; max-width: 440px !important; margin: 0 auto !important; gap: 10px !important; order: 2 !important; }
+            body.mobile-menu-open .nav-title { font-size: 16px !important; margin-bottom: 14px !important; align-self: center !important; }
+            body.mobile-menu-open .nav-buttons { gap: 12px !important; }
+            body.mobile-menu-open .nav-btn { min-width: 90px !important; height: 70px !important; }
+            body.mobile-menu-open .mobile-menu-toggle .icon-menu { display: none !important; }
+            body.mobile-menu-open .mobile-menu-toggle .icon-close { display: block !important; }
+            #capsuleOverlay { padding-right: 0 !important; justify-content: center !important; padding: 20px !important; padding-top: 140px !important; }
+            .capsule-inner { width: 100% !important; max-width: 380px !important; }
+            body.capsule-open .interactive-badge { position: fixed !important; top: 70px !important; left: 50% !important; transform: translateX(-50%) !important; width: 90% !important; max-width: 380px !important; margin: 0 !important; z-index: 100000 !important; pointer-events: auto !important; order: unset !important; background: rgba(0,0,0,0.45) !important; }
+            body.capsule-open .interactive-badge .badge-title { font-size: 24px !important; }
+            body.capsule-open .interactive-badge .badge-text { font-size: 14px !important; }
+            .settings-modal-box { width: 95% !important; padding: 24px 20px !important; max-height: 90vh !important; }
+            .settings-modal-body { flex-direction: column !important; gap: 20px !important; }
+            .settings-col-left, .settings-col-right { flex: none !important; min-width: 0 !important; }
         }
     </style>
 </head>
@@ -1682,30 +373,6 @@
             </div>
         </div>
     </div>
-
-    <div class="fixed-side left-box">
-        <div class="ziti_box">
-            作者: 小阿修 - 玖染
-            <div class="qrc-tip"><img src="https://cdn-us.imgs.moe/2026/05/29/59e5405debbc2ef662cadf358102a5a3.jpeg"></div>
-        </div>
-    </div>
-    <div class="fixed-side right-box">
-        <div class="ziti_box">
-            赞赏通道 (｡･ω･｡)
-            <div class="qrc-tip"><img src="https://cdn-us.imgs.moe/2026/07/06/6b0caae704b5b7d7d96c26c50f937fb7.jpg"><p>承蒙所有朋友厚爱</p><p>在下感激不尽</p></div>
-        </div>
-    </div>
-
-    <!-- 一言卡片（电脑端右侧） -->
-    <div class="hitokoto-side">
-        <div class="hitokoto-card" id="hitokotoCard">
-            <div class="hitokoto-content" id="hitokotoContent">
-                <span class="hitokoto-text" id="hitokotoText">这里应该显示一句话</span>
-                <span class="hitokoto-from" id="hitokotoFrom">-「 玖染 」</span>
-            </div>
-        </div>
-    </div>
-
     <div class="top-empty-space"></div>
 
     <div class="float-tip-top" id="welcomeTip">
@@ -1723,26 +390,16 @@
     <canvas id="lightningCanvas"></canvas>
 
     <div id="cursor" class="xs-hidden hidden"></div>
-
-    <div class="wrap">
-        <div class="cube">
-            <div class="out_front"><img src="https://cdn-us.imgs.moe/2026/08/08/f8162bcfc3b49e23b073f35c34c6945e.jpg" class="pic"></div>
-            <div class="out_back"><img src="https://cdn-us.imgs.moe/2026/08/08/3763e238833de6ca756b573229b250e4.jpg" class="pic"></div>
-            <div class="out_left"><img src="https://cdn-us.imgs.moe/2026/08/08/6c5975752df4500a82e792d64bd10422.jpg" class="pic"></div>
-            <div class="out_right"><img src="https://cdn-us.imgs.moe/2026/08/08/85a3fef7ceaf99be6809bde25d62e4f2.jpg" class="pic"></div>
-            <div class="out_top"><img src="https://cdn-us.imgs.moe/2026/08/08/37abeca60b5e42e22d4f917e8e2cf2d3.jpeg" class="pic"></div>
-            <div class="out_bottom"><img src="https://cdn-us.imgs.moe/2026/08/08/3bc8a3a9cb9e254f4489f35d30cd1c38.webp" class="pic"></div>
-            <span class="in_front"><img src="https://cdn-us.imgs.moe/2026/08/08/115387053e944d15481d41a745d84a96.jpeg" class="in_pic"></span>
-            <span class="in_back"><img src="https://cdn-us.imgs.moe/2026/08/08/07e24c2401fe6827929506ab3b728214.jpeg" class="in_pic"></span>
-            <span class="in_left"><img src="https://cdn-us.imgs.moe/2026/08/08/7405dabb9bc6ded55ab989816a32c9a1.png" class="in_pic"></span>
-            <span class="in_right"><img src="https://cdn-us.imgs.moe/2026/08/08/d05886ce3a5ff88ba82862674c71c47c.png" class="in_pic"></span>
-            <span class="in_top"><img src="https://cdn-us.imgs.moe/2026/08/08/d2a058e962e2f71d73ab5c1439d2e0cd.jpg" class="in_pic"></span>
-            <span class="in_bottom"><img src="https://cdn-us.imgs.moe/2026/08/08/d2c83047f7d46169e9e9fa595a4699d3.webp" class="in_pic"></span>
-        </div>
-    </div>
-
     <div class="footer-box">
         <div class="bottom-area-wrapper">
+            <div class="hitokoto-side">
+                <div class="hitokoto-card" id="hitokotoCard">
+                    <div class="hitokoto-content" id="hitokotoContent">
+                        <span class="hitokoto-text" id="hitokotoText">这里应该显示一句话</span>
+                        <span class="hitokoto-from" id="hitokotoFrom">-「 玖染 」</span>
+                    </div>
+                </div>
+            </div>
             <div class="center-logo-flow moved-logo">
                 <div class="logo">
                     <img class="logo-img" src="https://www.renkonti.top/images/icon/favicon.png" alt="logo">
@@ -1759,17 +416,11 @@
                 <div class="badge-text" id="badgeText">一个建立于 21 世纪的小破站，存活于三次元的边缘</div>
             </div>
 
-            <!-- 贪吃蛇游戏容器 -->
-            <div class="snake-game-container" id="snakeGameContainer">
-                <canvas id="snakeCanvas"></canvas>
-                <div class="snake-progress"><div class="snake-bar" id="snakeBar"></div></div>
-            </div>
-
             <div id="capsuleOverlay">
                 <div class="capsule-inner">
                     <div class="capsule-header">
                         <div class="capsule-title">
-                            <i class="fa-solid fa-box-open"></i> 时光胶囊
+                            <i class="fa-solid fa-hourglass-half"></i> 时光胶囊
                         </div>
                         <div class="capsule-actions">
                             <div class="capsule-btn setting-btn" title="设置"><i class="fa-solid fa-gear"></i></div>
@@ -1799,7 +450,6 @@
                 </div>
             </div>
 
-            <!-- 半透明玻璃大窗口面板 -->
             <div id="settingsModal">
                 <div class="settings-modal-box">
                     <div class="settings-modal-close"><i class="fa-solid fa-xmark"></i></div>
@@ -1862,39 +512,39 @@
                 </div>
             </div>
 
-    <div class="nav-group-cards">
-        <div class="nav-title">
-            <svg style="width:1em;height:1em;fill:currentColor;vertical-align:-0.125em;" viewBox="0 0 512 512">
-                <path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/>
-            </svg>
-            <span>网站列表</span>
-        </div>
-        <div class="nav-buttons">
-            <a href="javascript:void(0)" class="nav-btn" onclick="setTimeout(function(){ window.location.href='blog.html'; }, 300);">
-                <svg style="width:22px;height:22px;fill:currentColor;" viewBox="0 0 512 512">
-                    <path d="M172.2 226.8c-14.6-2.9-28.2 8.9-28.2 23.8V301c0 10.2 7.1 18.4 16.7 22 18.2 6.8 31.3 24.4 31.3 45 0 26.5-21.5 48-48 48s-48-21.5-48-48V120c0-13.3-10.7-24-24-24H24c-13.3 0-24 10.7-24 24v248c0 89.5 82.1 160.2 175 140.7 54.4-11.4 98.3-55.4 109.7-109.7 17.4-82.9-37-157.2-112.5-172.2zM209 0c-9.2-.5-17 6.8-17 16v31.6c0 8.5 6.6 15.5 15 15.9 129.4 7 233.4 112 240.9 241.5.5 8.4 7.5 15 15.9 15h32.1c9.2 0 16.5-7.8 16-17C503.4 139.8 372.2 8.6 209 0zm.3 96c-9.3-.7-17.3 6.7-17.3 16.1v32.1c0 8.4 6.5 15.3 14.8 15.9 76.8 6.3 138 68.2 144.9 145.2.8 8.3 7.6 14.7 15.9 14.7h32.2c9.3 0 16.8-8 16.1-17.3-8.4-110.1-96.5-198.2-206.6-206.7z"/>
-                </svg>
-                <span>博客</span>
-            </a>
-<a href="javascript:void(0)" class="nav-btn" onclick="setTimeout(function(){ window.location.href='Hyper.html'; }, 300);">
-    <svg style="width:22px;height:22px;fill:currentColor;" viewBox="0 0 24 24">
-        <path d="M20.5 11H19V7c0-1.1-.9-2-2-2h-4V3.5C13 2.7 12.3 2 11.5 2S10 2.7 10 3.5V5H6c-1.1 0-2 .9-2 2v4H2.5C1.7 11 1 11.7 1 12.5S1.7 14 2.5 14H4v4c0 1.1.9 2 2 2h4v1.5c0 .8.7 1.5 1.5 1.5s1.5-.7 1.5-1.5V20h4c1.1 0 2-.9 2-2v-4h1.5c.8 0 1.5-.7 1.5-1.5s-.7-1.5-1.5-1.5z"/>
-    </svg>
-    <span>插件</span>
-</a>
-            <a href="javascript:void(0)" class="nav-btn" onclick="setTimeout(function(){ window.location.href='https://threatmap.checkpoint.com/'; }, 2000);"><i class="fa-solid fa-map"></i><span>mc地图</span></a>
-            <a href="javascript:void(0)" class="nav-btn" onclick="window.location.reload();"><i class="fa-regular fa-compass"></i><span>起始页</span></a>
-        </div>
-    </div>
+            <div class="nav-group-cards">
+                <div class="nav-title">
+                    <svg style="width:1em;height:1em;fill:currentColor;vertical-align:-0.125em;" viewBox="0 0 512 512">
+                        <path d="M326.612 185.391c59.747 59.809 58.927 155.698.36 214.59-.11.12-.24.25-.36.37l-67.2 67.2c-59.27 59.27-155.699 59.262-214.96 0-59.27-59.26-59.27-155.7 0-214.96l37.106-37.106c9.84-9.84 26.786-3.3 27.294 10.606.648 17.722 3.826 35.527 9.69 52.721 1.986 5.822.567 12.262-3.783 16.612l-13.087 13.087c-28.026 28.026-28.905 73.66-1.155 101.96 28.024 28.579 74.086 28.749 102.325.51l67.2-67.19c28.191-28.191 28.073-73.757 0-101.83-3.701-3.694-7.429-6.564-10.341-8.569a16.037 16.037 0 0 1-6.947-12.606c-.396-10.567 3.348-21.456 11.698-29.806l21.054-21.055c5.521-5.521 14.182-6.199 20.584-1.731a152.482 152.482 0 0 1 20.522 17.197zM467.547 44.449c-59.261-59.262-155.69-59.27-214.96 0l-67.2 67.2c-.12.12-.25.25-.36.37-58.566 58.892-59.387 154.781.36 214.59a152.454 152.454 0 0 0 20.521 17.196c6.402 4.468 15.064 3.789 20.584-1.731l21.054-21.055c8.35-8.35 12.094-19.239 11.698-29.806a16.037 16.037 0 0 0-6.947-12.606c-2.912-2.005-6.64-4.875-10.341-8.569-28.073-28.073-28.191-73.639 0-101.83l67.2-67.19c28.239-28.239 74.3-28.069 102.325.51 27.75 28.3 26.872 73.934-1.155 101.96l-13.087 13.087c-4.35 4.35-5.769 10.79-3.783 16.612 5.864 17.194 9.042 34.999 9.69 52.721.509 13.906 17.454 20.446 27.294 10.606l37.106-37.106c59.271-59.259 59.271-155.699.001-214.959z"/>
+                    </svg>
+                    <span>网站列表</span>
+                </div>
+                <div class="nav-buttons">
+                    <a href="javascript:void(0)" class="nav-btn" onclick="setTimeout(function(){ window.location.href='blog.html'; }, 300);">
+                        <svg style="width:22px;height:22px;fill:currentColor;" viewBox="0 0 512 512">
+                            <path d="M172.2 226.8c-14.6-2.9-28.2 8.9-28.2 23.8V301c0 10.2 7.1 18.4 16.7 22 18.2 6.8 31.3 24.4 31.3 45 0 26.5-21.5 48-48 48s-48-21.5-48-48V120c0-13.3-10.7-24-24-24H24c-13.3 0-24 10.7-24 24v248c0 89.5 82.1 160.2 175 140.7 54.4-11.4 98.3-55.4 109.7-109.7 17.4-82.9-37-157.2-112.5-172.2zM209 0c-9.2-.5-17 6.8-17 16v31.6c0 8.5 6.6 15.5 15 15.9 129.4 7 233.4 112 240.9 241.5.5 8.4 7.5 15 15.9 15h32.1c9.2 0 16.5-7.8 16-17C503.4 139.8 372.2 8.6 209 0zm.3 96c-9.3-.7-17.3 6.7-17.3 16.1v32.1c0 8.4 6.5 15.3 14.8 15.9 76.8 6.3 138 68.2 144.9 145.2.8 8.3 7.6 14.7 15.9 14.7h32.2c9.3 0 16.8-8 16.1-17.3-8.4-110.1-96.5-198.2-206.6-206.7z"/>
+                        </svg>
+                        <span>博客</span>
+                    </a>
+                    <a href="javascript:void(0)" class="nav-btn" onclick="setTimeout(function(){ window.location.href='Hyper.html'; }, 300);">
+                        <svg style="width:22px;height:22px;fill:currentColor;" viewBox="0 0 24 24">
+                            <path d="M20.5 11H19V7c0-1.1-.9-2-2-2h-4V3.5C13 2.7 12.3 2 11.5 2S10 2.7 10 3.5V5H6c-1.1 0-2 .9-2 2v4H2.5C1.7 11 1 11.7 1 12.5S1.7 14 2.5 14H4v4c0 1.1.9 2 2 2h4v1.5c0 .8.7 1.5 1.5 1.5s1.5-.7 1.5-1.5V20h4c1.1 0 2-.9 2-2v-4h1.5c.8 0 1.5-.7 1.5-1.5s-.7-1.5-1.5-1.5z"/>
+                        </svg>
+                        <span>插件</span>
+                    </a>
+                    <a href="javascript:void(0)" class="nav-btn" onclick="setTimeout(function(){ window.location.href='https://threatmap.checkpoint.com/'; }, 2000);"><i class="fa-solid fa-map"></i><span>mc地图</span></a>
+                    <a href="javascript:void(0)" class="nav-btn" onclick="window.location.reload();"><i class="fa-regular fa-compass"></i><span>起始页</span></a>
+                </div>
+            </div>
 
             <div class="social">
                 <div class="link-bar" id="linkBar">
                     <a class="icon-item" href="https://github.com/lvoe82002" target="_blank" data-tooltip="去Github看看吧">
                         <svg class="social-icon" viewBox="0 0 48 48" style="filter: brightness(1.8);">
-                        <path d="M24 4C12.9543 4 4 12.9543 4 24C4 35.0457 12.9543 44 24 44C35.0457 44 44 35.0457 44 24C44 12.9543 35.0457 4 24 4Z"></path>
-                        <path d="M30.713 43.998V36.008C30.716 35.153 30.487 34.316 30.04 33.617C29.593 32.919 28.943 32.289 28.142 31.773C33.22 31.192 38.5 29.225 38.5 20.777C38.497 17.926 37.407 15.17 35.43 13.01C36.369 10.656 35.933 7.747 34.063 6.008C34.063 6.008 31.73 5.12 24 10.028C16.27 5.12 13.937 6.008 13.937 6.008C12.067 7.747 11.631 10.656 12.57 13.01C10.593 15.17 9.503 17.926 9.5 20.777C9.5 29.225 14.78 31.192 19.858 31.773C19.057 32.289 18.407 32.919 17.96 33.617C17.513 34.316 17.284 35.153 17.287 36.008V43.998"></path>
-                        <path d="M17.287 39.012C9.703 41.512 11.714 44 17.287 44"></path>
-                    </svg>
+                            <path d="M24 4C12.9543 4 4 12.9543 4 24C4 35.0457 12.9543 44 24 44C35.0457 44 44 35.0457 44 24C44 12.9543 35.0457 4 24 4Z"></path>
+                            <path d="M30.713 43.998V36.008C30.716 35.153 30.487 34.316 30.04 33.617C29.593 32.919 28.943 32.289 28.142 31.773C33.22 31.192 38.5 29.225 38.5 20.777C38.497 17.926 37.407 15.17 35.43 13.01C36.369 10.656 35.933 7.747 34.063 6.008C34.063 6.008 31.73 5.12 24 10.028C16.27 5.12 13.937 6.008 13.937 6.008C12.067 7.747 11.631 10.656 12.57 13.01C10.593 15.17 9.503 17.926 9.5 20.777C9.5 29.225 14.78 31.192 19.858 31.773C19.057 32.289 18.407 32.919 17.96 33.617C17.513 34.316 17.284 35.153 17.287 36.008V43.998"></path>
+                            <path d="M17.287 39.012C9.703 41.512 11.714 44 17.287 44"></path>
+                        </svg>
                     </a>
                     <a class="icon-item" href="https://space.bilibili.com/673583400" target="_blank" data-tooltip="( ´-` )つ口干杯～">
                         <svg class="social-icon" viewBox="0 0 24 24">
@@ -1965,13 +615,11 @@
     </div>
 
     <div class="particles" id="particles"></div>
-    <!-- 手机端汉堡菜单按钮 -->
     <div class="mobile-menu-toggle" id="mobileMenuToggle">
         <i class="fa-solid fa-bars icon-menu"></i>
         <i class="fa-solid fa-xmark icon-close"></i>
     </div>
 
-    <!-- 所有脚本保持原样，此处省略以节省篇幅，请使用你之前已有的脚本部分 -->
     <script>
         window.addEventListener('load', () => {
             setTimeout(() => {
@@ -2740,192 +1388,58 @@
             setInterval(updateWeather, 30 * 60 * 1000);
         })();
     </script>
-
-    <script>
-        (function() {
-            const COLS = 42;
-            const ROWS = 8;
-            const CELL_SIZE = 12;
-            const MARGIN_CELLS = 2;
-            const TARGET = 30;
-            const FOOD_MAX = 4;
-            const SNAKE_FIXED = 5;
-            const SPEED = 120;
-
-            const WORLD_COLS = COLS + MARGIN_CELLS * 2;
-            const WORLD_ROWS = ROWS + MARGIN_CELLS * 2;
-
-            const canvas = document.getElementById('snakeCanvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = WORLD_COLS * CELL_SIZE;
-            canvas.height = WORLD_ROWS * CELL_SIZE;
-            const barEl = document.getElementById('snakeBar');
-
-            let snake = [];
-            let foods = [];
-            let dir = { dx: 1, dy: 0 };
-            let score = 0;
-            let loopId = null;
-
-            function drawWhiteGrid() {
-                const offsetX = MARGIN_CELLS * CELL_SIZE;
-                const offsetY = MARGIN_CELLS * CELL_SIZE;
-                ctx.fillStyle = '#d0d5db';
-                for (let y = 0; y < ROWS; y++) {
-                    for (let x = 0; x < COLS; x++) {
-                        ctx.fillRect(
-                            offsetX + x * CELL_SIZE + 1,
-                            offsetY + y * CELL_SIZE + 1,
-                            CELL_SIZE - 2,
-                            CELL_SIZE - 2
-                        );
-                    }
-                }
-            }
-
-            function draw() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                drawWhiteGrid();
-
-                for (let f of foods) {
-                    ctx.fillStyle = '#9c27b0';
-                    ctx.fillRect(f.x * CELL_SIZE + 1, f.y * CELL_SIZE + 1, CELL_SIZE - 2, CELL_SIZE - 2);
-                }
-
-                for (let s of snake) {
-                    ctx.fillStyle = '#4caf50';
-                    ctx.fillRect(s.x * CELL_SIZE + 1, s.y * CELL_SIZE + 1, CELL_SIZE - 2, CELL_SIZE - 2);
-                }
-            }
-
-            function spawnFood() {
-                const occupied = new Set(snake.map(s => `${s.x},${s.y}`));
-                foods.forEach(f => occupied.add(`${f.x},${f.y}`));
-                const free = [];
-                for (let y = MARGIN_CELLS; y < MARGIN_CELLS + ROWS; y++) {
-                    for (let x = MARGIN_CELLS; x < MARGIN_CELLS + COLS; x++) {
-                        if (!occupied.has(`${x},${y}`)) free.push({ x, y });
-                    }
-                }
-                if (free.length === 0) return false;
-                foods.push(free[Math.floor(Math.random() * free.length)]);
-                return true;
-            }
-
-            function calcDirection() {
-                const head = snake[0];
-                let target = null, minD = Infinity;
-                for (let f of foods) {
-                    const d = Math.abs(head.x - f.x) + Math.abs(head.y - f.y);
-                    if (d < minD) { minD = d; target = f; }
-                }
-                if (!target) return null;
-
-                const dirs = [
-                    { dx: 0, dy: -1 }, { dx: 0, dy: 1 },
-                    { dx: -1, dy: 0 }, { dx: 1, dy: 0 }
-                ];
-                const safe = [];
-                for (let d of dirs) {
-                    const nx = head.x + d.dx;
-                    const ny = head.y + d.dy;
-                    if (nx < 0 || nx >= WORLD_COLS || ny < 0 || ny >= WORLD_ROWS) continue;
-
-                    const future = [{ x: nx, y: ny }, ...snake];
-                    future.pop();
-                    let hit = false;
-                    for (let i = 1; i < future.length; i++) {
-                        if (future[i].x === nx && future[i].y === ny) { hit = true; break; }
-                    }
-                    if (!hit) safe.push(d);
-                }
-                if (safe.length === 0) return null;
-
-                let best = safe[0], bestDist = Infinity;
-                for (let d of safe) {
-                    const nx = head.x + d.dx, ny = head.y + d.dy;
-                    const dist = Math.abs(nx - target.x) + Math.abs(ny - target.y);
-                    const wobble = Math.random() * 2;
-                    if (dist + wobble < bestDist) { bestDist = dist + wobble; best = d; }
-                }
-                return best;
-            }
-
-            function update() {
-                const next = calcDirection();
-                if (!next) { reset(); return; }
-                dir = next;
-                const head = snake[0];
-                const newHead = { x: head.x + dir.dx, y: head.y + dir.dy };
-
-                let eatIdx = -1;
-                for (let i = 0; i < foods.length; i++) {
-                    if (newHead.x === foods[i].x && newHead.y === foods[i].y) { eatIdx = i; break; }
-                }
-
-                snake = [newHead, ...snake];
-
-                if (eatIdx !== -1) {
-                    foods.splice(eatIdx, 1);
-                    score++;
-                    barEl.style.width = Math.min(100, (score / TARGET) * 100) + '%';
-                    spawnFood();
-                    if (score >= TARGET) {
-                        draw();
-                        clearInterval(loopId);
-                        loopId = null;
-                        setTimeout(reset, 3000);
-                        return;
-                    }
-                }
-
-                while (snake.length > SNAKE_FIXED) snake.pop();
-                while (foods.length < FOOD_MAX) {
-                    if (!spawnFood()) break;
-                }
-                draw();
-            }
-
-            function reset() {
-                if (loopId) clearInterval(loopId);
-                const startX = MARGIN_CELLS + Math.floor(COLS / 2) - 2;
-                const startY = MARGIN_CELLS + Math.floor(ROWS / 2);
-                snake = [];
-                for (let i = 0; i < SNAKE_FIXED; i++) snake.push({ x: startX + i, y: startY });
-                dir = { dx: 1, dy: 0 };
-                score = 0;
-                barEl.style.width = '0%';
-                foods = [];
-                for (let i = 0; i < FOOD_MAX; i++) spawnFood();
-                draw();
-                loopId = setInterval(update, SPEED);
-            }
-
-            reset();
-        })();
-    </script>
     <script>
     (function() {
         if (window.innerWidth < 1025) return;
         var topSpace = document.querySelector('.top-empty-space');
-        if (!topSpace) return;
+        var copyright = document.querySelector('.copyright-bar');
+        if (!topSpace || !copyright) return;
 
         function adjustLayout() {
+            var wrapper = document.querySelector('.bottom-area-wrapper');
+            if (!wrapper) return;
+
             var origMinH = document.body.style.minHeight;
-            var origHeight = topSpace.style.height;
+            copyright.style.marginTop = '';
             document.body.style.minHeight = 'auto';
             topSpace.style.height = '0px';
             topSpace.style.overflow = 'hidden';
+            wrapper.style.top = '0px';
             void document.body.offsetHeight;
             var otherContentHeight = document.body.scrollHeight;
+            var baseCopyrightMargin = parseFloat(getComputedStyle(copyright).marginTop) || 0;
             document.body.style.minHeight = origMinH;
-            topSpace.style.height = origHeight;
             topSpace.style.overflow = '';
 
             var viewportH = window.innerHeight;
-            var needed = viewportH - otherContentHeight;
-            needed = Math.max(30, Math.min(500, needed));
-            topSpace.style.height = needed + 'px';
+
+            var bottomFit = viewportH - otherContentHeight;
+
+            var wrapperRect = wrapper.getBoundingClientRect();
+            var visualEls = wrapper.querySelectorAll(
+                '.hitokoto-side, .center-logo-flow, .interactive-badge, .nav-group-cards, .social, .digital-clock-card'
+            );
+            var minTop = Infinity, maxBottom = -Infinity;
+            visualEls.forEach(function(el) {
+                var r = el.getBoundingClientRect();
+                if (r.width === 0 && r.height === 0) return;
+                if (r.top < minTop) minTop = r.top;
+                if (r.bottom > maxBottom) maxBottom = r.bottom;
+            });
+            var centerFit = bottomFit;
+            if (minTop !== Infinity) {
+                var visualCenterOffset = (minTop + maxBottom) / 2 - wrapperRect.top;
+                centerFit = viewportH / 2 - visualCenterOffset - wrapperRect.top;
+            }
+
+            if (centerFit <= bottomFit) {
+                topSpace.style.height = Math.max(30, centerFit) + 'px';
+                var extraGap = bottomFit - centerFit;
+                copyright.style.marginTop = (baseCopyrightMargin + extraGap) + 'px';
+            } else {
+                topSpace.style.height = Math.max(30, bottomFit) + 'px';
+                copyright.style.marginTop = '';
+            }
         }
 
         adjustLayout();
@@ -2946,10 +1460,9 @@
             e.stopPropagation();
             document.body.classList.toggle('mobile-menu-open');
         });
-        // 点击菜单展开区域外的空白处不关闭（保持与参考图一致，需点X关闭）
     })();
     </script>
-    <!-- 一言卡片脚本 -->
+    <!-- 一言卡片脚本（已移除动画） -->
     <script>
     (function() {
         const textEl = document.getElementById('hitokotoText');
@@ -2963,9 +1476,6 @@
                 .then(data => {
                     textEl.textContent = data.hitokoto;
                     fromEl.textContent = '-「 ' + data.from + ' 」';
-                    contentEl.classList.remove('hitokoto-fade-in');
-                    void contentEl.offsetWidth;
-                    contentEl.classList.add('hitokoto-fade-in');
                 })
                 .catch(() => {
                     textEl.textContent = '一言获取失败';
