@@ -606,7 +606,7 @@
                     <div class="digit-wrap" data-digit="s1"><div class="seg seg-a"></div><div class="seg seg-b"></div><div class="seg seg-c"></div><div class="seg seg-d"></div><div class="seg seg-e"></div><div class="seg seg-f"></div><div class="seg seg-g"></div></div>
                     <div class="digit-wrap" data-digit="s2"><div class="seg seg-a"></div><div class="seg seg-b"></div><div class="seg seg-c"></div><div class="seg seg-d"></div><div class="seg seg-e"></div><div class="seg seg-f"></div><div class="seg seg-g"></div></div>
                 </div>
-                <div class="clock-weather" id="clockWeather">天气加载中...</div>
+                <div class="clock-weather" id="clockWeather">湛江市 多云 27℃ 西风 ≤3级</div>
             </div>
         </div>
 
@@ -621,7 +621,6 @@
         <i class="fa-solid fa-xmark icon-close"></i>
     </div>
 
-    <!-- ========== 加载动画脚本 ========== -->
     <script>
         window.addEventListener('load', () => {
             setTimeout(() => {
@@ -781,8 +780,6 @@
             }
         }
     </script>
-
-    <!-- ========== 数字时钟脚本 ========== -->
     <script>
         const segMap = [
             ['a','b','c','d','e','f'],
@@ -821,8 +818,6 @@
         updateDigitalClock();
         setInterval(updateDigitalClock, 1000);
     </script>
-
-    <!-- ========== 链接栏 hover 提示脚本 ========== -->
     <script>
         (function() {
             const barText = document.getElementById('barText');
@@ -841,7 +836,6 @@
         })();
     </script>
 
-    <!-- ========== 时光胶囊和设置脚本 ========== -->
     <script>
         (function() {
             const siteBadge = document.getElementById('siteBadge');
@@ -1039,7 +1033,7 @@
         })();
     </script>
 
-    <!-- ========== 下雨特效脚本 ========== -->
+    <!-- 下雨特效脚本 -->
     <script>
         (function() {
             const canvas = document.getElementById('rainCanvas');
@@ -1160,7 +1154,7 @@
         })();
     </script>
 
-    <!-- ========== 闪电特效脚本 ========== -->
+    <!-- 闪电特效脚本 -->
     <script>
         (function() {
             const canvas = document.getElementById('lightningCanvas');
@@ -1278,7 +1272,6 @@
         })();
     </script>
 
-    <!-- ========== 自定义鼠标光标脚本 ========== -->
     <script>
         (function() {
             const cursor = document.getElementById('cursor');
@@ -1334,89 +1327,68 @@
         })();
     </script>
 
-    <!-- ========== 天气脚本（高德API 动态定位） ========== -->
     <script>
         (function() {
             const weatherEl = document.getElementById('clockWeather');
-            const AMAP_KEY = '4a62cc079349e92d403a8c9db3ec3b6f'; // 你的高德 key
+            const LAT = 21.2707;
+            const LON = 110.3594;
 
-<!-- ========== 天气脚本（Open-Meteo 自动IP定位） ========== -->
-<script>
-    (function() {
-        const weatherEl = document.getElementById('clockWeather');
-
-        // 第一步：通过第三方IP定位获取城市名和经纬度
-        async function getLocationByIP() {
-            const res = await fetch('https://ipapi.co/json/');
-            const data = await res.json();
-            return {
-                latitude: data.latitude,
-                longitude: data.longitude,
-                city: data.city || '未知城市'
-            };
-        }
-
-        // 第二步：根据经纬度获取天气
-        async function getWeather(lat, lon) {
-            const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`;
-            const res = await fetch(url);
-            const data = await res.json();
-            return data.current_weather;
-        }
-
-        // 天气代码转中文
-        function getWeatherText(code) {
-            const map = {
-                0: '晴', 1: '多云', 2: '多云', 3: '阴', 45: '雾', 48: '雾凇',
-                51: '毛毛雨', 53: '小雨', 55: '中雨', 61: '小雨', 63: '中雨', 65: '大雨',
-                71: '小雪', 73: '中雪', 75: '大雪', 80: '阵雨', 81: '阵雨', 82: '强阵雨',
-                95: '雷暴', 96: '雷暴伴有冰雹', 99: '雷暴伴有冰雹'
-            };
-            return map[code] || '未知';
-        }
-
-        function getWindDirection(deg) {
-            const dirs = ['北风', '东北风', '东风', '东南风', '南风', '西南风', '西风', '西北风'];
-            return dirs[Math.round(deg / 45) % 8];
-        }
-
-        function getWindScale(kmh) {
-            if (kmh < 1) return '0级';
-            if (kmh < 5) return '1级';
-            if (kmh < 11) return '2级';
-            if (kmh < 19) return '3级';
-            if (kmh < 28) return '4级';
-            if (kmh < 38) return '5级';
-            if (kmh < 49) return '6级';
-            if (kmh < 61) return '7级';
-            if (kmh < 74) return '8级';
-            if (kmh < 88) return '9级';
-            if (kmh < 102) return '10级';
-            if (kmh < 117) return '11级';
-            return '12级';
-        }
-
-        async function updateWeather() {
-            try {
-                const loc = await getLocationByIP();
-                const cw = await getWeather(loc.latitude, loc.longitude);
-                const temp = Math.round(cw.temperature);
-                const code = cw.weathercode;
-                const windDir = getWindDirection(cw.winddirection);
-                const windScale = getWindScale(cw.windspeed);
-                const weatherText = getWeatherText(code);
-                weatherEl.textContent = `${loc.city} ${weatherText} ${temp}℃ ${windDir} ${windScale}`;
-            } catch (err) {
-                weatherEl.textContent = '天气获取失败';
+            function getWeatherText(code) {
+                const map = {
+                    0: '晴', 1: '多云', 2: '多云', 3: '阴', 45: '雾', 48: '雾凇',
+                    51: '毛毛雨', 53: '小雨', 55: '中雨', 61: '小雨', 63: '中雨', 65: '大雨',
+                    71: '小雪', 73: '中雪', 75: '大雪', 80: '阵雨', 81: '阵雨', 82: '强阵雨',
+                    95: '雷暴', 96: '雷暴伴有冰雹', 99: '雷暴伴有冰雹'
+                };
+                return map[code] || '未知';
             }
-        }
 
-        updateWeather();
-        setInterval(updateWeather, 5 * 60 * 1000);
-    })();
-</script>
+            function getWindDirection(deg) {
+                const dirs = ['北风', '东北风', '东风', '东南风', '南风', '西南风', '西风', '西北风'];
+                return dirs[Math.round(deg / 45) % 8];
+            }
 
-    <!-- ========== 布局调整脚本 ========== -->
+            function getWindScale(kmh) {
+                if (kmh < 1) return '0级';
+                if (kmh < 5) return '1级';
+                if (kmh < 11) return '2级';
+                if (kmh < 19) return '3级';
+                if (kmh < 28) return '4级';
+                if (kmh < 38) return '5级';
+                if (kmh < 49) return '6级';
+                if (kmh < 61) return '7级';
+                if (kmh < 74) return '8级';
+                if (kmh < 88) return '9级';
+                if (kmh < 102) return '10级';
+                if (kmh < 117) return '11级';
+                return '12级';
+            }
+
+            async function updateWeather() {
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current_weather=true`;
+                try {
+                    const res = await fetch(url);
+                    const data = await res.json();
+                    const cw = data.current_weather;
+                    if (cw) {
+                        const temp = Math.round(cw.temperature);
+                        const code = cw.weathercode;
+                        const windDir = getWindDirection(cw.winddirection);
+                        const windScale = getWindScale(cw.windspeed);
+                        const weatherText = getWeatherText(code);
+                        weatherEl.textContent = `湛江市 ${weatherText} ${temp}℃ ${windDir} ${windScale}`;
+                    } else {
+                        weatherEl.textContent = '天气获取失败，请检查网络';
+                    }
+                } catch (err) {
+                    weatherEl.textContent = '天气获取失败，请检查网络';
+                }
+            }
+
+            updateWeather();
+            setInterval(updateWeather, 5 * 60 * 1000);
+        })();
+    </script>
     <script>
     (function() {
         if (window.innerWidth < 1025) return;
@@ -1479,8 +1451,7 @@
         }
     })();
     </script>
-
-    <!-- ========== 手机端汉堡菜单切换 ========== -->
+    <!-- 手机端汉堡菜单切换 -->
     <script>
     (function() {
         var btn = document.getElementById('mobileMenuToggle');
@@ -1492,8 +1463,7 @@
         });
     })();
     </script>
-
-    <!-- ========== 一言卡片脚本 ========== -->
+    <!-- 一言卡片脚本（已移除动画） -->
     <script>
     (function() {
         const textEl = document.getElementById('hitokotoText');
