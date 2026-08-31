@@ -1331,38 +1331,31 @@
         (function() {
             const weatherEl = document.getElementById('clockWeather');
             const AMAP_KEY = '4a62cc079349e92d403a8c9db3ec3b6f';
+            const LOC_CACHE_KEY = 'zenly_loc_v1';
+            const LOC_CACHE_TTL = 6 * 60 * 60 * 1000; // 定位结果缓存 6 小时，避免每次刷新都消耗定位配额
 
-            /* ===== JSONP 工具：绕过 CORS，调用高德 Web 服务 ===== */
+            /* ===== JSONP 工具：绕过 CORS 调用高德 Web 服务 ===== */
             function jsonp(url, timeoutMs) {
-                timeoutMs = timeoutMs || 8000;
+                timeoutMs = timeoutMs || 4000;
                 return new Promise(function(resolve, reject) {
                     const cbName = 'amap_cb_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
                     const script = document.createElement('script');
-                    const timer = setTimeout(function() {
-                        cleanup();
-                        reject(new Error('timeout'));
-                    }, timeoutMs);
+                    const timer = setTimeout(function() { cleanup(); reject(new Error('timeout')); }, timeoutMs);
                     function cleanup() {
                         clearTimeout(timer);
                         try { delete window[cbName]; } catch(e) { window[cbName] = null; }
                         if (script.parentNode) script.parentNode.removeChild(script);
                     }
-                    window[cbName] = function(data) {
-                        cleanup();
-                        resolve(data);
-                    };
-                    script.onerror = function() {
-                        cleanup();
-                        reject(new Error('script error'));
-                    };
+                    window[cbName] = function(data) { cleanup(); resolve(data); };
+                    script.onerror = function() { cleanup(); reject(new Error('script error')); };
                     const sep = url.indexOf('?') >= 0 ? '&' : '?';
                     script.src = url + sep + 'callback=' + cbName;
                     document.body.appendChild(script);
                 });
             }
 
-            /* ===== 第一步：IP 定位（高德 IP 定位，无需 GPS / 无需授权） ===== */
-            function locateByIP() {
+            /* ============ 定位源 1：高德 IP 定位（https，用你的 key，无需 GPS） ============ */
+            function locateByAmapIP() {
                 return jsonp('https://restapi.amap.com/v3/ip?key=' + AMAP_KEY).then(function(data) {
                     if (data && data.status === '1' && data.city) {
                         let lat = null, lon = null;
@@ -1375,13 +1368,98 @@
                                 lat = (parseFloat(p1[1]) + parseFloat(p2[1])) / 2;
                             }
                         }
-                        return { city: data.city, province: data.province || '', lat: lat, lon: lon };
+                        return { city: data.city, province: data.province || '', adcode: data.adcode || '', lat: lat, lon: lon };
                     }
-                    throw new Error('IP定位失败');
+                    throw new Error('高德IP定位失败');
                 });
             }
 
-            /* ===== 第二步：城市名 → adcode ===== */
+            /* ============ 定位源 2：搜狐 cityjson（国内最稳、无需key、直接给adcode；仅非https环境可用） ============ */
+            function locateBySohu() {
+                return new Promise(function(resolve, reject) {
+                    const script = document.createElement('script');
+                    const timer = setTimeout(function() { cleanup(); reject(new Error('sohu timeout')); }, 4000);
+                    function cleanup() {
+                        clearTimeout(timer);
+                        if (script.parentNode) script.parentNode.removeChild(script);
+                    }
+                    script.onload = function() {
+                        cleanup();
+                        const d = window.returnCitySN;
+                        if (d && d.cid && /^[1-9]\d{5}$/.test(String(d.cid))) {
+                            resolve({ city: '', province: '', adcode: String(d.cid), lat: null, lon: null });
+                        } else {
+                            reject(new Error('sohu no data'));
+                        }
+                    };
+                    script.onerror = function() { cleanup(); reject(new Error('sohu error')); };
+                    script.src = 'https://pv.sohu.com/cityjson?ie=utf-8';
+                    document.body.appendChild(script);
+                });
+            }
+
+            /* ============ 定位源 3：ipwho.is（https、无需key，支持中文） ============ */
+            function locateByIpwho() {
+                return fetch('https://ipwho.is/?lang=zh').then(function(res) { return res.json(); }).then(function(data) {
+                    if (data && data.success && data.latitude && data.longitude) {
+                        return { city: data.city || '', province: data.region || '', adcode: '', lat: data.latitude, lon: data.longitude };
+                    }
+                    throw new Error('ipwho失败');
+                });
+            }
+
+            /* ============ 定位源 4：ip-api.com（http、无需key；仅非https环境可用） ============ */
+            function locateByIpApi() {
+                return fetch('http://ip-api.com/json/?lang=zh-CN').then(function(res) { return res.json(); }).then(function(data) {
+                    if (data && data.status === 'success' && data.lat) {
+                        return { city: data.city || '', province: data.regionName || '', adcode: '', lat: data.lat, lon: data.lon };
+                    }
+                    throw new Error('ip-api失败');
+                });
+            }
+
+            /* ============ 定位源 5：ipapi.co（https、无需key） ============ */
+            function locateByIpapiCo() {
+                return fetch('https://ipapi.co/json/').then(function(res) { return res.json(); }).then(function(data) {
+                    if (data && data.latitude && data.longitude) {
+                        return { city: data.city || '', province: data.region || '', adcode: '', lat: data.latitude, lon: data.longitude };
+                    }
+                    throw new Error('ipapi.co失败');
+                });
+            }
+
+            /* ============ 综合定位：多个源依次尝试，任一成功即返回 ============ */
+            function locate() {
+                const sources = [locateByAmapIP];
+                const isHttps = window.location.protocol === 'https:';
+                if (!isHttps) sources.push(locateBySohu, locateByIpApi); // 非https页面才可用http源
+                sources.push(locateByIpwho, locateByIpapiCo);
+                let i = 0;
+                function next() {
+                    if (i >= sources.length) return Promise.reject(new Error('所有定位源均失败'));
+                    const fn = sources[i++];
+                    return fn().catch(function() { return next(); });
+                }
+                return next();
+            }
+
+            /* ===== 定位结果缓存（localStorage，6小时有效） ===== */
+            function loadLocCache() {
+                try {
+                    const obj = JSON.parse(localStorage.getItem(LOC_CACHE_KEY));
+                    if (obj && obj.ts && (Date.now() - obj.ts) < LOC_CACHE_TTL) {
+                        return obj;
+                    }
+                } catch(e) {}
+                return null;
+            }
+            function saveLocCache(loc) {
+                try {
+                    localStorage.setItem(LOC_CACHE_KEY, JSON.stringify({ city: loc.city || '', adcode: loc.adcode || '', lat: loc.lat || null, lon: loc.lon || null, ts: Date.now() }));
+                } catch(e) {}
+            }
+
+            /* ===== 城市名 → adcode（高德行政区划） ===== */
             function getAdcode(cityName) {
                 const keyword = encodeURIComponent(cityName);
                 return jsonp('https://restapi.amap.com/v3/config/district?key=' + AMAP_KEY + '&keywords=' + keyword + '&subdistrict=0').then(function(data) {
@@ -1392,7 +1470,7 @@
                 });
             }
 
-            /* ===== 第三步：高德实时天气 ===== */
+            /* ===== 高德实时天气 ===== */
             function getWeatherByAmap(adcode) {
                 return jsonp('https://restapi.amap.com/v3/weather/weatherInfo?key=' + AMAP_KEY + '&city=' + adcode + '&extensions=base').then(function(data) {
                     if (data && data.status === '1' && data.lives && data.lives.length > 0) {
@@ -1402,13 +1480,23 @@
                 });
             }
 
-            /* ===== 备用定位：ipapi.co ===== */
-            function locateByIpapi() {
-                return fetch('https://ipapi.co/json/').then(function(res) { return res.json(); }).then(function(data) {
-                    if (data && data.latitude && data.longitude) {
-                        return { city: data.city || '未知', lat: data.latitude, lon: data.longitude };
+            /* ===== Open-Meteo：城市名 → 经纬度（免费，无需key） ===== */
+            function geoByCity(cityName) {
+                const name = encodeURIComponent(cityName);
+                return fetch('https://geocoding-api.open-meteo.com/v1/search?name=' + name + '&count=1&language=zh').then(function(res) { return res.json(); }).then(function(data) {
+                    if (data && data.results && data.results.length > 0) {
+                        return { lat: data.results[0].latitude, lon: data.results[0].longitude };
                     }
-                    throw new Error('ipapi定位失败');
+                    throw new Error('geocoding失败');
+                });
+            }
+
+            /* ===== Open-Meteo：经纬度 → 实时天气 ===== */
+            function getWeatherByOpenMeteo(lat, lon) {
+                const url = 'https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lon + '&current_weather=true';
+                return fetch(url).then(function(res) { return res.json(); }).then(function(data) {
+                    if (data && data.current_weather) return data.current_weather;
+                    throw new Error('Open-Meteo无数据');
                 });
             }
 
@@ -1421,12 +1509,10 @@
                 };
                 return map[code] || '未知';
             }
-
             function getWindDirection(deg) {
                 const dirs = ['北风', '东北风', '东风', '东南风', '南风', '西南风', '西风', '西北风'];
                 return dirs[Math.round(deg / 45) % 8];
             }
-
             function getWindScale(kmh) {
                 if (kmh < 1) return '0级';
                 if (kmh < 5) return '1级';
@@ -1442,61 +1528,65 @@
                 if (kmh < 117) return '11级';
                 return '12级';
             }
-            function getWeatherByOpenMeteo(lat, lon) {
-                const url = 'https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lon + '&current_weather=true';
-                return fetch(url).then(function(res) { return res.json(); }).then(function(data) {
-                    if (data && data.current_weather) return data.current_weather;
-                    throw new Error('Open-Meteo无数据');
-                });
+
+            function formatAmap(live) {
+                let windDir = live.winddirection || '';
+                if (windDir && windDir.indexOf('风') < 0) windDir = windDir + '风';
+                let windPower = live.windpower || '';
+                if (windPower && windPower.indexOf('级') < 0) windPower = windPower + '级';
+                return live.weather + ' ' + live.temperature + '℃ ' + windDir + ' ' + windPower;
+            }
+            function formatOpenMeteo(cw) {
+                const temp = Math.round(cw.temperature);
+                return getWeatherText(cw.weathercode) + ' ' + temp + '℃ ' + getWindDirection(cw.winddirection) + ' ' + getWindScale(cw.windspeed);
             }
 
-            /* ===== 主流程：IP 定位 → 动态天气 ===== */
+            /* ===== 根据定位结果获取天气（高德优先，Open-Meteo 兜底） ===== */
+            async function getWeatherByLoc(loc) {
+                let adcode = loc.adcode;
+                if (!adcode && loc.city) {
+                    try { adcode = await getAdcode(loc.city); } catch(e) {}
+                }
+                if (adcode) {
+                    const live = await getWeatherByAmap(adcode);
+                    return { city: live.city || loc.city || '', text: formatAmap(live) };
+                }
+                let lat = loc.lat, lon = loc.lon;
+                if (!lat && loc.city) {
+                    try {
+                        const g = await geoByCity(loc.city);
+                        if (g) { lat = g.lat; lon = g.lon; }
+                    } catch(e) {}
+                }
+                if (lat) {
+                    const cw = await getWeatherByOpenMeteo(lat, lon);
+                    return { city: loc.city || '', text: formatOpenMeteo(cw) };
+                }
+                throw new Error('无可用天气源');
+            }
+
+            /* ===== 主流程：定位 → 天气 ===== */
             async function updateWeather() {
+                if (document.hidden) return; // 页面在后台时不刷新，节省配额
                 weatherEl.textContent = '正在定位…';
                 try {
-                    /* 主方案：高德 IP 定位 + 高德天气 */
-                    const loc = await locateByIP();
-                    const cityName = loc.city;
-                    try {
-                        const adcode = await getAdcode(cityName);
-                        const live = await getWeatherByAmap(adcode);
-                        let windDir = live.winddirection || '';
-                        if (windDir && windDir.indexOf('风') < 0) windDir = windDir + '风';
-                        let windPower = live.windpower || '';
-                        if (windPower && windPower.indexOf('级') < 0) windPower = windPower + '级';
-                        weatherEl.textContent = cityName + ' ' + live.weather + ' ' + live.temperature + '℃ ' + windDir + ' ' + windPower;
-                        return;
-                    } catch (e) {
-                        /* 高德天气失败 → 用 IP 定位拿到的经纬度 + Open-Meteo */
-                        if (loc.lat && loc.lon) {
-                            const cw = await getWeatherByOpenMeteo(loc.lat, loc.lon);
-                            const temp = Math.round(cw.temperature);
-                            const weatherText = getWeatherText(cw.weathercode);
-                            const wDir = getWindDirection(cw.winddirection);
-                            const wScale = getWindScale(cw.windspeed);
-                            weatherEl.textContent = cityName + ' ' + weatherText + ' ' + temp + '℃ ' + wDir + ' ' + wScale;
-                            return;
-                        }
-                        throw e;
+                    let loc = loadLocCache();
+                    if (!loc) {
+                        loc = await locate();
+                        saveLocCache(loc);
                     }
+                    const r = await getWeatherByLoc(loc);
+                    weatherEl.textContent = (r.city ? r.city + ' ' : '') + r.text;
                 } catch (err) {
-                    /* 全降级：ipapi.co 定位 + Open-Meteo 天气 */
-                    try {
-                        const loc2 = await locateByIpapi();
-                        const cw2 = await getWeatherByOpenMeteo(loc2.lat, loc2.lon);
-                        const temp2 = Math.round(cw2.temperature);
-                        const weatherText2 = getWeatherText(cw2.weathercode);
-                        const wDir2 = getWindDirection(cw2.winddirection);
-                        const wScale2 = getWindScale(cw2.windspeed);
-                        weatherEl.textContent = loc2.city + ' ' + weatherText2 + ' ' + temp2 + '℃ ' + wDir2 + ' ' + wScale2;
-                    } catch (e2) {
-                        weatherEl.textContent = '天气获取失败，请检查网络';
-                    }
+                    weatherEl.textContent = '天气获取失败，请检查网络';
                 }
             }
 
             updateWeather();
             setInterval(updateWeather, 5 * 60 * 1000);
+            document.addEventListener('visibilitychange', function() {
+                if (!document.hidden) updateWeather();
+            });
         })();
     </script>
     <script>
