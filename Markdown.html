@@ -1391,7 +1391,7 @@
             function animate(now) {
                 const dt = Math.min((now - lastTime) / 1000, 0.1);
                 lastTime = now;
-                const smoothing = 100;
+                const smoothing = 1000000000000000;
                 const t = 1 - Math.exp(-smoothing * dt);
                 curX += (mouseX - curX) * t;
                 curY += (mouseY - curY) * t;
