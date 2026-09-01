@@ -30,7 +30,16 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         a { text-decoration: none; }
-        html, body { width: 100%; min-height: 100vh; overflow: hidden; font-family: "宋体"; background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(https://t.mwm.moe/ycy/) no-repeat center top; background-size: cover; background-attachment: fixed; transition: all 0.5s ease; }
+        html, body { width: 100%; min-height: 100vh; overflow: hidden; font-family: "宋体"; background: #0b0b0d; transition: all 0.5s ease; }
+        /* ========== 模糊渐清（PC + 手机端通用）：加载完成前壁纸与全部内容保持模糊，帷幕拉开的同时整体由模糊渐变到清晰 ========== */
+        #wallpaper-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: 0; background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(https://t.mwm.moe/ycy/) no-repeat center top; background-size: cover; -webkit-filter: blur(26px) brightness(0.92); filter: blur(26px) brightness(0.92); transform: scale(1.12); transition: -webkit-filter 1.1s ease, filter 1.1s ease, transform 1.1s ease; will-change: filter, transform; }
+        body.page-clear #wallpaper-layer { -webkit-filter: blur(0) brightness(1); filter: blur(0) brightness(1); transform: scale(1); }
+        body.pre-blur > *:not(#loading-box):not(#wallpaper-layer):not(#cursor):not(script) { -webkit-filter: blur(20px); filter: blur(20px); }
+        body.page-clear > *:not(#loading-box):not(#wallpaper-layer):not(#cursor):not(script) { -webkit-filter: none; filter: none; transition: -webkit-filter 1.1s ease, filter 1.1s ease; }
+        @media (max-width: 768px) {
+            #wallpaper-layer { -webkit-filter: blur(18px) brightness(0.92); filter: blur(18px) brightness(0.92); }
+            body.pre-blur > *:not(#loading-box):not(#wallpaper-layer):not(#cursor):not(script) { -webkit-filter: blur(14px); filter: blur(14px); }
+        }
 
         /* 特效画布 */
         #snowFullScreen, #rainCanvas, #lightningCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
@@ -51,7 +60,7 @@
         .footer-box { width: 100%; padding: 12px 20px 0; text-align: center; position: relative; z-index: 1; margin-top: 20px; background: transparent !important; }
         .bottom-area-wrapper { position: relative; width: 100%; min-height: 220px; display: flex; flex-direction: column; align-items: center; margin-bottom: 10px; }
 
-        .interactive-badge { position: absolute; left: 19%; top: -240px; background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(6px); padding: 27px 24px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4); cursor: pointer; color: #fff; z-index: 10; transition: all 0.3s ease; user-select: none; text-align: left; min-width: 500px; max-width: 500px; font-family: "宋体", serif; }
+        .interactive-badge { position: absolute; left: 19%; top: -240px; background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(6px); padding: 27px 24px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4); cursor: pointer; color: #fff; z-index: 10; transition: all 0.3s ease; user-select: none; text-align: left; min-width: 510px; max-width: 510px; font-family: "宋体", serif; }
         .interactive-badge:hover { transform: translateY(-2px) scale(1.02); background: rgba(0, 0, 0, 0.6); }
         .interactive-badge .q-left, .interactive-badge .q-right { position: absolute; font-size: 40px; opacity: 0.8; font-family: Georgia, serif; line-height: 0.8; color: #fff; }
         .interactive-badge .q-left { top: 6px; left: 8px; }
@@ -146,6 +155,17 @@
         .settings-list-item { color: #fff; font-size: 14px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; cursor: pointer; transition: 0.2s; }
         .settings-list-item:last-child { border-bottom: none; }
         .settings-list-item:hover { color: #fff; padding-left: 5px; }
+        /* ========== 设置分区可折叠箭头（PC + 手机端通用）：点标题行收起/展开，箭头朝下↔朝右旋转 ========== */
+        .settings-item-title { width: 100%; cursor: pointer; user-select: none; -webkit-user-select: none; }
+        .settings-toggle-icon { margin-left: auto; font-size: 12px; opacity: 0.65; transition: transform 0.3s ease, opacity 0.2s ease; }
+        .settings-item-title:hover .settings-toggle-icon { opacity: 1; }
+        .settings-content-box { max-height: 600px; overflow: hidden; transition: max-height 0.35s ease, opacity 0.3s ease, padding 0.35s ease, margin-bottom 0.35s ease, border-color 0.35s ease; }
+        .settings-item.collapsed .settings-toggle-icon { transform: rotate(-90deg); }
+        .settings-item.collapsed .settings-content-box { max-height: 0 !important; opacity: 0; padding-top: 0 !important; padding-bottom: 0 !important; margin-bottom: 0 !important; border-color: transparent; }
+        /* 版权中的 imsyy 跳转链接（PC + 手机端通用） */
+        .copyright-link { color: #fff; text-decoration: underline; text-underline-offset: 2px; transition: opacity 0.2s ease; }
+        .copyright-link:hover { opacity: 0.7; }
+        .copyright-link:active { opacity: 0.55; }
 
         /* 隐藏规则：设置打开时隐藏版权等，但胶囊打开时不隐藏版权 */
         body.settings-open .center-logo-flow,
@@ -191,7 +211,7 @@
         .nav-btn span { font-size: 14px; font-weight: 600; }
 
         .social { display: flex; justify-content: flex-start; align-items: center; margin-bottom: 10px; margin-top: -90px; width: 100%; padding-left: 19%; }
-        .link-bar { display: flex; align-items: center; gap: 1px; background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; box-shadow: none; border-radius: 30px; padding: 3px 1px; white-space: nowrap; width: 510px; max-width: 510px; min-width: 510px; flex-shrink: 0; margin-top: -23px; position: relative; transition: background 0.35s ease, box-shadow 0.35s ease; }
+        .link-bar { display: flex; align-items: center; gap: 1px; background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; box-shadow: none; border-radius: 6px; padding: 3px 1px; white-space: nowrap; width: 510px; max-width: 510px; min-width: 510px; flex-shrink: 0; margin-top: -23px; position: relative; transition: background 0.35s ease, box-shadow 0.35s ease; }
         .link-bar:hover { background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3); }
         .icon-item { display: flex; justify-content: center; align-items: center; width: 42px; height: 42px; border-radius: 0; transition: transform 0.12s; color: #fff; cursor: pointer; user-select: none; flex-shrink: 0; }
         .icon-item:active { transform: scale(0.92); }
@@ -289,6 +309,16 @@
 
         @media (hover: hover) and (pointer: fine) {
             body, a, button, * { cursor: none !important; }
+            /* ========== PC端防复制（仅鼠标设备生效；手机端 hover:none 不匹配，不受影响） ========== */
+            /* 全局禁止文字选中：鼠标拖选、双击选词、三击选段都不会出现选中高亮 */
+            html, body, body * {
+                -webkit-user-select: none !important;
+                -moz-user-select: none !important;
+                -ms-user-select: none !important;
+                user-select: none !important;
+            }
+            /* 禁止图片、链接被拖拽出去 */
+            img, a { -webkit-user-drag: none; }
         }
         #cursor { position: fixed; pointer-events: none; z-index: 100000; width: 16px; height: 16px; margin-left: -8px; margin-top: -8px; border: 1.5px solid #fff; border-radius: 50%; background: transparent; display: flex; align-items: center; justify-content: center; transition: width 0.15s, height 0.15s, margin-left 0.15s, margin-top 0.15s; }
         #cursor::after { content: ''; width: 8px; height: 8px; background: #fff; border-radius: 50%; transition: width 0.15s, height 0.15s; }
@@ -313,7 +343,12 @@
         .mobile-menu-toggle { display: none; }
         @media (max-width: 768px) {
             html, body { overflow: hidden !important; height: 100vh !important; width: 100vw !important; }
-            .copyright-bar, .top-empty-space, .float-tip-top { display: none !important; }
+            .top-empty-space, .float-tip-top { display: none !important; }
+            /* 手机端显示版权©（仅作用于 max-width:768px，电脑端样式保持不变） */
+            .copyright-bar { display: block !important; position: fixed !important; left: 0 !important; right: 0 !important; bottom: 0 !important; top: auto !important; transform: none !important; width: 100% !important; max-width: none !important; margin: 0 !important; padding: 10px 16px !important; background: rgba(255, 255, 255, 0.22) !important; backdrop-filter: blur(16px) !important; -webkit-backdrop-filter: blur(16px) !important; border-radius: 0 !important; box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.2) !important; text-align: center !important; z-index: 150 !important; }
+            .copyright-bar .copyright-text { display: block !important; font-size: 12px !important; line-height: 1.5 !important; white-space: nowrap !important; word-break: normal !important; opacity: 1 !important; color: #fff !important; letter-spacing: 0.5px !important; }
+            /* 底部版权底板占住位置后，手机端悬浮菜单按钮上移避让（仅手机端） */
+            body .mobile-menu-toggle { bottom: 54px !important; }
             .footer-box { position: relative !important; height: 100vh !important; width: 100vw !important; display: flex !important; flex-direction: column !important; justify-content: center !important; align-items: center !important; padding: 0 20px !important; margin: 0 !important; }
             .bottom-area-wrapper { position: relative !important; width: 100% !important; min-height: 0 !important; flex: none !important; display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; gap: 0 !important; padding: 0 !important; margin: 0 !important; }
             .center-logo-flow.moved-logo { position: relative !important; top: auto !important; left: auto !important; right: auto !important; width: auto !important; max-width: calc(100vw - 48px) !important; margin: 0 0 18px 0 !important; z-index: 10 !important; transform: none !important; align-self: flex-start !important; order: 1 !important; }
@@ -325,7 +360,7 @@
             .interactive-badge .badge-text { font-size: 15px !important; margin-left: 20px !important; line-height: 1.6 !important; }
             .interactive-badge .q-left, .interactive-badge .q-right { font-size: 36px !important; }
             .social { position: relative !important; bottom: auto !important; left: auto !important; right: auto !important; padding: 0 !important; margin: 18px 0 0 0 !important; justify-content: center !important; z-index: 10 !important; order: 3 !important; }
-            .link-bar { width: auto !important; max-width: none !important; min-width: 0 !important; margin-top: 0 !important; justify-content: center !important; gap: 2px !important; padding: 6px 14px !important; background: rgba(255,255,255,0.12) !important; backdrop-filter: blur(8px) !important; -webkit-backdrop-filter: blur(8px) !important; border-radius: 30px !important; }
+            .link-bar { width: auto !important; max-width: none !important; min-width: 0 !important; margin-top: 0 !important; justify-content: center !important; gap: 2px !important; padding: 6px 14px !important; background: rgba(255,255,255,0.12) !important; backdrop-filter: blur(8px) !important; -webkit-backdrop-filter: blur(8px) !important; border-radius: 6px !important; }
             .icon-item { width: 38px !important; height: 38px !important; }
             .icon-item svg, .icon-item img { width: 20px !important; height: 20px !important; }
             .bar-text { display: none !important; }
@@ -334,6 +369,8 @@
             .mobile-menu-toggle:active { transform: translateX(-50%) scale(0.92) !important; }
             .mobile-menu-toggle .icon-close { display: none !important; }
             body.settings-open .mobile-menu-toggle { display: none !important; }
+            /* 手机端：切到 Oops / 时光胶囊画面（capsule-open）时隐藏底部三横菜单按钮；点 Oops 框关闭胶囊后自动恢复显示。仅在手机端媒体查询内，电脑端无此按钮、不受影响 */
+            body.capsule-open .mobile-menu-toggle { display: none !important; }
             body.mobile-menu-open .center-logo-flow.moved-logo { top: auto !important; order: 0 !important; margin: 0 0 16px 0 !important; position: relative !important; }
             body.mobile-menu-open .center-logo-flow.moved-logo .logo-img { display: none !important; }
             body.mobile-menu-open .center-logo-flow.moved-logo .name .bg { font-size: 95px !important; letter-spacing: 1px !important; }
@@ -360,7 +397,8 @@
         }
     </style>
 </head>
-<body>
+<body class="pre-blur">
+    <div id="wallpaper-layer" aria-hidden="true"></div>
     <div id="loading-box">
         <div class="loading-left-bg"></div>
         <div class="loading-right-bg"></div>
@@ -412,8 +450,8 @@
             </div>
 
             <div class="interactive-badge" id="siteBadge">
-                <span class="q-left">"</span>
-                <span class="q-right">"</span>
+                <span class="q-left">“</span>
+                <span class="q-right">”</span>
                 <div class="badge-title" id="badgeTitle">Hello World !</div>
                 <div class="badge-text" id="badgeText">一个建立于 21 世纪的小破站，存活于三次元的边缘</div>
             </div>
@@ -606,7 +644,7 @@
         </div>
 
         <div class="copyright-bar">
-            <span class="copyright-text">Copyright © 2026 小阿修 & Made by imsyy</span>
+            <span class="copyright-text">Copyright © 2026 小阿修 & Made by <a class="copyright-link" href="https://github.com/lvoe82002" target="_blank" rel="noopener noreferrer">imsyy</a></span>
         </div>
     </div>
 
@@ -617,15 +655,47 @@
     </div>
 
     <script>
-        window.addEventListener('load', () => {
+        /* ===== 模糊渐清：等页面 load + 壁纸图片真正下载完成后，再拉开帷幕，壁纸和全部内容一起由模糊渐变清晰（6 秒兜底，防止卡死） ===== */
+        function getInitialWallpaperUrl() {
+            const map = {
+                default: 'https://t.mwm.moe/ycy/',
+                daily: 'https://picsum.photos/1920/1080?random=1',
+                scenery: 'https://picsum.photos/1920/1080?random=2',
+                anime: 'https://t.mwm.moe/ycy/'
+            };
+            let type = 'anime';
+            try { type = localStorage.getItem('siteWallpaper') || 'anime'; } catch (e) {}
+            return map[type] || map.default;
+        }
+        function waitWindowLoad() {
+            return new Promise(resolve => {
+                if (document.readyState === 'complete') return resolve();
+                window.addEventListener('load', resolve);
+            });
+        }
+        function waitWallpaperReady() {
+            return new Promise(resolve => {
+                let finished = false;
+                const finish = () => { if (!finished) { finished = true; resolve(); } };
+                const img = new Image();
+                img.onload = finish;
+                img.onerror = finish;
+                img.src = getInitialWallpaperUrl();
+                setTimeout(finish, 6000);
+            });
+        }
+        function startReveal() {
+            document.body.classList.add('loading');      // 左右黑幕向两侧拉开
+            document.body.classList.add('page-clear');  // 壁纸 + 全部内容模糊渐清
+            document.body.classList.remove('pre-blur');
             setTimeout(() => {
-                document.body.classList.add('loading');
-                setTimeout(() => {
-                    const box = document.getElementById('loading-box');
-                    if (box) box.remove();
-                    tryShowWelcomeAfterLoad();
-                }, 600);
-            }, 300);
+                const box = document.getElementById('loading-box');
+                if (box) box.remove();
+                tryShowWelcomeAfterLoad();
+            }, 700);
+        }
+        Promise.all([waitWindowLoad(), waitWallpaperReady()]).then(() => {
+            setTimeout(startReveal, 300);
         });
 
         function getGreeting() {
@@ -774,6 +844,61 @@
                 setTimeout(() => p.remove(), 600);
             }
         }
+    </script>
+    <!-- PC端防复制脚本：仅PC(鼠标设备)生效，手机端自动跳过；与上方 CSS user-select 形成多层兜底 -->
+    <script>
+    (function() {
+        // 仅 PC 端（可悬停的鼠标设备）启用；触屏/手机端直接返回，不改变手机端任何行为
+        if (!window.matchMedia || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+        // 1) 阻止鼠标拖选、双击选词、三击选段：selectstart 阶段直接掐断，不出现选中高亮
+        document.addEventListener('selectstart', function(e) {
+            e.preventDefault();
+            return false;
+        }, false);
+
+        // 2) 兜底：任何途径产生的选区（如 Shift+方向键）立即清除
+        document.addEventListener('selectionchange', function() {
+            var sel = window.getSelection ? window.getSelection() : null;
+            if (sel && sel.rangeCount > 0) sel.removeAllRanges();
+        });
+
+        // 3) 拦截复制/剪切（Ctrl+C、菜单复制等全部途径），阻止内容写入剪贴板
+        function blockClipboard(e) {
+            e.preventDefault();
+            if (e.clipboardData) {
+                try { e.clipboardData.setData('text/plain', ''); } catch(err) {}
+                try { e.clipboardData.setData('text/html', ''); } catch(err) {}
+            }
+            return false;
+        }
+        document.addEventListener('copy', blockClipboard);
+        document.addEventListener('cut', blockClipboard);
+
+        // 4) 禁止拖拽文字、图片、链接
+        document.addEventListener('dragstart', function(e) {
+            e.preventDefault();
+            return false;
+        }, false);
+
+        // 5) 拦截键盘途径：Ctrl/Cmd + C(复制) X(剪切) A(全选) S(另存) U(源码) P(打印)、Ctrl+Insert、F12
+        document.addEventListener('keydown', function(e) {
+            var key = (e.key || '').toLowerCase();
+            var isCtrl = e.ctrlKey || e.metaKey;
+            if (isCtrl && ['c', 'x', 'a', 's', 'u', 'p'].indexOf(key) > -1) {
+                e.preventDefault();
+                return false;
+            }
+            if (isCtrl && e.keyCode === 45) { // Ctrl+Insert 复制
+                e.preventDefault();
+                return false;
+            }
+            if (e.keyCode === 123) { // F12 开发者工具
+                e.preventDefault();
+                return false;
+            }
+        }, false);
+    })();
     </script>
     <script>
         const segMap = [
@@ -1000,9 +1125,11 @@
 
             function applyWallpaper(type) {
                 const url = wallpapers[type] || wallpapers.default;
-                document.body.style.background = `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${url}) no-repeat center top`;
-                document.body.style.backgroundSize = 'cover';
-                document.body.style.backgroundAttachment = 'fixed';
+                const wallpaperLayer = document.getElementById('wallpaper-layer');
+                if (wallpaperLayer) {
+                    wallpaperLayer.style.background = `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${url}) no-repeat center top`;
+                    wallpaperLayer.style.backgroundSize = 'cover';
+                }
 
                 if (wallpaperOptions) {
                     wallpaperOptions.querySelectorAll('.settings-option').forEach(opt => {
