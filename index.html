@@ -1556,15 +1556,12 @@
                 return (windDir + ' ' + windPower).replace(/\s+/g, ' ').trim();
             }
 
-            /* 仅使用高德 IP 定位（与 renkonti.top 同款）：不弹任何权限框、不使用GPS、不做本地缓存。
-               WiFi/宽带公网IP可识别到城市；手机流量运营商出口IP识别不到时直接提示，不猜测到其他城市 */
-            // 判断当前是否为手机流量（蜂窝网络）；不支持 Network Information API 的设备返回 false，交由后续定位结果兜底
+            /* 高德 IP 定位（与 renkonti.top 同款）：不弹权限框、不使用GPS、不做本地缓存。
+               关键修正：不再用 navigator.connection.type 预判网络类型——手机热点、需要网页认证的 WiFi、
+               安卓“智能切换/WiFi辅助”等场景下 type 可能被误报为 cellular，会导致明明连着 WiFi 却被提前判失败。
+               现在一律实际请求高德接口，以接口真实返回为准（renkonti.top 正是这种做法）。 */
             function getConnection() {
                 return navigator.connection || navigator.mozConnection || navigator.webkitConnection || null;
-            }
-            function isCellularNetwork() {
-                const c = getConnection();
-                return !!(c && c.type === 'cellular');
             }
             // 天气失败提示每次打开页面只弹一次，避免 5 分钟轮询、页面重新可见时重复打扰
             let weatherFailTipShown = false;
@@ -1592,11 +1589,7 @@
             async function updateWeather() {
                 if (document.hidden) return;
                 weatherEl.textContent = '正在定位…';
-                // 用流量打开：蜂窝网络运营商出口 IP 无法被高德定位，直接按获取失败处理并给出顶部提示
-                if (isCellularNetwork()) {
-                    showWeatherFail();
-                    return;
-                }
+                // 不做网络类型预判，直接请求高德接口（对齐 renkonti.top：它从不检查 connection.type）
                 try {
                     const loc = await getJSON('https://restapi.amap.com/v3/ip?key=' + AMAP_KEY);
                     // 手机流量下高德常返回 status=1 但 adcode/city 为空数组[]，按无法定位处理
@@ -1619,7 +1612,7 @@
             }
 
             updateWeather();
-            // 网络在 WiFi/流量之间切换时立即重新判定（如中途切到流量，也会补一次失败提示）
+            // 网络切换时立即重新请求一次定位
             const conn = getConnection();
             if (conn && conn.addEventListener) {
                 conn.addEventListener('change', updateWeather);
