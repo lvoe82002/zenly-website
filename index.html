@@ -784,10 +784,12 @@
             return '夜深了';
         }
 
+        // 问候语生命周期标记：天气失败提示必须等问候语完整显示并关闭后才允许弹出
+        window.__greetingDone = false;
         function showWelcomeTip() {
             const tip = document.getElementById('welcomeTip');
             const textEl = document.getElementById('welcomeTipText');
-            if (!tip || !textEl) return;
+            if (!tip || !textEl) { window.__greetingDone = true; return; }
             const greeting = getGreeting();
             if (greeting === '早上好') {
                 textEl.innerHTML = '<strong>早上好</strong> 欢迎来到我的主页';
@@ -806,6 +808,7 @@
                     tip.classList.add('float-tip-out');
                     setTimeout(() => {
                         tip.classList.remove('show', 'float-tip-out');
+                        window.__greetingDone = true; // 问候语已完全关闭，放行正在等待的天气失败提示
                     }, 350);
                 }, 3500);
             })();
@@ -813,7 +816,7 @@
 
         function tryShowWelcomeAfterLoad() {
             const navEntry = performance.getEntriesByType('navigation')[0];
-            if (!navEntry) return;
+            if (!navEntry) { window.__greetingDone = true; return; }
             const type = navEntry.type;
             if (type === 'reload') {
                 sessionStorage.removeItem('welcomed');
@@ -824,7 +827,10 @@
             if (type === 'navigate' && !sessionStorage.getItem('welcomed')) {
                 showWelcomeTip();
                 sessionStorage.setItem('welcomed', '1');
+                return;
             }
+            // 本次不会再弹问候语（本会话已问候过 / 非导航进入）：直接放行后续提示
+            window.__greetingDone = true;
         }
 
         let rightTipTimer;
@@ -1566,11 +1572,18 @@
                 weatherEl.textContent = '天气信息获取失败';
                 if (weatherFailTipShown) return;
                 weatherFailTipShown = true;
+                let greetingWaitStart = 0;
                 (function enqueueAfterReveal() {
-                    // 先等开场加载帷幕拉开（body.page-clear），避免提示被盖在加载动画下面；
-                    // 再进入顶部提示队列，排在问候语之后显示，保证不重叠（手机端与 PC 端共用此逻辑）
+                    // 1) 先等开场加载帷幕拉开（body.page-clear），避免提示被盖在加载动画下面
                     if (!document.body.classList.contains('page-clear')) {
                         setTimeout(enqueueAfterReveal, 200);
+                        return;
+                    }
+                    if (!greetingWaitStart) greetingWaitStart = Date.now();
+                    // 2) 严格顺序：必须先显示问候语，等问候语完全关闭（__greetingDone）后才弹天气失败提示；
+                    //    兜底：帷幕拉开超过 10 秒仍未收到结束信号（异常场景）则不再死等
+                    if (window.__greetingDone !== true && (Date.now() - greetingWaitStart) < 10000) {
+                        setTimeout(enqueueAfterReveal, 150);
                         return;
                     }
                     if (window.enqueueTopTip) window.enqueueTopTip('天气信息获取失败', 3000, 'close');
