@@ -230,6 +230,8 @@
         @keyframes floatTipIn { 0% { opacity: 0; transform: translateX(-50%) translateY(-14px) scale(0.92); } 100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); } }
         @keyframes floatTipOut { 0% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); } 100% { opacity: 0; transform: translateX(-50%) translateY(-10px) scale(0.94); } }
         .float-tip-top .tip-icon { display: inline-flex !important; align-items: center !important; justify-content: center !important; width: 20px !important; height: 20px !important; border-radius: 50% !important; background: #ffffff !important; color: #1f1f1f !important; font-family: 'Times New Roman', Times, serif !important; font-style: italic !important; font-weight: 700 !important; font-size: 15px !important; line-height: 1 !important; flex-shrink: 0 !important; padding-bottom: 2px !important; box-sizing: border-box !important; }
+        .float-tip-top .tip-icon.is-svg { padding-bottom: 0 !important; position: relative !important; font-style: normal !important; }
+        .float-tip-top .tip-icon.is-svg svg { position: absolute !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important; display: block !important; }
         .particles { position: fixed; top: 0; left: 0; width: 100%; pointer-events: none; z-index: 9998; }
         .particle { position: absolute; border-radius: 50%; transform: translate(-50%, -50%); animation: particle-burst 0.6s ease-out forwards; }
         @keyframes particle-burst { 0% { opacity: 1; transform: translate(-50%, -50%) scale(1) } 100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0.5) } }
@@ -428,16 +430,29 @@
     </div>
 
     <script>
-        /* 通用顶部提醒气泡：与问候语同款样式、带圆形 i 图标；任意脚本均可 window.showSiteTip('文案', 停留毫秒) */
+        /* 通用顶部提醒气泡：与问候语同款样式；任意脚本均可 window.showSiteTip('文案', 停留毫秒, 图标)
+           第三个参数 icon：传字符直接显示（默认 'i'）；传内置名称 'close' 显示实心粗 X 的 SVG 图标（失败类提示，例如天气获取失败） */
         (function() {
             let tipEl = null, hideTimer = null, outTimer = null;
-            window.showSiteTip = function(text, duration) {
+            // 内置 SVG 图标（viewBox 0 0 48 48），填充色 currentColor 自动跟随 .tip-icon 的深色字色
+            const TIP_ICON_SVGS = {
+                close: '<svg width="1em" height="1em" viewBox="0 0 48 48" fill="none" aria-hidden="true" style="display:block"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 11L11 6L24 19L37 6L42 11L29 24L42 37L37 42L24 29L11 42L6 37L19 24L6 11Z" fill="currentColor" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+            };
+            window.showSiteTip = function(text, duration, icon) {
                 duration = duration || 2500;
                 if (!tipEl) {
                     tipEl = document.createElement('div');
                     tipEl.className = 'float-tip-top site-tip';
-                    tipEl.innerHTML = '<span class="tip-icon">i</span><span class="site-tip-text"></span>';
+                    tipEl.innerHTML = '<span class="tip-icon"></span><span class="site-tip-text"></span>';
                     document.body.appendChild(tipEl);
+                }
+                const tipIconEl = tipEl.querySelector('.tip-icon');
+                if (TIP_ICON_SVGS[icon]) {
+                    tipIconEl.classList.add('is-svg');
+                    tipIconEl.innerHTML = TIP_ICON_SVGS[icon];
+                } else {
+                    tipIconEl.classList.remove('is-svg');
+                    tipIconEl.textContent = icon || 'i';
                 }
                 tipEl.querySelector('.site-tip-text').textContent = text;
                 tipEl.classList.remove('float-tip-out');
@@ -450,6 +465,38 @@
                         tipEl.classList.remove('show', 'float-tip-out');
                     }, 350);
                 }, duration);
+            };
+            /* ===== 顶部提示串行队列（PC + 手机端通用）：同一时刻只允许一个顶部气泡可见。
+               天气失败提示进入队列排队，等问候语（早上好/下午好…）或其他顶部气泡完全退场后再弹出，保证互不重叠 ===== */
+            const tipQueue = [];
+            let queueBusy = false;
+            function isOtherTipVisible() {
+                const tips = document.querySelectorAll('.float-tip-top.show');
+                for (let i = 0; i < tips.length; i++) {
+                    if (tips[i] === tipEl) continue;
+                    // 手机端 #welcomeTip 等非 site-tip 被 CSS 强制 display:none，虽带 show 类但不可见，不算占位
+                    if (getComputedStyle(tips[i]).display !== 'none') return true;
+                }
+                return false;
+            }
+            function pumpQueue() {
+                if (queueBusy) return;
+                const job = tipQueue.shift();
+                if (!job) return;
+                (function waitSlot() {
+                    if (isOtherTipVisible()) { setTimeout(waitSlot, 150); return; }
+                    queueBusy = true;
+                    window.showSiteTip(job.text, job.duration, job.icon);
+                    setTimeout(function() {
+                        queueBusy = false;
+                        pumpQueue();
+                    }, job.duration + 420); // 停留时长 + 350ms 退场动画 + 余量
+                })();
+            }
+            /* 排队弹出顶部提示：window.enqueueTopTip('文案', 停留毫秒, 图标字符) */
+            window.enqueueTopTip = function(text, duration, icon) {
+                tipQueue.push({ text: text, duration: duration || 3000, icon: icon });
+                pumpQueue();
             };
         })();
     </script>
@@ -747,13 +794,21 @@
             } else {
                 textEl.textContent = greeting + ' 欢迎来到我的主页';
             }
-            tip.classList.add('show');
-            setTimeout(() => {
-                tip.classList.add('float-tip-out');
+            // 与天气失败等顶部提示互斥：若此刻已有 site-tip 正在显示，等其退场后再弹问候语，避免两个气泡重叠
+            function siteTipVisible() {
+                const t = document.querySelector('.float-tip-top.site-tip.show');
+                return !!(t && getComputedStyle(t).display !== 'none');
+            }
+            (function present() {
+                if (siteTipVisible()) { setTimeout(present, 150); return; }
+                tip.classList.add('show');
                 setTimeout(() => {
-                    tip.classList.remove('show', 'float-tip-out');
-                }, 350);
-            }, 3500);
+                    tip.classList.add('float-tip-out');
+                    setTimeout(() => {
+                        tip.classList.remove('show', 'float-tip-out');
+                    }, 350);
+                }, 3500);
+            })();
         }
 
         function tryShowWelcomeAfterLoad() {
@@ -1497,19 +1552,48 @@
 
             /* 仅使用高德 IP 定位（与 renkonti.top 同款）：不弹任何权限框、不使用GPS、不做本地缓存。
                WiFi/宽带公网IP可识别到城市；手机流量运营商出口IP识别不到时直接提示，不猜测到其他城市 */
+            // 判断当前是否为手机流量（蜂窝网络）；不支持 Network Information API 的设备返回 false，交由后续定位结果兜底
+            function getConnection() {
+                return navigator.connection || navigator.mozConnection || navigator.webkitConnection || null;
+            }
+            function isCellularNetwork() {
+                const c = getConnection();
+                return !!(c && c.type === 'cellular');
+            }
+            // 天气失败提示每次打开页面只弹一次，避免 5 分钟轮询、页面重新可见时重复打扰
+            let weatherFailTipShown = false;
+            function showWeatherFail() {
+                weatherEl.textContent = '天气信息获取失败';
+                if (weatherFailTipShown) return;
+                weatherFailTipShown = true;
+                (function enqueueAfterReveal() {
+                    // 先等开场加载帷幕拉开（body.page-clear），避免提示被盖在加载动画下面；
+                    // 再进入顶部提示队列，排在问候语之后显示，保证不重叠（手机端与 PC 端共用此逻辑）
+                    if (!document.body.classList.contains('page-clear')) {
+                        setTimeout(enqueueAfterReveal, 200);
+                        return;
+                    }
+                    if (window.enqueueTopTip) window.enqueueTopTip('天气信息获取失败', 3000, 'close');
+                })();
+            }
             async function updateWeather() {
                 if (document.hidden) return;
                 weatherEl.textContent = '正在定位…';
+                // 用流量打开：蜂窝网络运营商出口 IP 无法被高德定位，直接按获取失败处理并给出顶部提示
+                if (isCellularNetwork()) {
+                    showWeatherFail();
+                    return;
+                }
                 try {
                     const loc = await getJSON('https://restapi.amap.com/v3/ip?key=' + AMAP_KEY);
                     // 手机流量下高德常返回 status=1 但 adcode/city 为空数组[]，按无法定位处理
                     if (!loc || loc.status !== '1' || !loc.adcode || Array.isArray(loc.adcode)) {
-                        weatherEl.textContent = '天气数据获取失败';
+                        showWeatherFail();
                         return;
                     }
                     const w = await getJSON('https://restapi.amap.com/v3/weather/weatherInfo?key=' + AMAP_KEY + '&city=' + loc.adcode + '&extensions=base');
                     if (!w || w.status !== '1' || !w.lives || !w.lives.length) {
-                        weatherEl.textContent = '天气数据获取失败';
+                        showWeatherFail();
                         return;
                     }
                     const live = w.lives[0];
@@ -1517,11 +1601,16 @@
                     city = live.city || city || loc.province || '';
                     weatherEl.textContent = (city ? city + ' ' : '') + live.weather + ' ' + live.temperature + '℃ ' + formatWind(live.winddirection, live.windpower);
                 } catch (err) {
-                    weatherEl.textContent = '天气数据获取失败';
+                    showWeatherFail();
                 }
             }
 
             updateWeather();
+            // 网络在 WiFi/流量之间切换时立即重新判定（如中途切到流量，也会补一次失败提示）
+            const conn = getConnection();
+            if (conn && conn.addEventListener) {
+                conn.addEventListener('change', updateWeather);
+            }
             setInterval(updateWeather, 5 * 60 * 1000);
             document.addEventListener('visibilitychange', function() {
                 if (!document.hidden) updateWeather();
