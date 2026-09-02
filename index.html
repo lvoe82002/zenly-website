@@ -1572,7 +1572,7 @@
                 return next();
             }
 
-            /* ===== 定位结果缓存（localStorage，6小时有效） ===== */
+            /* ===== 定位结果缓存（localStorage，30分钟有效，换地方后最多半小时自动更新） ===== */
             function loadLocCache() {
                 try {
                     const obj = JSON.parse(localStorage.getItem(LOC_CACHE_KEY));
