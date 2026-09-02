@@ -996,7 +996,7 @@
                 const month = now.getMonth() + 1;
                 const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
 
-                const startDate = new Date('2020-01-01');
+                const startDate = new Date('2026-08-15');
                 let diffYears = now.getFullYear() - startDate.getFullYear();
                 let diffMonths = now.getMonth() - startDate.getMonth();
                 let diffDays = now.getDate() - startDate.getDate();
@@ -1474,12 +1474,12 @@
                     const loc = await getJSON('https://restapi.amap.com/v3/ip?key=' + AMAP_KEY);
                     // 手机流量下高德常返回 status=1 但 adcode/city 为空数组[]，按无法定位处理
                     if (!loc || loc.status !== '1' || !loc.adcode || Array.isArray(loc.adcode)) {
-                        weatherEl.textContent = '当前网络无法定位（连接WiFi后刷新试试）';
+                        weatherEl.textContent = '天气数据获取失败';
                         return;
                     }
                     const w = await getJSON('https://restapi.amap.com/v3/weather/weatherInfo?key=' + AMAP_KEY + '&city=' + loc.adcode + '&extensions=base');
                     if (!w || w.status !== '1' || !w.lives || !w.lives.length) {
-                        weatherEl.textContent = '当前网络无法定位（连接WiFi后刷新试试）';
+                        weatherEl.textContent = '天气数据获取失败';
                         return;
                     }
                     const live = w.lives[0];
@@ -1487,7 +1487,7 @@
                     city = live.city || city || loc.province || '';
                     weatherEl.textContent = (city ? city + ' ' : '') + live.weather + ' ' + live.temperature + '℃ ' + formatWind(live.winddirection, live.windpower);
                 } catch (err) {
-                    weatherEl.textContent = '当前网络无法定位（连接WiFi后刷新试试）';
+                    weatherEl.textContent = '天气数据获取失败';
                 }
             }
 
