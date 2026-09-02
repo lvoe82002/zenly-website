@@ -644,7 +644,7 @@
         </div>
 
         <div class="copyright-bar">
-            <span class="copyright-text">Copyright © 2026 小阿修 & Made by <a class="copyright-link" href="https://github.com/lvoe82002/zenly-website" target="_blank" rel="noopener noreferrer">imsyy</a></span>
+            <span class="copyright-text">Copyright © 2026 小阿修 & Made by <a class="copyright-link" href="https://github.com/lvoe82002" target="_blank" rel="noopener noreferrer">imsyy</a></span>
         </div>
     </div>
 
@@ -996,7 +996,7 @@
                 const month = now.getMonth() + 1;
                 const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
 
-                const startDate = new Date('2026-08-15');
+                const startDate = new Date('2020-01-01');
                 let diffYears = now.getFullYear() - startDate.getFullYear();
                 let diffMonths = now.getMonth() - startDate.getMonth();
                 let diffDays = now.getDate() - startDate.getDate();
@@ -1453,8 +1453,8 @@
         (function() {
             const weatherEl = document.getElementById('clockWeather');
             const AMAP_KEY = '4a62cc079349e92d403a8c9db3ec3b6f';
-            const LOC_CACHE_KEY = 'zenly_loc_v2'; // v2：修复外地显示英文城市名，旧版 v1 缓存直接作废
-            const LOC_CACHE_TTL = 30 * 60 * 1000; // 定位结果缓存 30 分钟：换城市后最多半小时自动更新，同时节省定位配额
+            const LOC_CACHE_KEY = 'zenly_loc_v1';
+            const LOC_CACHE_TTL = 6 * 60 * 60 * 1000; // 定位结果缓存 6 小时，避免每次刷新都消耗定位配额
 
             /* ===== JSONP 工具：绕过 CORS 调用高德 Web 服务 ===== */
             function jsonp(url, timeoutMs) {
@@ -1479,12 +1479,7 @@
             /* ============ 定位源 1：高德 IP 定位（https，用你的 key，无需 GPS） ============ */
             function locateByAmapIP() {
                 return jsonp('https://restapi.amap.com/v3/ip?key=' + AMAP_KEY).then(function(data) {
-                    if (data && data.status === '1') {
-                        // 高德只定位到省/直辖市时，city、adcode 可能是空数组 []，统一归一化
-                        let city = (data.city && !Array.isArray(data.city)) ? data.city : '';
-                        let province = (data.province && !Array.isArray(data.province)) ? data.province : '';
-                        // 省级 adcode 不能直接查天气，city 为空时丢弃，后面用经纬度逆地理补全
-                        let adcode = (city && data.adcode && !Array.isArray(data.adcode)) ? data.adcode : '';
+                    if (data && data.status === '1' && data.city) {
                         let lat = null, lon = null;
                         if (data.rectangle) {
                             const parts = data.rectangle.split(';');
@@ -1495,9 +1490,7 @@
                                 lat = (parseFloat(p1[1]) + parseFloat(p2[1])) / 2;
                             }
                         }
-                        if (city || province || lat) {
-                            return { city: city, province: province, adcode: adcode, lat: lat, lon: lon };
-                        }
+                        return { city: data.city, province: data.province || '', adcode: data.adcode || '', lat: lat, lon: lon };
                     }
                     throw new Error('高德IP定位失败');
                 });
@@ -1572,7 +1565,7 @@
                 return next();
             }
 
-            /* ===== 定位结果缓存（localStorage，30分钟有效，换地方后最多半小时自动更新） ===== */
+            /* ===== 定位结果缓存（localStorage，6小时有效） ===== */
             function loadLocCache() {
                 try {
                     const obj = JSON.parse(localStorage.getItem(LOC_CACHE_KEY));
@@ -1588,33 +1581,14 @@
                 } catch(e) {}
             }
 
-            /* ===== 判断字符串是否含中文（用于拦截 Guangzhou 这类英文拼音上屏） ===== */
-            function hasChinese(s) {
-                return !!s && /[\u4e00-\u9fa5]/.test(String(s));
-            }
-
-            /* ===== 城市名 → adcode + 标准中文名（高德行政区划；英文拼音也可识别） ===== */
+            /* ===== 城市名 → adcode（高德行政区划） ===== */
             function getAdcode(cityName) {
                 const keyword = encodeURIComponent(cityName);
                 return jsonp('https://restapi.amap.com/v3/config/district?key=' + AMAP_KEY + '&keywords=' + keyword + '&subdistrict=0').then(function(data) {
-                    if (data && data.status === '1' && data.districts && data.districts.length > 0 && data.districts[0].adcode) {
-                        return { adcode: data.districts[0].adcode, name: data.districts[0].name || '' };
+                    if (data && data.status === '1' && data.districts && data.districts.length > 0) {
+                        return data.districts[0].adcode;
                     }
                     throw new Error('获取adcode失败');
-                });
-            }
-
-            /* ===== 经纬度 → adcode + 中文城市名（高德逆地理；兜底源返回英文拼音时靠它转回中文） ===== */
-            function regeoByAmap(lat, lon) {
-                return jsonp('https://restapi.amap.com/v3/geocode/regeo?key=' + AMAP_KEY + '&location=' + lon + ',' + lat + '&extensions=base').then(function(data) {
-                    if (data && data.status === '1' && data.regeocode && data.regeocode.addressComponent) {
-                        const ac = data.regeocode.addressComponent;
-                        let cityName = (ac.city && !Array.isArray(ac.city)) ? ac.city : '';
-                        if (!cityName) cityName = (ac.province && !Array.isArray(ac.province)) ? ac.province : ''; // 直辖市 city 为空，用省名
-                        if (!ac.adcode || Array.isArray(ac.adcode)) throw new Error('逆地理无adcode');
-                        return { adcode: String(ac.adcode), name: cityName };
-                    }
-                    throw new Error('逆地理失败');
                 });
             }
 
@@ -1628,12 +1602,12 @@
                 });
             }
 
-            /* ===== Open-Meteo：城市名 → 经纬度 + 中文名（免费，无需key；language=zh 时返回中文译名） ===== */
+            /* ===== Open-Meteo：城市名 → 经纬度（免费，无需key） ===== */
             function geoByCity(cityName) {
                 const name = encodeURIComponent(cityName);
                 return fetch('https://geocoding-api.open-meteo.com/v1/search?name=' + name + '&count=1&language=zh').then(function(res) { return res.json(); }).then(function(data) {
                     if (data && data.results && data.results.length > 0) {
-                        return { lat: data.results[0].latitude, lon: data.results[0].longitude, name: data.results[0].name || '' };
+                        return { lat: data.results[0].latitude, lon: data.results[0].longitude };
                     }
                     throw new Error('geocoding失败');
                 });
@@ -1689,55 +1663,26 @@
                 return getWeatherText(cw.weathercode) + ' ' + temp + '℃ ' + getWindDirection(cw.winddirection) + ' ' + getWindScale(cw.windspeed);
             }
 
-            /* ===== 根据定位结果获取天气（高德优先，Open-Meteo 兜底；城市名全程保证中文） ===== */
+            /* ===== 根据定位结果获取天气（高德优先，Open-Meteo 兜底） ===== */
             async function getWeatherByLoc(loc) {
-                let adcode = loc.adcode || '';
-                let cnName = hasChinese(loc.city) ? loc.city : ''; // 记录标准中文城市名，任何环节拿到就更新
-
-                // 1) 没有 adcode 但有经纬度（常见于英文兜底定位源）：先用高德逆地理换 adcode + 中文名
-                if (!adcode && loc.lat && loc.lon) {
-                    try {
-                        const r = await regeoByAmap(loc.lat, loc.lon);
-                        adcode = r.adcode;
-                        cnName = r.name || cnName;
-                    } catch(e) {}
-                }
-
-                // 2) 仍无 adcode 但有城市名（可能是英文拼音，如 Guangzhou）：高德行政区划查询转中文 + adcode
+                let adcode = loc.adcode;
                 if (!adcode && loc.city) {
-                    try {
-                        const r = await getAdcode(loc.city);
-                        adcode = r.adcode;
-                        cnName = hasChinese(r.name) ? r.name : cnName;
-                    } catch(e) {}
+                    try { adcode = await getAdcode(loc.city); } catch(e) {}
                 }
-
-                // 3) 拿到 adcode → 高德实时天气（优先显示地级市中文名 cnName，其次天气返回名）
                 if (adcode) {
                     const live = await getWeatherByAmap(adcode);
-                    return { city: cnName || (hasChinese(live.city) ? live.city : ''), text: formatAmap(live) };
+                    return { city: live.city || loc.city || '', text: formatAmap(live) };
                 }
-
-                // 4) 只剩城市名（可能是英文拼音）：Open-Meteo 先转坐标+中文名，再回头试一次高德逆地理，尽量走高德天气
                 let lat = loc.lat, lon = loc.lon;
                 if (!lat && loc.city) {
                     try {
-                        const g = await geoByCity(cnName || loc.city);
-                        if (g) {
-                            lat = g.lat; lon = g.lon;
-                            cnName = hasChinese(g.name) ? g.name : cnName;
-                        }
+                        const g = await geoByCity(loc.city);
+                        if (g) { lat = g.lat; lon = g.lon; }
                     } catch(e) {}
                 }
-                if (lat && lon) {
-                    try {
-                        const r = await regeoByAmap(lat, lon);
-                        const live = await getWeatherByAmap(r.adcode);
-                        return { city: cnName || r.name || '', text: formatAmap(live) };
-                    } catch(e) {}
-                    // 5) 最终兜底：Open-Meteo 天气。城市名只显示中文；只有英文拼音时宁可不显示城市，也不上英文
+                if (lat) {
                     const cw = await getWeatherByOpenMeteo(lat, lon);
-                    return { city: cnName || '', text: formatOpenMeteo(cw) };
+                    return { city: loc.city || '', text: formatOpenMeteo(cw) };
                 }
                 throw new Error('无可用天气源');
             }
