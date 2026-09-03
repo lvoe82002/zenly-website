@@ -1556,7 +1556,7 @@
                 return (windDir + ' ' + windPower).replace(/\s+/g, ' ').trim();
             }
 
-            /* 仅使用高德 IP 定位（与 renkonti.top 同款）：不弹任何权限框、不使用GPS、不做本地缓存。
+            /* 仅使用高德 IP 定位：不弹任何权限框、不使用GPS、不做本地缓存。
                WiFi/宽带公网IP可识别到城市；手机流量运营商出口IP识别不到时直接提示，不猜测到其他城市 */
             // 判断当前是否为手机流量（蜂窝网络）；不支持 Network Information API 的设备返回 false，交由后续定位结果兜底
             function getConnection() {
