@@ -21,10 +21,9 @@
             width: 100%;
             min-height: 100vh;
             overflow-x: hidden;
+            overflow-x: clip;
             font-family: "宋体";
-            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(https://t.mwm.moe/ycy/) no-repeat center top;
-            background-size: cover;
-            background-attachment: fixed;
+            background: #0b0b0d;
             transition: all 0.5s ease;
         }
 
@@ -377,24 +376,9 @@
             box-sizing: border-box !important;
         }
 
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            pointer-events: none;
-            z-index: 9998;
-        }
-        .particle {
-            position: absolute;
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            animation: particle-burst 0.6s ease-out forwards;
-        }
-        @keyframes particle-burst {
-            0% { opacity: 1; transform: translate(-50%, -50%) scale(1) }
-            100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0.5) }
-        }
+        .particles { position: fixed; top: 0; left: 0; width: 100%; pointer-events: none; z-index: 9998; }
+        .particle { position: absolute; border-radius: 50%; transform: translate(-50%, -50%); animation: particle-burst 0.6s ease-out forwards; }
+        @keyframes particle-burst { 0% { opacity: 1; transform: translate(-50%, -50%) scale(1) } 100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0.5) } }
 
         /* ========== 新的返回主页按钮样式（顶部居中） ========== */
         .back-btn {
@@ -471,9 +455,34 @@
                 cursor: auto !important;
             }
         }
+    
+        /* ===== 固定壁纸层：PC/手机统一 cover，修复移动端 background-attachment:fixed 导致壁纸被放大 ===== */
+        html { background: #0b0b0d; }
+        body { background: transparent !important; background-image: none !important; background-attachment: scroll !important; }
+        #wallpaper-layer {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100vh; height: 100dvh;
+            z-index: -1; pointer-events: none;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(https://t.mwm.moe/ycy/) no-repeat center center;
+            background-size: cover; background-position: center center;
+            -webkit-transform: translateZ(0); transform: translateZ(0);
+        }
+        @supports not (height: 100dvh) { #wallpaper-layer { height: 100vh; } }
+
+        /* 手机端壁纸固定：滑动时壁纸不跟随内容滚动（与主页表现一致） */
+        @media (max-width: 768px), (hover: none) and (pointer: coarse) {
+            html, body { overflow-x: clip !important; }
+            #wallpaper-layer {
+                position: fixed !important; top: 0 !important; left: 0 !important;
+                width: 100% !important; height: 100vh !important; height: 100dvh !important;
+                -webkit-transform: translate3d(0,0,0) !important; transform: translate3d(0,0,0) !important;
+            }
+        }
+
     </style>
 </head>
 <body>
+    <div id="wallpaper-layer" aria-hidden="true"></div>
     <canvas id="snowFullScreen"></canvas>
     <canvas id="rainCanvas"></canvas>
     <canvas id="lightningCanvas"></canvas>
@@ -628,7 +637,6 @@
         };
 
         document.addEventListener("click", e => createParticle(e.clientX, e.clientY));
-
         function createParticle(x, y) {
             for (let i = 0; i < 18; i++) {
                 const p = document.createElement("div");
@@ -753,9 +761,10 @@
 
             function applyWallpaper(type) {
                 const url = wallpapers[type] || wallpapers.default;
-                document.body.style.background = `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${url}) no-repeat center top`;
-                document.body.style.backgroundSize = 'cover';
-                document.body.style.backgroundAttachment = 'fixed';
+                const __wl = document.getElementById('wallpaper-layer');
+                const __bg = `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${url}) no-repeat center center`;
+                if (__wl) { __wl.style.background = __bg; __wl.style.backgroundSize = 'cover'; }
+                else { document.body.style.background = __bg; document.body.style.backgroundSize = 'cover'; }
 
                 if (wallpaperOptions) {
                     wallpaperOptions.querySelectorAll('.settings-option').forEach(opt => {
@@ -1070,5 +1079,40 @@
             requestAnimationFrame(animate);
         })();
     </script>
+
+<script>
+/* ===== F12 拦截 + 问候气泡（与主页一致） ===== */
+(function () {
+    function showSiteTip(text, duration, icon) {
+        duration = duration || 2500;
+        var tip = document.querySelector('.float-tip-top.site-tip');
+        if (!tip) {
+            tip = document.createElement('div');
+            tip.className = 'float-tip-top site-tip';
+            tip.innerHTML = '<span class="tip-icon"></span><span class="site-tip-text"></span>';
+            (document.body || document.documentElement).appendChild(tip);
+        }
+        var iconEl = tip.querySelector('.tip-icon');
+        iconEl.classList.remove('is-svg');
+        iconEl.textContent = icon || 'i';
+        tip.querySelector('.site-tip-text').textContent = text;
+        tip.classList.remove('float-tip-out');
+        tip.classList.add('show');
+        clearTimeout(tip.__hideT); clearTimeout(tip.__outT);
+        tip.__hideT = setTimeout(function () {
+            tip.classList.add('float-tip-out');
+            tip.__outT = setTimeout(function () { tip.classList.remove('show', 'float-tip-out'); }, 350);
+        }, duration);
+    }
+    window.showSiteTip = showSiteTip;
+    document.addEventListener('keydown', function (e) {
+        if (e.keyCode === 123 || (e.key || '').toLowerCase() === 'f12') {
+            e.preventDefault();
+            showSiteTip('别想偷我源码，想要自己写去', 2500);
+            return false;
+        }
+    }, false);
+})();
+</script>
 </body>
 </html>

@@ -27,11 +27,9 @@
         body {
             width: 100%;
             overflow-x: hidden;
+            overflow-x: clip;
             font-family: "宋体";
-            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-                url(https://t.mwm.moe/ycy/) no-repeat center top !important;
-            background-size: cover !important;
-            background-attachment: fixed !important;
+            background: #0b0b0d;
         }
 
         /* 雪花画布 */
@@ -181,31 +179,9 @@
             color: #ffffff;
             font-weight: bold;
         }
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 9998;
-        }
-        .particle {
-            position: absolute;
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            animation: burst 0.6s ease-out forwards;
-        }
-        @keyframes burst {
-            0% {
-                opacity: 1;
-                transform: translate(-50%, -50%) scale(1);
-            }
-            100% {
-                opacity: 0;
-                transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0.5);
-            }
-        }
+        .particles { position: fixed; top: 0; left: 0; width: 100%; pointer-events: none; z-index: 9998; }
+        .particle { position: absolute; border-radius: 50%; transform: translate(-50%, -50%); animation: particle-burst 0.6s ease-out forwards; }
+        @keyframes particle-burst { 0% { opacity: 1; transform: translate(-50%, -50%) scale(1) } 100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0.5) } }
 
         /* ========== 右键禁用提示框样式 ========== */
         .float-tip-top {
@@ -318,9 +294,34 @@
                 cursor: auto !important;
             }
         }
+    
+        /* ===== 固定壁纸层：PC/手机统一 cover，修复移动端 background-attachment:fixed 导致壁纸被放大 ===== */
+        html { background: #0b0b0d; }
+        body { background: transparent !important; background-image: none !important; background-attachment: scroll !important; }
+        #wallpaper-layer {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100vh; height: 100dvh;
+            z-index: -1; pointer-events: none;
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(https://t.mwm.moe/ycy/) no-repeat center center;
+            background-size: cover; background-position: center center;
+            -webkit-transform: translateZ(0); transform: translateZ(0);
+        }
+        @supports not (height: 100dvh) { #wallpaper-layer { height: 100vh; } }
+
+        /* 手机端壁纸固定：滑动时壁纸不跟随内容滚动（与主页表现一致） */
+        @media (max-width: 768px), (hover: none) and (pointer: coarse) {
+            html, body { overflow-x: clip !important; }
+            #wallpaper-layer {
+                position: fixed !important; top: 0 !important; left: 0 !important;
+                width: 100% !important; height: 100vh !important; height: 100dvh !important;
+                -webkit-transform: translate3d(0,0,0) !important; transform: translate3d(0,0,0) !important;
+            }
+        }
+
     </style>
 </head>
 <body>
+    <div id="wallpaper-layer" aria-hidden="true"></div>
     <!-- 三个特效画布 -->
     <canvas id="snowFullScreen"></canvas>
     <canvas id="rainCanvas"></canvas>
@@ -645,7 +646,7 @@ nginx</div>
     })();
 
     const particlesWrap = document.getElementById("particles");
-    const colors = ["#0099ff", "#0000ff", "#9900ff", "#ff66cc"];
+    const colors = ["#ff0000", "#ff9900", "#ffff00", "#00ff00", "#0099ff", "#0000ff", "#9900ff", "#ff66cc"];
 
     // ========== 雪花特效（根据 __snowActive 控制） ==========
     function createSnowCanvas(canvasId, snowNum) {
@@ -924,26 +925,27 @@ nginx</div>
     })();
 
     // ========== 点击粒子特效（保留） ==========
-    document.addEventListener("click", function(e) {
-        for (let i = 0; i < 10; i++) {
-            const p = document.createElement("div");
-            p.className = "particle";
-            const size = Math.random() * 10 + 6;
-            const angle = (Math.PI * 2 / 10) * i + Math.random() * 0.5;
-            const dis = Math.random() * 100 + 50;
-            const tx = Math.cos(angle) * dis;
-            const ty = Math.sin(angle) * dis;
-            p.style.left = e.clientX + "px";
-            p.style.top = e.clientY + "px";
-            p.style.width = size + "px";
-            p.style.height = size + "px";
-            p.style.background = colors[Math.floor(Math.random() * colors.length)];
-            p.style.setProperty("--tx", tx + "px");
-            p.style.setProperty("--ty", ty + "px");
-            particlesWrap.appendChild(p);
-            setTimeout(() => p.remove(), 600);
+    document.addEventListener("click", e => createParticle(e.clientX, e.clientY));
+        function createParticle(x, y) {
+            for (let i = 0; i < 18; i++) {
+                const p = document.createElement("div");
+                p.className = "particle";
+                const size = Math.random() * 10 + 6;
+                const angle = (Math.PI * 2 / 18) * i + Math.random() * 0.5;
+                const dis = Math.random() * 100 + 50;
+                const tx = Math.cos(angle) * dis,
+                    ty = Math.sin(angle) * dis;
+                p.style.left = x + "px";
+                p.style.top = y + "px";
+                p.style.width = size + "px";
+                p.style.height = size + "px";
+                p.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                p.style.setProperty("--tx", tx + "px");
+                p.style.setProperty("--ty", ty + "px");
+                particlesWrap.appendChild(p);
+                setTimeout(() => p.remove(), 600);
+            }
         }
-    });
 
     // ========== 右键禁用提示框逻辑 ==========
     let rightTipTimer;
@@ -1016,6 +1018,41 @@ nginx</div>
         }
         requestAnimationFrame(animate);
     })();
+</script>
+
+<script>
+/* ===== F12 拦截 + 问候气泡（与主页一致） ===== */
+(function () {
+    function showSiteTip(text, duration, icon) {
+        duration = duration || 2500;
+        var tip = document.querySelector('.float-tip-top.site-tip');
+        if (!tip) {
+            tip = document.createElement('div');
+            tip.className = 'float-tip-top site-tip';
+            tip.innerHTML = '<span class="tip-icon"></span><span class="site-tip-text"></span>';
+            (document.body || document.documentElement).appendChild(tip);
+        }
+        var iconEl = tip.querySelector('.tip-icon');
+        iconEl.classList.remove('is-svg');
+        iconEl.textContent = icon || 'i';
+        tip.querySelector('.site-tip-text').textContent = text;
+        tip.classList.remove('float-tip-out');
+        tip.classList.add('show');
+        clearTimeout(tip.__hideT); clearTimeout(tip.__outT);
+        tip.__hideT = setTimeout(function () {
+            tip.classList.add('float-tip-out');
+            tip.__outT = setTimeout(function () { tip.classList.remove('show', 'float-tip-out'); }, 350);
+        }, duration);
+    }
+    window.showSiteTip = showSiteTip;
+    document.addEventListener('keydown', function (e) {
+        if (e.keyCode === 123 || (e.key || '').toLowerCase() === 'f12') {
+            e.preventDefault();
+            showSiteTip('别想偷我源码，想要自己写去', 2500);
+            return false;
+        }
+    }, false);
+})();
 </script>
 </body>
 </html>
