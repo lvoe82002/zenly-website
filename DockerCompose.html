@@ -188,6 +188,42 @@
             color: #ffffff;
             font-weight: bold;
         }
+
+        /* ===== 页面阅读进度环（位于返回顶部箭头正上方） ===== */
+        .read-progress {
+            position: fixed;
+            right: 30px;
+            bottom: 98px; /* 正好在 back-top(bottom:40 + 高46 + 间距12) 上方 */
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 99;
+            transition: 0.3s ease;
+            cursor: default;
+        }
+        .read-progress:hover {
+            background: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 0 18px rgba(255, 255, 255, 0.35);
+            transform: translateY(-6px);
+        }
+        .read-progress svg { width: 46px; height: 46px; display: block; }
+        .read-progress .rp-track { fill: none; stroke: rgba(255, 255, 255, 0.35); stroke-width: 3; }
+        .read-progress .rp-bar { fill: none; stroke: #49b1f5; stroke-width: 3; stroke-linecap: round; transition: stroke 0.3s ease; }
+        .read-progress text {
+            font-size: 11px;
+            font-weight: bold;
+            fill: #ffffff;
+            text-anchor: middle;
+            dominant-baseline: central;
+        }
+
         .particles { position: fixed; top: 0; left: 0; width: 100%; pointer-events: none; z-index: 9998; }
         .particle { position: absolute; border-radius: 50%; transform: translate(-50%, -50%); animation: particle-burst 0.6s ease-out forwards; }
         @keyframes particle-burst { 0% { opacity: 1; transform: translate(-50%, -50%) scale(1) } 100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0.5) } }
@@ -611,7 +647,41 @@ docker compose up -d --build</div>
 </div>
 <!-- 评论区已删除 -->
 </div>
+<div class="read-progress" id="readProgress" title="页面进度">
+    <svg viewBox="0 0 46 46">
+        <circle class="rp-track" cx="23" cy="23" r="20.5"></circle>
+        <circle class="rp-bar" cx="23" cy="23" r="20.5" transform="rotate(-90 23 23)"></circle>
+        <text x="23" y="23">0%</text>
+    </svg>
+</div>
 <div class="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})"></div>
+<script>
+/* 页面阅读进度：scrollY / (scrollHeight - innerHeight)，三档变色 */
+(function () {
+    var ring = document.getElementById('readProgress');
+    if (!ring) return;
+    var bar = ring.querySelector('.rp-bar');
+    var text = ring.querySelector('text');
+    var R = 20.5, C = 2 * Math.PI * R;
+    bar.style.strokeDasharray = C;
+    bar.style.strokeDashoffset = C;
+    function colorOf(p) { return p <= 50 ? '#49b1f5' : p <= 90 ? '#67c23a' : '#f56c6c'; }
+    var ticking = false;
+    function update() {
+        var st = window.scrollY || document.documentElement.scrollTop || 0;
+        var total = document.documentElement.scrollHeight - window.innerHeight;
+        var p = total > 0 ? Math.round(st / total * 100) : 0;
+        bar.style.strokeDashoffset = C * (1 - p / 100);
+        bar.style.stroke = colorOf(p);
+        text.textContent = p + '%';
+        ticking = false;
+    }
+    function onScroll() { if (!ticking) { ticking = true; requestAnimationFrame(update); } }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    update();
+})();
+</script>
 <div class="footer-box"></div>
 <script>
     // ========== 初始化特效设置（读取主页保存的选择） ==========
