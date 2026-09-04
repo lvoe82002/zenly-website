@@ -1190,5 +1190,28 @@ nginx</div>
         }, false);
     })();
     </script>
+    <script>
+    /* 内嵌音乐不中断桥接（不改变页面任何样式/按钮）：
+       仅当本页被主页以 iframe 打开时，把指向 index.html 的“返回主页”链接
+       改为通知父窗口关闭弹层（主页音乐不中断）；其余链接、样式全部保持原样。
+       直接独立打开本文件时本脚本直接退出，页面行为零变化。 */
+    (function () {
+        function inFrame() { try { return window.self !== window.top; } catch (e) { return true; } }
+        if (!inFrame()) return;
+        document.addEventListener('click', function (e) {
+            var t = e.target;
+            var a = t && t.closest ? t.closest('a[href]') : null;
+            if (!a) return;
+            var href = a.getAttribute('href') || '';
+            if (/^(https?:)?\/\//i.test(href) || /^mailto:|^tel:|^javascript:/i.test(href)) return;
+            var pure = href.split('#')[0];
+            if (/index\.html(\?.*)?$/i.test(pure)) {
+                e.preventDefault();
+                e.stopPropagation();
+                try { window.parent.postMessage({ type: 'nx-close-card' }, '*'); } catch (err) {}
+            }
+        }, true);
+    })();
+    </script>
 </body>
 </html>

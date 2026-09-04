@@ -204,7 +204,10 @@
         /* 网站列表 */
         .nav-group-cards { position: absolute; right: 15%; top: -180px; transform: none; display: flex; flex-direction: column; align-items: center; gap: 12px; }
         .nav-title { display: flex; align-items: center; gap: 8px; color: #fff; font-size: 14px; margin-bottom: 12px; margin-left: 20px; height: 30px; align-self: flex-start; }
-        .nav-buttons { display: flex; flex-direction: row; align-items: center; gap: 15px; flex-wrap: wrap; justify-content: center; }
+        .nav-buttons { display: grid; grid-template-columns: repeat(4, auto); align-items: center; gap: 15px; justify-content: center; }
+        .nav-buttons { position: relative; }
+        .nav-row2 { position: absolute; top: calc(100% + 15px); left: 0; width: 100%;
+            display: grid; grid-template-columns: repeat(4, max-content); gap: 15px; }
         .nav-btn { width: auto; min-width: 128px; height: 75px; background: rgba(50, 50, 50, 0.4); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; color: white; border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4); transition: all 0.3s ease; cursor: pointer; padding: 0 20px; }
         .nav-btn:hover { background: rgba(255, 255, 255, 0.15); transform: translateY(-4px); }
         .nav-btn i { font-size: 22px; margin-bottom: 6px; }
@@ -303,10 +306,17 @@
             .top-empty-space { height: 170px; }
             .social { padding-left: 5%; }
         }
+        @media (max-width: 768px) {
+            .nav-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; width: 100%; }
+            .nav-row2 { position: static; grid-column: 1 / -1; display: grid;
+                grid-template-columns: repeat(4, 1fr); gap: 6px; }
+            .nav-btn { min-width: 0; height: 58px; padding: 0 3px; border-radius: 10px; }
+            .nav-btn svg { width: 17px; height: 17px; }
+        }
         @media (max-width: 450px) {
-            .nav-btn { min-width: 70px; height: 60px; }
-            .nav-btn i { font-size: 16px; }
-            .nav-btn span { font-size: 11px; }
+            .nav-btn { height: 54px; }
+            .nav-btn i { font-size: 15px; }
+            .nav-btn span { font-size: 10.5px; }
         }
 
         @media (hover: hover) and (pointer: fine) {
@@ -384,10 +394,14 @@
             body.mobile-menu-open .clock-weather { font-size: 15px !important; margin-top: 16px !important; }
             body.mobile-menu-open .nav-group-cards { display: flex !important; position: relative !important; top: auto !important; right: auto !important; left: auto !important; transform: none !important; width: 100% !important; max-width: 440px !important; margin: 0 auto !important; gap: 10px !important; order: 2 !important; }
             body.mobile-menu-open .nav-title { font-size: 16px !important; margin-bottom: 14px !important; align-self: center !important; transform: translateX(-20px) !important; }
-            body.mobile-menu-open .nav-buttons { gap: 16px !important; }  /* 增大了间距 */
-            body.mobile-menu-open .nav-btn { min-width: 110px !important; height: 85px !important; }  /* 框变大 */
-            body.mobile-menu-open .nav-btn i { font-size: 28px !important; margin-bottom: 8px !important; }  /* 图标变大 */
-            body.mobile-menu-open .nav-btn span { font-size: 16px !important; }  /* 文字变大 */
+            body.mobile-menu-open .nav-buttons { display: grid !important; grid-template-columns: repeat(4, 1fr) !important; gap: 6px !important; width: 100% !important; }
+            body.mobile-menu-open .nav-row2 { position: static !important; grid-column: 1 / -1 !important;
+                display: grid !important; grid-template-columns: repeat(4, 1fr) !important; gap: 6px !important; }
+            body.mobile-menu-open .nav-btn { min-width: 0 !important; height: 58px !important; padding: 0 3px !important; border-radius: 10px !important; }
+            body.mobile-menu-open .nav-btn svg { width: 17px !important; height: 17px !important; margin-bottom: 3px !important; }
+
+            body.mobile-menu-open .nav-btn i { font-size: 17px !important; margin-bottom: 3px !important; }
+            body.mobile-menu-open .nav-btn span { font-size: 11px !important; }
             body.mobile-menu-open .mobile-menu-toggle .icon-menu { display: none !important; }
             body.mobile-menu-open .mobile-menu-toggle .icon-close { display: block !important; }
             #capsuleOverlay { padding-right: 0 !important; justify-content: center !important; padding: 20px !important; padding-top: 140px !important; }
@@ -399,6 +413,50 @@
             .settings-modal-body { flex-direction: column !important; gap: 20px !important; }
             .settings-col-left, .settings-col-right { flex: none !important; min-width: 0 !important; }
         }
+        /* ========== 时光胶囊内嵌音乐播放器（深色玻璃风，宽度随胶囊自适应，不影响首页任何卡片尺寸） ========== */
+        .capsule-music { margin-top: 22px; padding-top: 18px; border-top: 1px solid rgba(255,255,255,.12); }
+        .capsule-music .music-player-card { background: rgba(255,255,255,.07); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 12px; border: 1px solid rgba(255,255,255,.14); box-shadow: none; overflow: hidden; max-width: none; width: 100%; margin: 0; }
+        .capsule-music .card-header { padding: 13px 16px; border-bottom: 1px solid rgba(255,255,255,.1); font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; color: #fff; }
+        .capsule-music .card-header .head-icon { display: inline-flex; align-items: center; color: #fff; }
+        .capsule-music .card-header .head-icon svg { width: 17px; height: 17px; display: block; }
+        .capsule-music .netease-svg { display: block; flex-shrink: 0; }
+        .capsule-music .card-body { padding: 0 14px 12px; }
+        .capsule-music .cd-section { display: flex; justify-content: center; margin-bottom: 8px; padding-top: 14px; }
+        .capsule-music .cd-disc { width: 72px; height: 72px; border-radius: 50%; background-color: #2a2a2a; background-image: conic-gradient(from 0deg,#2a2a2a,#3a3a3a,#2a2a2a,#444,#2a2a2a,#3a3a3a,#2a2a2a,#444,#2a2a2a,#3a3a3a,#2a2a2a,#444,#2a2a2a 360deg); background-size: cover; background-position: center; box-shadow: 0 2px 12px rgba(0,0,0,.35); position: relative; transition: box-shadow .4s ease; }
+        .capsule-music .cd-disc.spinning { animation: music-spin 8s linear infinite; box-shadow: 0 0 20px rgba(73,177,245,.25); }
+        .capsule-music .cd-center-hole { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 14px; height: 14px; border-radius: 50%; background: radial-gradient(circle at 40% 35%,#666,#1a1a1a 80%); box-shadow: inset 0 2px 6px rgba(0,0,0,.6),0 0 0 2px rgba(255,255,255,.08); z-index: 2; }
+        .capsule-music .wave-ring { position: absolute; inset: -6px; border-radius: 50%; border: 2px solid transparent; border-top-color: #49b1f5; border-right-color: #49b1f5; opacity: 0; transition: opacity .4s ease; z-index: 1; box-shadow: 0 0 15px rgba(73,177,245,.15); }
+        .capsule-music .wave-ring.playing { opacity: 1; animation: music-spin 1.2s linear infinite; }
+        .capsule-music .track-info { text-align: center; margin-bottom: 6px; }
+        .capsule-music .track-info .title { display: block; font-weight: 600; font-size: 14px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .capsule-music .track-info .artist { display: block; font-size: 12px; color: rgba(255,255,255,.6); margin-top: 1px; }
+        .capsule-music .progress-area { margin-bottom: 8px; padding: 0 2px; display: flex; align-items: center; }
+        .capsule-music .progress-area input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 2px; background: rgba(255,255,255,.25); border-radius: 2px; outline: none; cursor: pointer; }
+        .capsule-music .progress-area input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 8px; height: 8px; border-radius: 50%; background: #fff; border: 2px solid #49b1f5; }
+        .capsule-music .progress-area input[type=range]::-moz-range-thumb { width: 8px; height: 8px; border-radius: 50%; background: #fff; border: 2px solid #49b1f5; }
+        .capsule-music .controls-area { display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 8px; }
+        .capsule-music .controls-area button { background: transparent; border: none; color: rgba(255,255,255,.75); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 2px; border-radius: 50%; transition: all .2s; width: 28px; height: 28px; font-size: 14px; }
+        .capsule-music .controls-area button:hover { background: rgba(73,177,245,.18); color: #49b1f5; }
+        .capsule-music .controls-area button.play-btn { background: #49b1f5; color: #fff; width: 34px; height: 34px; }
+        .capsule-music .controls-area button.play-btn:hover { background: #3a9bd9; transform: scale(1.05); }
+        .capsule-music .playlist-collapse { max-height: 96px; overflow-y: auto; border-top: 1px solid rgba(255,255,255,.1); padding-top: 6px; }
+        .capsule-music .playlist-collapse::-webkit-scrollbar { width: 3px; }
+        .capsule-music .playlist-collapse::-webkit-scrollbar-thumb { background: rgba(255,255,255,.3); border-radius: 4px; }
+        .capsule-music .playlist-item { display: flex; align-items: center; gap: 8px; padding: 3px 6px; border-radius: 5px; cursor: pointer; transition: background .15s; font-size: 12px; color: rgba(255,255,255,.7); }
+        .capsule-music .playlist-item:hover { background: rgba(255,255,255,.08); }
+        .capsule-music .playlist-item.active { background: rgba(73,177,245,.16); color: #49b1f5; }
+        .capsule-music .playlist-item.active .index { color: #49b1f5; font-weight: 600; }
+        .capsule-music .playlist-item .index { opacity: .55; min-width: 20px; font-size: 10px; font-variant-numeric: tabular-nums; }
+        .capsule-music .playlist-item .t { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        @keyframes music-spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+        /* 时光胶囊最下方：爱发电计时 */
+        .capsule-afd { margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,.12); font-size: .85rem; color: rgba(255,255,255,.72); line-height: 1.95; text-align: center; white-space: nowrap; }
+        .capsule-afd span { display: inline; }
+        @media (max-width: 768px) { .capsule-afd { font-size: .72rem; } }
+        /* ========== 卡片全屏弹层：iframe 100% 视口、不缩放不变形，卡片与独立打开时尺寸完全一致；主页不卸载 → 音乐不中断 ========== */
+        #cardFrameMask { position: fixed; inset: 0; width: 100vw; height: 100vh; height: 100dvh; z-index: 999990; background: #0b0b0d; display: none; overflow: hidden; }
+        #cardFrameMask.show { display: block; }
+        #cardFrame { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; margin: 0; padding: 0; background: #0b0b0d; display: block; }
     </style>
 </head>
 <body class="pre-blur">
@@ -563,6 +621,31 @@
                         </div>
                         <div class="capsule-footer" id="statAge">本站已经苟活了 -- 年 -- 月 -- 天</div>
                     </div>
+                    <!-- 音乐播放器：位于时光胶囊文字下方，与文字保留间距 -->
+                    <div id="capsulePlayer" class="capsule-music"></div>
+                    <!-- 时光胶囊最下方：本博客已靠爱发电计时（起始 2026-08-15） -->
+                    <div class="capsule-afd">
+                        <span id="timeDate">本博客已靠爱发电&nbsp;0&nbsp;天</span>
+                        <span id="times">0&nbsp;小时&nbsp;0&nbsp;分&nbsp;0&nbsp;秒(●'◡'●)</span>
+                    </div>
+                    <script>
+                    (function () {
+                        var startTime = new Date(2026, 7, 15, 0, 0, 0).getTime(); // 2026年8月15日 00:00:00
+                        var dEl = document.getElementById('timeDate');
+                        var tEl = document.getElementById('times');
+                        function update() {
+                            var diff = Math.max(0, Date.now() - startTime);
+                            var days = Math.floor(diff / 86400000); diff -= days * 86400000;
+                            var hours = Math.floor(diff / 3600000); diff -= hours * 3600000;
+                            var mins = Math.floor(diff / 60000); diff -= mins * 60000;
+                            var secs = Math.floor(diff / 1000);
+                            if (dEl) dEl.innerHTML = '本博客已靠爱发电&nbsp;' + days + '&nbsp;天';
+                            if (tEl) tEl.innerHTML = hours + '&nbsp;小时&nbsp;' + mins + '&nbsp;分&nbsp;' + secs + '&nbsp;秒(●\'◡\'●)';
+                        }
+                        update();
+                        setInterval(update, 1000);
+                    })();
+                    </script>
                 </div>
             </div>
 
@@ -635,7 +718,7 @@
                     <span>网站列表</span>
                 </div>
                 <div class="nav-buttons">
-                    <a href="javascript:void(0)" class="nav-btn" onclick="setTimeout(function(){ window.location.href='blog.html'; }, 300);">
+                    <a href="javascript:void(0)" class="nav-btn" onclick="window.__openCard && window.__openCard('blog.html');">
                         <svg style="width:22px;height:22px;fill:currentColor;" viewBox="0 0 512 512">
                             <path d="M172.2 226.8c-14.6-2.9-28.2 8.9-28.2 23.8V301c0 10.2 7.1 18.4 16.7 22 18.2 6.8 31.3 24.4 31.3 45 0 26.5-21.5 48-48 48s-48-21.5-48-48V120c0-13.3-10.7-24-24-24H24c-13.3 0-24 10.7-24 24v248c0 89.5 82.1 160.2 175 140.7 54.4-11.4 98.3-55.4 109.7-109.7 17.4-82.9-37-157.2-112.5-172.2zM209 0c-9.2-.5-17 6.8-17 16v31.6c0 8.5 6.6 15.5 15 15.9 129.4 7 233.4 112 240.9 241.5.5 8.4 7.5 15 15.9 15h32.1c9.2 0 16.5-7.8 16-17C503.4 139.8 372.2 8.6 209 0zm.3 96c-9.3-.7-17.3 6.7-17.3 16.1v32.1c0 8.4 6.5 15.3 14.8 15.9 76.8 6.3 138 68.2 144.9 145.2.8 8.3 7.6 14.7 15.9 14.7h32.2c9.3 0 16.8-8 16.1-17.3-8.4-110.1-96.5-198.2-206.6-206.7z"/>
                         </svg>
@@ -644,6 +727,11 @@
                     <a href="javascript:void(0)" class="nav-btn" onclick="setTimeout(function(){ window.location.href='https://raw.githubusercontent.com/lvoe82002/zenly-website/main/index.html'; }, 2000);"><i class="fa-solid fa-code"></i><span>源码</span></a>
                     <a href="javascript:void(0)" class="nav-btn" onclick="setTimeout(function(){ window.location.href='https://threatmap.checkpoint.com/'; }, 2000);"><i class="fa-solid fa-map"></i><span>mc地图</span></a>
                     <a href="javascript:void(0)" class="nav-btn" onclick="window.location.reload();"><i class="fa-regular fa-compass"></i><span>起始页</span></a>
+                    <div class="nav-row2">
+                    <a href="javascript:void(0)" class="nav-btn" onclick="window.__openCard && window.__openCard('播放器架构.html');"><svg style="width:22px;height:22px;fill:currentColor;" viewBox="0 0 24 24"><path d="M13.046 9.388a3.919 3.919 0 0 0-.66.19c-.809.312-1.447.991-1.666 1.775a2.269 2.269 0 0 0-.074.81c.048.546.333 1.05.764 1.35a1.483 1.483 0 0 0 2.01-.286c.406-.531.355-1.183.24-1.636-.098-.387-.22-.816-.345-1.249a64.76 64.76 0 0 1-.269-.954zm-.82 10.07c-3.984 0-7.224-3.24-7.224-7.223 0-.98.226-3.02 1.884-4.822A7.188 7.188 0 0 1 9.502 5.6a.792.792 0 1 1 .587 1.472 5.619 5.619 0 0 0-2.795 2.462 5.538 5.538 0 0 0-.707 2.7 5.645 5.645 0 0 0 5.638 5.638c1.844 0 3.627-.953 4.542-2.428 1.042-1.68.772-3.931-.627-5.238a3.299 3.299 0 0 0-1.437-.777c.172.589.334 1.18.494 1.772.284 1.12.1 2.181-.519 2.989-.39.51-.956.888-1.592 1.064a3.038 3.038 0 0 1-2.58-.44 3.45 3.45 0 0 1-1.44-2.514c-.04-.467.002-.93.128-1.376.35-1.256 1.356-2.339 2.622-2.826a5.5 5.5 0 0 1 .823-.246l-.134-.505c-.37-1.371.25-2.579 1.547-3.007.329-.109.68-.145 1.025-.105.792.09 1.476.592 1.709 1.023.258.507-.096 1.153-.706 1.153a.788.788 0 0 1-.54-.213c-.088-.08-.163-.174-.259-.247a.825.825 0 0 0-.632-.166.807.807 0 0 0-.634.551c-.056.191-.031.406.02.595.07.256.159.597.217.82 1.11.098 2.162.54 2.97 1.296 1.974 1.844 2.35 4.886.892 7.233-1.197 1.93-3.509 3.177-5.889 3.177z"></path></svg><span>播放器架构</span></a>
+                    <a href="javascript:void(0)" class="nav-btn" onclick="setTimeout(function(){ window.location.href='https://hyper.is'; }, 2000);"><svg style="width:22px;height:22px;fill:currentColor;" viewBox="0 0 24 24"><path d="M20.5 11H19V7c0-1.1-.9-2-2-2h-4V3.5C13 2.12 11.88 1 10.5 1S8 2.12 8 3.5V5H4c-1.1 0-1.99.9-1.99 2v3.8H3.5c1.49 0 2.7 1.21 2.7 2.7s-1.21 2.7-2.7 2.7H2V20c0 1.1.9 2 2 2h3.8v-1.5c0-1.49 1.21-2.7 2.7-2.7 1.49 0 2.7 1.21 2.7 2.7V22H17c1.1 0 2-.9 2-2v-4h1.5c1.38 0 2.5-1.12 2.5-2.5S21.88 11 20.5 11z"></path></svg><span>插件</span></a>
+                    <a href="javascript:void(0)" class="nav-btn" onclick="setTimeout(function(){ window.location.href='https://gitee.com/write-and-repair/termux-rc'; }, 2000);"><svg style="width:22px;height:22px;fill:currentColor;" viewBox="0 0 24 24"><path d="M11.984 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.016 0zm6.09 5.333c.328 0 .593.266.592.593v1.482a.594.594 0 0 1-.593.592H9.777c-.982 0-1.778.796-1.778 1.778v5.63c0 .327.266.592.593.592h5.63c.982 0 1.778-.796 1.778-1.778v-.296a.593.593 0 0 0-.592-.593h-4.15a.592.592 0 0 1-.592-.592v-1.482a.593.593 0 0 1 .593-.592h6.815c.327 0 .593.265.593.592v3.408a4 4 0 0 1-4 4H5.926a.593.593 0 0 1-.593-.593V9.778a4.444 4.444 0 0 1 4.445-4.444h8.296Z"></path></svg><span>Gitee</span></a>
+                </div>
                 </div>
             </div>
 
@@ -728,6 +816,10 @@
     <div class="mobile-menu-toggle" id="mobileMenuToggle">
         <i class="fa-solid fa-bars icon-menu"></i>
         <i class="fa-solid fa-xmark icon-close"></i>
+    </div>
+    <!-- 卡片全屏弹层：主页常驻不卸载，跳转只在 iframe 内发生，保证音乐不中断 -->
+    <div id="cardFrameMask">
+        <iframe id="cardFrame" title="card" referrerpolicy="no-referrer"></iframe>
     </div>
 
     <script>
@@ -1731,6 +1823,222 @@
             debounceTimer = setTimeout(fetchHitokoto, 500);
         });
         fetchHitokoto();
+    })();
+    </script>
+    <script>
+    /* ==================================================================
+       全局音乐播放器（主页常驻单例）
+       - 音频对象只存在于主页文档；卡片页通过全屏 iframe 打开，跳转只在
+         iframe 内发生，主页不卸载，所以音乐不中断、不重播。
+       - 播放器 UI 只挂在「时光胶囊」文字下方，不含右下角悬浮图标。
+       - 一首播完自动播下一首并循环；只有用户按下暂停才会停止。
+       ================================================================== */
+    (function () {
+        const NETEASE_PATH = 'M13.046 9.388a3.919 3.919 0 0 0-.66.19c-.809.312-1.447.991-1.666 1.775a2.269 2.269 0 0 0-.074.81c.048.546.333 1.05.764 1.35a1.483 1.483 0 0 0 2.01-.286c.406-.531.355-1.183.24-1.636-.098-.387-.22-.816-.345-1.249a64.76 64.76 0 0 1-.269-.954zm-.82 10.07c-3.984 0-7.224-3.24-7.224-7.223 0-.98.226-3.02 1.884-4.822A7.188 7.188 0 0 1 9.502 5.6a.792.792 0 1 1 .587 1.472 5.619 5.619 0 0 0-2.795 2.462 5.538 5.538 0 0 0-.707 2.7 5.645 5.645 0 0 0 5.638 5.638c1.844 0 3.627-.953 4.542-2.428 1.042-1.68.772-3.931-.627-5.238a3.299 3.299 0 0 0-1.437-.777c.172.589.334 1.18.494 1.772.284 1.12.1 2.181-.519 2.989-.39.51-.956.888-1.592 1.064a3.038 3.038 0 0 1-2.58-.44 3.45 3.45 0 0 1-1.44-2.514c-.04-.467.002-.93.128-1.376.35-1.256 1.356-2.339 2.622-2.826a5.5 5.5 0 0 1 .823-.246l-.134-.505c-.37-1.371.25-2.579 1.547-3.007.329-.109.68-.145 1.025-.105.792.09 1.476.592 1.709 1.023.258.507-.096 1.153-.706 1.153a.788.788 0 0 1-.54-.213c-.088-.08-.163-.174-.259-.247a.825.825 0 0 0-.632-.166.807.807 0 0 0-.634.551c-.056.191-.031.406.02.595.07.256.159.597.217.82 1.11.098 2.162.54 2.97 1.296 1.974 1.844 2.35 4.886.892 7.233-1.197 1.93-3.509 3.177-5.889 3.177z';
+        function neteaseIcon(size) { return '<svg class="netease-svg" viewBox="0 0 24 24" width="' + size + '" height="' + size + '" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="' + NETEASE_PATH + '"/></svg>'; }
+
+        const MusicPlayer = (function () {
+            const audio = new Audio(); audio.preload = 'auto';
+            const state = {
+                isPlaying: false,
+                userPaused: false,
+                progress: 0,
+                index: 0,
+                tracks: [],
+                loaded: false,
+                get current() {
+                    return this.tracks.length === 0
+                        ? { title: '暂无歌曲', artist: '', url: '' }
+                        : this.tracks[this.index] || this.tracks[0];
+                }
+            };
+            const listeners = new Set();
+            const emit = () => listeners.forEach(fn => fn(state));
+            const subscribe = fn => { listeners.add(fn); fn(state); return () => listeners.delete(fn); };
+            audio.addEventListener('timeupdate', () => {
+                if (audio.duration) { state.progress = Math.min(audio.currentTime / audio.duration * 100, 100); emit(); }
+            });
+            // 自然播完时浏览器会先触发 pause 再触发 ended，因此不能用 isPlaying 判断是否连播；
+            // 用 userPaused（仅用户按暂停键才为 true）保证一首结束立刻接下一首、循环不停。
+            audio.addEventListener('ended', () => { if (!state.userPaused) next(); });
+            audio.addEventListener('play', () => { state.isPlaying = true; emit(); });
+            audio.addEventListener('pause', () => { state.isPlaying = false; emit(); });
+            audio.addEventListener('error', e => {
+                console.warn('音频加载失败:', audio.src, e);
+                if (!state.userPaused && state.tracks.length > 1) setTimeout(next, 1500);
+                emit();
+            });
+            async function loadTracks() {
+                if (state.loaded) return;
+                const fallback = [
+                    { id: 4, title: 'ブルーバード', artist: '忆殇', url: 'https://videotourl.com/audio/1785656110156-f37de81e-eac5-4dc9-830b-c3f671c89499.mp3', cover: 'https://img3.kuwo.cn/star/albumcover/500/s4s48/17/1426696007.jpg' },
+                    { id: 1, title: 'DAN DAN心魅かれていく', artist: 'Field of View', url: 'https://videotourl.com/audio/1785656638911-a8cae60b-1a9d-4ef4-9448-f3077dc35a9b.mp3', cover: 'https://ts3.tc.mm.bing.net/th/id/OIP-C.5L2Ya403EjY37iBMqPREUgHaER?w=200' }
+                ];
+                try {
+                    const res = await fetch('https://chortle.asia/api/music/playlist');
+                    const json = await res.json();
+                    const list = (json.data || []).map(n => ({ id: n.id, title: n.title, artist: n.artist, url: n.url, cover: n.cover }));
+                    state.tracks = list.length ? list : fallback;
+                } catch (err) {
+                    console.warn('接口请求失败，使用内置示例歌单：', err);
+                    state.tracks = fallback;
+                }
+                state.loaded = true; emit();
+            }
+            function togglePlay() {
+                const cur = state.current;
+                if (!cur.url) return;
+                if (audio.paused) {
+                    state.userPaused = false;
+                    if (!audio.src || audio.src === window.location.href) audio.src = cur.url;
+                    audio.play().catch(console.warn);
+                } else {
+                    state.userPaused = true; // 只有用户按暂停键才会停
+                    audio.pause();
+                }
+            }
+            function seek(percent) { if (audio.duration) audio.currentTime = percent / 100 * audio.duration; }
+            function applyTrack() {
+                const keepPlaying = !state.userPaused, cur = state.current;
+                if (cur.url) { audio.src = cur.url; audio.load(); if (keepPlaying) audio.play().catch(console.warn); }
+                state.progress = 0; emit();
+            }
+            // 上一首/选歌都是用户主动操作，直接继续播放
+            function prev() { const n = state.tracks.length; if (n) { state.userPaused = false; state.index = (state.index - 1 + n) % n; applyTrack(); } }
+            function next() { const n = state.tracks.length; if (n) { state.index = (state.index + 1) % n; applyTrack(); } }
+            function select(i) { if (state.index !== i) { state.userPaused = false; state.index = i; applyTrack(); } }
+            return { subscribe, loadTracks, togglePlay, seek, prev, next, select };
+        })();
+
+        /* 播放器视图：仅渲染到时光胶囊内（无右下角悬浮控制器） */
+        const root = document.getElementById('capsulePlayer');
+        if (root) {
+            root.innerHTML =
+                '<div class="music-player-card">' +
+                '  <div class="card-header"><span class="head-icon">' + neteaseIcon(17) + '</span><span>音乐播放器</span></div>' +
+                '  <div class="card-body">' +
+                '    <div class="cd-section"><div class="cd-disc" data-role="disc"><div class="cd-center-hole"></div><div class="wave-ring" data-role="ring"></div></div></div>' +
+                '    <div class="track-info"><span class="title" data-role="title"></span><span class="artist" data-role="artist"></span></div>' +
+                '    <div class="progress-area"><input type="range" min="0" max="100" step="0.1" value="0" data-role="seek" aria-label="播放进度"></div>' +
+                '    <div class="controls-area">' +
+                '      <button data-act="prev" aria-label="上一曲"><<<</button>' +
+                '      <button class="play-btn" data-act="toggle" data-role="toggle" aria-label="播放/暂停">▶</button>' +
+                '      <button data-act="next" aria-label="下一曲">>>></button>' +
+                '    </div>' +
+                '    <div class="playlist-collapse" data-role="list"></div>' +
+                '  </div>' +
+                '</div>';
+            const $ = s => root.querySelector(s);
+            const disc = $('[data-role=disc]'), ring = $('[data-role=ring]'),
+                title = $('[data-role=title]'), artist = $('[data-role=artist]'),
+                seekBar = $('[data-role=seek]'), list = $('[data-role=list]'),
+                toggleBtn = $('[data-role=toggle]');
+            $('[data-act=prev]').onclick = () => MusicPlayer.prev();
+            $('[data-act=next]').onclick = () => MusicPlayer.next();
+            toggleBtn.onclick = () => MusicPlayer.togglePlay();
+            seekBar.oninput = e => MusicPlayer.seek(+e.target.value);
+            MusicPlayer.subscribe(s => {
+                const cur = s.current;
+                title.textContent = cur.title; artist.textContent = cur.artist || '';
+                disc.style.backgroundImage = cur.cover ? 'url(' + cur.cover + ')' : '';
+                disc.classList.toggle('spinning', s.isPlaying);
+                ring.classList.toggle('playing', s.isPlaying);
+                toggleBtn.textContent = s.isPlaying ? '⏸' : '▶';
+                if (document.activeElement !== seekBar) seekBar.value = s.progress;
+                list.innerHTML = s.tracks.map((t, i) =>
+                    '<div class="playlist-item ' + (i === s.index ? 'active' : '') + '" data-i="' + i + '">' +
+                    '<span class="index">' + String(i + 1).padStart(2, '0') + '</span><span class="t">' + t.title + '</span></div>'
+                ).join('');
+                list.querySelectorAll('.playlist-item').forEach(el => el.onclick = () => MusicPlayer.select(+el.dataset.i));
+            });
+            MusicPlayer.loadTracks();
+        }
+    })();
+    </script>
+    <script>
+    /* ==================================================================
+       卡片全屏弹层：本地卡片页在 iframe 内切换，主页文档（与音乐）常驻。
+       - iframe 始终 100% 视口、无缩放，卡片尺寸与独立打开完全一致；
+       - 手机物理返回键 / 浏览器后退：关闭弹层回到仍然活着的主页；
+       - 卡片内 blog 页“返回主页”通过 postMessage 通知父窗口关闭弹层。
+       ================================================================== */
+    (function () {
+        const mask = document.getElementById('cardFrameMask');
+        const frame = document.getElementById('cardFrame');
+        if (!mask || !frame) return;
+        let cardOpen = false, historyPushed = false, savedEffects = null, baseHistLen = 0;
+        // 卡片页均未写 viewport meta，手机浏览器独立打开时按 980px 虚拟宽度缩放渲染。
+        // iframe 内必须复刻同样的 980 布局再等比缩回屏幕宽度，保证手机端卡片大小与独立打开完全一致。
+        const MOBILE_LAYOUT_W = 980;
+        function applyFrameSize() {
+            const vw = window.innerWidth, vh = window.innerHeight;
+            if (vw <= 768) {
+                const scale = vw / MOBILE_LAYOUT_W;
+                frame.style.inset = 'auto';
+                frame.style.left = '0'; frame.style.top = '0';
+                frame.style.width = MOBILE_LAYOUT_W + 'px';
+                frame.style.height = (vh / scale) + 'px';
+                frame.style.transformOrigin = '0 0';
+                frame.style.transform = 'scale(' + scale + ')';
+            } else {
+                frame.style.inset = ''; frame.style.left = ''; frame.style.top = '';
+                frame.style.width = ''; frame.style.height = '';
+                frame.style.transform = ''; frame.style.transformOrigin = '';
+            }
+        }
+        window.addEventListener('resize', () => { if (cardOpen) applyFrameSize(); });
+        window.addEventListener('orientationchange', () => setTimeout(() => { if (cardOpen) applyFrameSize(); }, 200));
+
+        function pauseParentEffects() {
+            savedEffects = { snow: !!window.__snowActive, rain: !!window.__rainActive, thunder: !!window.__thunderMode };
+            window.__snowActive = false; window.__rainActive = false; window.__thunderMode = false;
+        }
+        function resumeParentEffects() {
+            if (!savedEffects) return;
+            window.__snowActive = savedEffects.snow; window.__rainActive = savedEffects.rain; window.__thunderMode = savedEffects.thunder;
+            savedEffects = null;
+        }
+        window.__openCard = function (href) {
+            if (!href) return;
+            document.body.classList.remove('mobile-menu-open');
+            if (!cardOpen) {
+                cardOpen = true;
+                try { baseHistLen = history.length; } catch (e) { baseHistLen = 0; }
+                pauseParentEffects();
+                applyFrameSize();
+                mask.classList.add('show');
+                try { history.pushState({ nxCard: true }, '', href); historyPushed = true; } catch (e) { historyPushed = false; }
+            }
+            if (frame.getAttribute('src') !== href) frame.src = href;
+        };
+        function hideCard() {
+            if (!cardOpen) return;
+            cardOpen = false;
+            historyPushed = false;
+            baseHistLen = 0;
+            resumeParentEffects();
+            mask.classList.remove('show');
+            setTimeout(() => { if (!cardOpen) frame.src = 'about:blank'; }, 260);
+        }
+        window.__closeCard = function () {
+            // 联合历史长度差值 = pushState + iframe 内全部跳转层数，一次性退回主页
+            if (historyPushed) {
+                let steps = 1;
+                try { steps = Math.max(1, history.length - baseHistLen); } catch (e) {}
+                historyPushed = false;
+                try { history.go(-steps); return; } catch (e) {}
+            }
+            hideCard();
+        };
+        window.addEventListener('popstate', e => {
+            // 回到主页条目（state 不再是 nxCard）时关闭弹层；iframe 内部回退不会触发父窗口 popstate
+            if (cardOpen && !(e.state && e.state.nxCard)) hideCard();
+        });
+        window.addEventListener('message', ev => {
+            const d = ev.data;
+            if (!d || typeof d !== 'object') return;
+            if (d.type === 'nx-close-card') window.__closeCard();
+        });
     })();
     </script>
 </body>
