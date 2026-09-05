@@ -467,6 +467,14 @@
             .capsule-inner::-webkit-scrollbar { width: 0; height: 0; display: none; }
             .capsule-afd { line-height: 1.55; }
         }
+        /* ===== 仅手机端（max-width:768px）：与电脑端保持一致——面板高度随内容收缩，
+           去掉“本博客已靠爱发电”文字下方的多余空白（内容超高时仍可触摸滑动），
+           同时隐藏滚动长条、收紧爱发电行高；电脑端规则不做任何改动 ===== */
+        @media (max-width: 768px) {
+            .capsule-inner { scrollbar-width: none; -ms-overflow-style: none; padding-bottom: 10px; height: auto; max-height: 80%; }
+            .capsule-inner::-webkit-scrollbar { width: 0; height: 0; display: none; }
+            .capsule-afd { line-height: 1.55; }
+        }
         /* ========== 卡片全屏弹层：iframe 100% 视口、不缩放不变形，卡片与独立打开时尺寸完全一致；主页不卸载 → 音乐不中断 ========== */
         #cardFrameMask { position: fixed; inset: 0; width: 100vw; height: 100vh; height: 100dvh; z-index: 999990; background: #0b0b0d; display: none; overflow: hidden; }
         #cardFrameMask.show { display: block; }
