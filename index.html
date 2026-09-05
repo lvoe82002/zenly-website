@@ -69,6 +69,8 @@
         .interactive-badge .badge-text { font-size: 16px; letter-spacing: 1px; margin-left: 24px; color: #fff; line-height: 1.4; padding-top: 4px; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* 时光胶囊专用入场：起始即半可见、无位移，160ms 内到位，杜绝“先黑屏再出内容”，也避免带 backdrop-filter 的层做位移重绘 */
+        @keyframes capsuleIn { from { opacity: .55; } to { opacity: 1; } }
 
         /* ========== 时光胶囊：调整为右侧占约60%宽度 ========== */
         #capsuleOverlay {
@@ -84,7 +86,7 @@
             align-items: center;
             padding-left: 45%;   /* 修改：原为50%，现在为40%，胶囊占右侧约60% */
             padding-right: 5%;   /* 保持不变 */
-            transition: all 0.3s ease;
+            transition: opacity 0.18s ease;
             cursor: default;
         }
         body.capsule-open #capsuleOverlay { display: flex !important; }
@@ -102,7 +104,7 @@
             pointer-events: auto;
             position: relative;
             overflow-y: auto;
-            animation: fadeIn 0.5s ease;
+            animation: capsuleIn 0.16s ease-out;
         }
         .capsule-header { display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; margin: 0.2rem 0 1.5rem; position: relative; }
         .capsule-header .capsule-title { display: flex; align-items: center; gap: 10px; }
@@ -370,7 +372,7 @@
             .copyright-bar .copyright-text { display: block !important; font-size: 12px !important; line-height: 1.5 !important; white-space: nowrap !important; word-break: normal !important; opacity: 1 !important; color: #fff !important; letter-spacing: 0.5px !important; }
             /* 底部版权底板占住位置后，手机端悬浮菜单按钮上移避让（仅手机端） */
             body .mobile-menu-toggle { bottom: 54px !important; }
-            .footer-box { position: relative !important; height: 100vh !important; width: 100vw !important; display: flex !important; flex-direction: column !important; justify-content: center !important; align-items: center !important; padding: 0 20px !important; margin: 0 !important; }
+            .footer-box { position: relative !important; height: 100vh !important; width: 100vw !important; display: flex !important; flex-direction: column !important; justify-content: center !important; align-items: center !important; /* 手机端：底部多留 120px，让居中的内容组（logo/时光胶囊/社交图标）整体上移约 60px；底部固定的菜单开关与版权条位置不变 */ padding: 0 20px 120px !important; margin: 0 !important; }
             .bottom-area-wrapper { position: relative !important; width: 100% !important; min-height: 0 !important; flex: none !important; display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; gap: 0 !important; padding: 0 !important; margin: 0 !important; }
             .center-logo-flow.moved-logo { position: relative !important; top: auto !important; left: auto !important; right: auto !important; width: auto !important; max-width: calc(100vw - 48px) !important; margin: 0 0 18px 0 !important; z-index: 10 !important; transform: none !important; align-self: flex-start !important; order: 1 !important; }
             .center-logo-flow.moved-logo .logo { gap: 14px !important; align-items: center !important; }
@@ -425,7 +427,7 @@
         .capsule-music .music-player-card { background: rgba(255,255,255,.07); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 12px; border: 1px solid rgba(255,255,255,.14); box-shadow: none; overflow: hidden; max-width: none; width: 100%; margin: 0; }
         .capsule-music .card-header { padding: 13px 16px; border-bottom: 1px solid rgba(255,255,255,.1); font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; color: #fff; }
         .capsule-music .card-header .head-icon { display: inline-flex; align-items: center; color: #fff; }
-        .capsule-music .card-header .head-icon svg { width: 17px; height: 17px; display: block; }
+        .capsule-music .card-header .head-icon svg { width: 28px; height: 28px; display: block; }
         .capsule-music .netease-svg { display: block; flex-shrink: 0; }
         .capsule-music .card-body { padding: 0 14px 12px; }
         .capsule-music .cd-section { display: flex; justify-content: center; margin-bottom: 8px; padding-top: 14px; }
@@ -1012,14 +1014,19 @@
             }
             for (let i = 0; i < snowNum; i++) flakes.push(new Snow());
 
+            let snowFrameTick = 0, snowIdleCleared = false;
             function render() {
-                ctx.clearRect(0, 0, width, height);
+                requestAnimationFrame(render);
                 if (!window.__snowActive) {
-                    requestAnimationFrame(render);
+                    // 特效关闭/卡片跳转期间：只清一次画布后空转，不再每帧全屏 clearRect，省掉无效重绘
+                    if (!snowIdleCleared) { ctx.clearRect(0, 0, width, height); snowIdleCleared = true; }
                     return;
                 }
-                flakes.forEach(s => { s.update(); s.draw(); });
-                requestAnimationFrame(render);
+                snowIdleCleared = false;
+                flakes.forEach(s => s.update());           // 位移每帧计算，保持原下落速度
+                if ((snowFrameTick++ & 1) === 0) return;   // 隔帧绘制锁 30fps：观感不变、绘制开销减半
+                ctx.clearRect(0, 0, width, height);
+                flakes.forEach(s => s.draw());
             }
             render();
         }
@@ -1464,19 +1471,19 @@
                 }
             }
 
+            let rainFrameTick = 0, rainIdleCleared = false;
             function animateRain() {
                 requestAnimationFrame(animateRain);
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-
                 if (!window.__rainActive) {
+                    // 同雪花：关闭/卡片跳转期间只清一次后空转，避免每帧全屏重绘
+                    if (!rainIdleCleared) { ctx.clearRect(0, 0, canvas.width, canvas.height); rainIdleCleared = true; }
                     return;
                 }
-
-                for (const drop of raindrops) {
-                    drop.update();
-                    drop.draw();
-                }
-
+                rainIdleCleared = false;
+                for (const drop of raindrops) drop.update();    // 位移每帧计算，保持原下落速度
+                if ((rainFrameTick++ & 1) === 0) return;        // 隔帧绘制锁 30fps，绘制开销减半
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                for (const drop of raindrops) drop.draw();
                 drawRipples();
             }
             animateRain();
@@ -1778,7 +1785,6 @@
         if (!topSpace || !copyright) return;
 
         var lastLayoutWidth = null;      // 上次完成布局时的视口宽度
-        var frozenSpacerHeight = null;   // 冻结的顶部留白高度：仅高度变化时保持内容顶部不动
 
         function adjustLayout(forceRecent) {
             var wrapper = document.querySelector('.bottom-area-wrapper');
@@ -1811,24 +1817,19 @@
                 if (r.top < minTop) minTop = r.top;
                 if (r.bottom > maxBottom) maxBottom = r.bottom;
             });
+            // 视觉中心相对视口几何中心的上移量：按 F11 全屏后内容看着略偏下，整体再抬高一点（只影响电脑端布局）
+            var centerLift = 40;
             var centerFit = bottomFit;
             if (minTop !== Infinity) {
                 var visualCenterOffset = (minTop + maxBottom) / 2 - wrapperRect.top;
-                centerFit = viewportH / 2 - visualCenterOffset - wrapperRect.top;
+                centerFit = viewportH / 2 - centerLift - visualCenterOffset - wrapperRect.top;
             }
 
-            // 只有“宽度变化 / 首次加载 / 字体加载完成（强制）”时才重新垂直居中；
-            // 仅高度变化（F11 全屏切换、浏览器地址栏/任务栏显隐）时沿用上次的顶部留白，
-            // 整组内容（含左侧 logo、一言）顶部位置保持不动，避免按 F11 后整体下移
-            var widthChanged = lastLayoutWidth === null || lastLayoutWidth !== window.innerWidth;
-            var spacer;
-            if (forceRecent || widthChanged || frozenSpacerHeight === null) {
-                spacer = (centerFit <= bottomFit) ? Math.max(30, centerFit) : Math.max(30, bottomFit);
-                frozenSpacerHeight = spacer;
-                lastLayoutWidth = window.innerWidth;
-            } else {
-                spacer = frozenSpacerHeight;
-            }
+            // 无论首次加载、宽度变化，还是仅高度变化（按 F11 全屏 / 退出全屏、地址栏显隐），
+            // 都按当前视口重新垂直居中：整组内容（logo、一言、卡片、时钟等）始终位于视口上下中部，
+            // 顶部留白与底部版权条间距同步重算，上下距离保持协调
+            var spacer = (centerFit <= bottomFit) ? Math.max(30, centerFit) : Math.max(30, bottomFit);
+            lastLayoutWidth = window.innerWidth;
             topSpace.style.height = spacer + 'px';
 
             // 顶部位置定好后，剩余/多出的高度全部交给底部版权条间距吸收，版权条始终贴近视口底部。
@@ -1845,7 +1846,7 @@
         var userResized = false;
         adjustLayout(true);
         window.addEventListener('load', function () { adjustLayout(true); });
-        // F11 等只改高度的 resize 不强制重排，内容不上下跳动；改宽度时自动重新居中（rAF 合并连续触发）
+        // 任意 resize（含 F11 只改高度）都经 rAF 合并后重新垂直居中，避免连续触发时抖动
         var resizeRaf = null;
         window.addEventListener('resize', function () {
             userResized = true;
@@ -1989,7 +1990,7 @@
         if (root) {
             root.innerHTML =
                 '<div class="music-player-card">' +
-                '  <div class="card-header"><span class="head-icon">' + neteaseIcon(17) + '</span><span>音乐播放器</span></div>' +
+                '  <div class="card-header"><span class="head-icon">' + neteaseIcon(28) + '</span><span>音乐播放器</span></div>' +
                 '  <div class="card-body">' +
                 '    <div class="cd-section"><div class="cd-disc" data-role="disc"><div class="cd-center-hole"></div><div class="wave-ring" data-role="ring"></div></div></div>' +
                 '    <div class="track-info"><span class="title" data-role="title"></span><span class="artist" data-role="artist"></span></div>' +
@@ -2019,11 +2020,15 @@
                 ring.classList.toggle('playing', s.isPlaying);
                 toggleBtn.textContent = s.isPlaying ? '⏸' : '▶';
                 if (document.activeElement !== seekBar) seekBar.value = s.progress;
-                list.innerHTML = s.tracks.map((t, i) =>
-                    '<div class="playlist-item ' + (i === s.index ? 'active' : '') + '" data-i="' + i + '">' +
-                    '<span class="index">' + String(i + 1).padStart(2, '0') + '</span><span class="t">' + t.title + '</span></div>'
-                ).join('');
-                list.querySelectorAll('.playlist-item').forEach(el => el.onclick = () => MusicPlayer.select(+el.dataset.i));
+                const listSig = s.tracks.length + ':' + s.index;
+                if (list.dataset.sig !== listSig) {
+                    list.dataset.sig = listSig;
+                    list.innerHTML = s.tracks.map((t, i) =>
+                        '<div class="playlist-item ' + (i === s.index ? 'active' : '') + '" data-i="' + i + '">' +
+                        '<span class="index">' + String(i + 1).padStart(2, '0') + '</span><span class="t">' + t.title + '</span></div>'
+                    ).join('');
+                    list.querySelectorAll('.playlist-item').forEach(el => el.onclick = () => MusicPlayer.select(+el.dataset.i));
+                }
             });
             MusicPlayer.loadTracks();
         }
