@@ -1607,25 +1607,32 @@
             if (!cursor) return;
             if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
 
-            let mouseX = innerWidth / 2, mouseY = innerHeight / 2;
-            let curX = mouseX, curY = mouseY;
-            // 修复：页面（含从插件/源码等外链返回主页）加载的几秒内，鼠标未移动时自定义光标一直隐藏、
-            // 而电脑端系统光标又被 cursor:none 隐藏，导致“几秒看不到光标”。初始化即在屏幕中央显示，
-            // 首次 mousemove 时再吸附到真实鼠标位置。
-            cursor.style.left = curX + 'px';
-            cursor.style.top = curY + 'px';
-            cursor.classList.remove('hidden');
-            let visible = true;
+            // 初始保持隐藏：绝不在屏幕中央凭空显示光标。只有用户真正移动鼠标（mousemove）、
+            // 或鼠标从窗口外重新移入（mouseenter，事件自带真实坐标）时，光标才在鼠标所在位置直接出现，
+            // 不做从中央飞过去的动画。鼠标移出窗口则隐藏。
+            let mouseX = 0, mouseY = 0;
+            let curX = 0, curY = 0;
+            let hasPointer = false;   // 本次加载后是否拿到过真实鼠标位置
+            let visible = false;
             let lastTime = performance.now();
 
+            function showAt(x, y) {
+                mouseX = x; mouseY = y;
+                curX = x; curY = y;   // 直接落在鼠标位置，不从上一个位置（含屏幕中央）滑行
+                cursor.style.left = curX + 'px';
+                cursor.style.top = curY + 'px';
+                cursor.classList.remove('hidden');
+                visible = true;
+                hasPointer = true;
+            }
+
             document.addEventListener('mousemove', e => {
-                mouseX = e.clientX;
-                mouseY = e.clientY;
                 if (!visible) {
-                    curX = mouseX;
-                    curY = mouseY;
-                    cursor.classList.remove('hidden');
-                    visible = true;
+                    showAt(e.clientX, e.clientY);
+                } else {
+                    mouseX = e.clientX;
+                    mouseY = e.clientY;
+                    hasPointer = true;
                 }
             });
 
@@ -1633,19 +1640,17 @@
                 cursor.classList.add('hidden');
                 visible = false;
             });
-            // 鼠标重新进入窗口、窗口重新获得焦点、以及浏览器后退/缓存恢复（bfcache pageshow）时，
-            // 立刻在上次位置恢复光标，避免返回主页加载期间光标消失
-            function revealCursor() {
-                curX = (mouseX >= 0 && mouseX <= innerWidth) ? mouseX : innerWidth / 2;
-                curY = (mouseY >= 0 && mouseY <= innerHeight) ? mouseY : innerHeight / 2;
-                cursor.style.left = curX + 'px';
-                cursor.style.top = curY + 'px';
-                cursor.classList.remove('hidden');
-                visible = true;
+            // 鼠标从窗口外移入：在进入瞬间的真实位置显示，不猜测屏幕中央
+            document.addEventListener('mouseenter', e => {
+                if (!visible) showAt(e.clientX, e.clientY);
+            });
+            // 窗口重新获得焦点 / bfcache 后退恢复：仅当本页之前已经拿到过鼠标位置时，
+            // 才在上次的位置恢复；从未移动过鼠标就继续保持隐藏（绝不在中央出现）
+            function restoreCursor() {
+                if (hasPointer && !visible) showAt(mouseX, mouseY);
             }
-            document.addEventListener('mouseenter', revealCursor);
-            window.addEventListener('focus', revealCursor);
-            window.addEventListener('pageshow', revealCursor);
+            window.addEventListener('focus', restoreCursor);
+            window.addEventListener('pageshow', restoreCursor);
 
             document.addEventListener('mousedown', () => {
                 cursor.style.width = '20px';
