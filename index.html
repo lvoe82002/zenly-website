@@ -351,6 +351,13 @@
         .hitokoto-card .hitokoto-label { position: absolute; top: 10px; left: 14px; font-size: 11px; opacity: 0.5; letter-spacing: 1px; font-family: 'Inter', sans-serif; }
         /* 动画已删除 */
         @media (max-width: 1024px) { .hitokoto-side { display: none !important; } }
+        /* 仅宽屏电脑（≥1680px，左右两列水平方向互不重叠时）：右侧时钟/一言/网站列表整体上移 20px，相互间距不变；
+           更窄的电脑屏幕左右两列本就贴边，上移会互相遮挡，故保持原位置；手机端同样不变 */
+        @media (min-width: 1680px) {
+            .digital-clock-card { top: -383px; }
+            .nav-group-cards { top: -200px; }
+            .hitokoto-side { top: -381px; }
+        }
 
         .mobile-menu-toggle { display: none; }
         @media (max-width: 768px) {
@@ -453,6 +460,13 @@
         .capsule-afd { margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,.12); font-size: .85rem; color: rgba(255,255,255,.72); line-height: 1.95; text-align: center; white-space: nowrap; }
         .capsule-afd span { display: inline; }
         @media (max-width: 768px) { .capsule-afd { font-size: .72rem; } }
+        /* ===== 仅电脑端：隐藏时光胶囊滚动长条（仍可滚轮/触摸滑动）；面板高度随内容收缩，
+           去掉“本博客已靠爱发电”文字下方的多余空白（内容超过 80% 视口时才滚动）；手机端保持原样 ===== */
+        @media (min-width: 1025px) {
+            .capsule-inner { scrollbar-width: none; -ms-overflow-style: none; padding-bottom: 10px; height: auto; max-height: 80%; }
+            .capsule-inner::-webkit-scrollbar { width: 0; height: 0; display: none; }
+            .capsule-afd { line-height: 1.55; }
+        }
         /* ========== 卡片全屏弹层：iframe 100% 视口、不缩放不变形，卡片与独立打开时尺寸完全一致；主页不卸载 → 音乐不中断 ========== */
         #cardFrameMask { position: fixed; inset: 0; width: 100vw; height: 100vh; height: 100dvh; z-index: 999990; background: #0b0b0d; display: none; overflow: hidden; }
         #cardFrameMask.show { display: block; }
@@ -725,13 +739,14 @@
                         </svg>
                         <span>博客</span>
                     </a>
-                    <a href="javascript:void(0)" class="nav-btn" onclick="setTimeout(function(){ window.location.href='https://raw.githubusercontent.com/lvoe82002/zenly-website/main/index.html'; }, 2000);"><i class="fa-solid fa-code"></i><span>源码</span></a>
-                    <a href="javascript:void(0)" class="nav-btn" onclick="setTimeout(function(){ window.location.href='https://threatmap.checkpoint.com/'; }, 2000);"><i class="fa-solid fa-map"></i><span>mc地图</span></a>
-                    <a href="javascript:void(0)" class="nav-btn" onclick="window.location.reload();"><i class="fa-regular fa-compass"></i><span>起始页</span></a>
-                    <div class="nav-row2">
                     <a href="javascript:void(0)" class="nav-btn" onclick="window.__openCard && window.__openCard('播放器架构.html');"><svg style="width:22px;height:22px;fill:currentColor;" viewBox="0 0 24 24"><path d="M13.046 9.388a3.919 3.919 0 0 0-.66.19c-.809.312-1.447.991-1.666 1.775a2.269 2.269 0 0 0-.074.81c.048.546.333 1.05.764 1.35a1.483 1.483 0 0 0 2.01-.286c.406-.531.355-1.183.24-1.636-.098-.387-.22-.816-.345-1.249a64.76 64.76 0 0 1-.269-.954zm-.82 10.07c-3.984 0-7.224-3.24-7.224-7.223 0-.98.226-3.02 1.884-4.822A7.188 7.188 0 0 1 9.502 5.6a.792.792 0 1 1 .587 1.472 5.619 5.619 0 0 0-2.795 2.462 5.538 5.538 0 0 0-.707 2.7 5.645 5.645 0 0 0 5.638 5.638c1.844 0 3.627-.953 4.542-2.428 1.042-1.68.772-3.931-.627-5.238a3.299 3.299 0 0 0-1.437-.777c.172.589.334 1.18.494 1.772.284 1.12.1 2.181-.519 2.989-.39.51-.956.888-1.592 1.064a3.038 3.038 0 0 1-2.58-.44 3.45 3.45 0 0 1-1.44-2.514c-.04-.467.002-.93.128-1.376.35-1.256 1.356-2.339 2.622-2.826a5.5 5.5 0 0 1 .823-.246l-.134-.505c-.37-1.371.25-2.579 1.547-3.007.329-.109.68-.145 1.025-.105.792.09 1.476.592 1.709 1.023.258.507-.096 1.153-.706 1.153a.788.788 0 0 1-.54-.213c-.088-.08-.163-.174-.259-.247a.825.825 0 0 0-.632-.166.807.807 0 0 0-.634.551c-.056.191-.031.406.02.595.07.256.159.597.217.82 1.11.098 2.162.54 2.97 1.296 1.974 1.844 2.35 4.886.892 7.233-1.197 1.93-3.509 3.177-5.889 3.177z"></path></svg><span>播放器架构</span></a>
+                    <a href="javascript:void(0)" class="nav-btn" onclick="setTimeout(function(){ window.location.href='https://threatmap.checkpoint.com/'; }, 2000);"><i class="fa-solid fa-map"></i><span>mc地图</span></a>
+                    <a href="javascript:void(0)" class="nav-btn" onclick="window.__openCard && window.__openCard('关于我.html');"><i class="fa-solid fa-user"></i><span>关于我</span></a>
+                    <div class="nav-row2">
                     <a href="javascript:void(0)" class="nav-btn" onclick="setTimeout(function(){ window.location.href='https://hyper.is'; }, 2000);"><svg style="width:22px;height:22px;fill:currentColor;" viewBox="0 0 24 24"><path d="M20.5 11H19V7c0-1.1-.9-2-2-2h-4V3.5C13 2.12 11.88 1 10.5 1S8 2.12 8 3.5V5H4c-1.1 0-1.99.9-1.99 2v3.8H3.5c1.49 0 2.7 1.21 2.7 2.7s-1.21 2.7-2.7 2.7H2V20c0 1.1.9 2 2 2h3.8v-1.5c0-1.49 1.21-2.7 2.7-2.7 1.49 0 2.7 1.21 2.7 2.7V22H17c1.1 0 2-.9 2-2v-4h1.5c1.38 0 2.5-1.12 2.5-2.5S21.88 11 20.5 11z"></path></svg><span>插件</span></a>
                     <a href="javascript:void(0)" class="nav-btn" onclick="setTimeout(function(){ window.location.href='https://gitee.com/write-and-repair/termux-rc'; }, 2000);"><svg style="width:22px;height:22px;fill:currentColor;" viewBox="0 0 24 24"><path d="M11.984 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.016 0zm6.09 5.333c.328 0 .593.266.592.593v1.482a.594.594 0 0 1-.593.592H9.777c-.982 0-1.778.796-1.778 1.778v5.63c0 .327.266.592.593.592h5.63c.982 0 1.778-.796 1.778-1.778v-.296a.593.593 0 0 0-.592-.593h-4.15a.592.592 0 0 1-.592-.592v-1.482a.593.593 0 0 1 .593-.592h6.815c.327 0 .593.265.593.592v3.408a4 4 0 0 1-4 4H5.926a.593.593 0 0 1-.593-.593V9.778a4.444 4.444 0 0 1 4.445-4.444h8.296Z"></path></svg><span>Gitee</span></a>
+                    <a href="javascript:void(0)" class="nav-btn" onclick="setTimeout(function(){ window.location.href='https://raw.githubusercontent.com/lvoe82002/zenly-website/main/index.html'; }, 2000);"><i class="fa-solid fa-code"></i><span>源码</span></a>
+                    <a href="javascript:void(0)" class="nav-btn" onclick="window.location.reload();"><i class="fa-regular fa-compass"></i><span>起始页</span></a>
                 </div>
                 </div>
             </div>
@@ -1586,7 +1601,13 @@
 
             let mouseX = innerWidth / 2, mouseY = innerHeight / 2;
             let curX = mouseX, curY = mouseY;
-            let visible = false;
+            // 修复：页面（含从插件/源码等外链返回主页）加载的几秒内，鼠标未移动时自定义光标一直隐藏、
+            // 而电脑端系统光标又被 cursor:none 隐藏，导致“几秒看不到光标”。初始化即在屏幕中央显示，
+            // 首次 mousemove 时再吸附到真实鼠标位置。
+            cursor.style.left = curX + 'px';
+            cursor.style.top = curY + 'px';
+            cursor.classList.remove('hidden');
+            let visible = true;
             let lastTime = performance.now();
 
             document.addEventListener('mousemove', e => {
@@ -1604,6 +1625,19 @@
                 cursor.classList.add('hidden');
                 visible = false;
             });
+            // 鼠标重新进入窗口、窗口重新获得焦点、以及浏览器后退/缓存恢复（bfcache pageshow）时，
+            // 立刻在上次位置恢复光标，避免返回主页加载期间光标消失
+            function revealCursor() {
+                curX = (mouseX >= 0 && mouseX <= innerWidth) ? mouseX : innerWidth / 2;
+                curY = (mouseY >= 0 && mouseY <= innerHeight) ? mouseY : innerHeight / 2;
+                cursor.style.left = curX + 'px';
+                cursor.style.top = curY + 'px';
+                cursor.classList.remove('hidden');
+                visible = true;
+            }
+            document.addEventListener('mouseenter', revealCursor);
+            window.addEventListener('focus', revealCursor);
+            window.addEventListener('pageshow', revealCursor);
 
             document.addEventListener('mousedown', () => {
                 cursor.style.width = '20px';
@@ -1730,7 +1764,10 @@
         var copyright = document.querySelector('.copyright-bar');
         if (!topSpace || !copyright) return;
 
-        function adjustLayout() {
+        var lastLayoutWidth = null;      // 上次完成布局时的视口宽度
+        var frozenSpacerHeight = null;   // 冻结的顶部留白高度：仅高度变化时保持内容顶部不动
+
+        function adjustLayout(forceRecent) {
             var wrapper = document.querySelector('.bottom-area-wrapper');
             if (!wrapper) return;
 
@@ -1767,21 +1804,44 @@
                 centerFit = viewportH / 2 - visualCenterOffset - wrapperRect.top;
             }
 
-            if (centerFit <= bottomFit) {
-                topSpace.style.height = Math.max(30, centerFit) + 'px';
-                var extraGap = bottomFit - centerFit;
+            // 只有“宽度变化 / 首次加载 / 字体加载完成（强制）”时才重新垂直居中；
+            // 仅高度变化（F11 全屏切换、浏览器地址栏/任务栏显隐）时沿用上次的顶部留白，
+            // 整组内容（含左侧 logo、一言）顶部位置保持不动，避免按 F11 后整体下移
+            var widthChanged = lastLayoutWidth === null || lastLayoutWidth !== window.innerWidth;
+            var spacer;
+            if (forceRecent || widthChanged || frozenSpacerHeight === null) {
+                spacer = (centerFit <= bottomFit) ? Math.max(30, centerFit) : Math.max(30, bottomFit);
+                frozenSpacerHeight = spacer;
+                lastLayoutWidth = window.innerWidth;
+            } else {
+                spacer = frozenSpacerHeight;
+            }
+            topSpace.style.height = spacer + 'px';
+
+            // 顶部位置定好后，剩余/多出的高度全部交给底部版权条间距吸收，版权条始终贴近视口底部。
+            // 注意 body 带 min-height:100vh，不能用 scrollHeight 反推（会恒等于视口高），直接用测量期
+            // （min-height 临时置 auto）得到的 bottomFit 做代数计算。
+            var extraGap = bottomFit - spacer;
+            if (extraGap > 0) {
                 copyright.style.marginTop = (baseCopyrightMargin + extraGap) + 'px';
             } else {
-                topSpace.style.height = Math.max(30, bottomFit) + 'px';
                 copyright.style.marginTop = '';
             }
         }
 
-        adjustLayout();
-        window.addEventListener('load', adjustLayout);
-        window.addEventListener('resize', adjustLayout);
+        var userResized = false;
+        adjustLayout(true);
+        window.addEventListener('load', function () { adjustLayout(true); });
+        // F11 等只改高度的 resize 不强制重排，内容不上下跳动；改宽度时自动重新居中（rAF 合并连续触发）
+        var resizeRaf = null;
+        window.addEventListener('resize', function () {
+            userResized = true;
+            if (resizeRaf) cancelAnimationFrame(resizeRaf);
+            resizeRaf = requestAnimationFrame(function () { adjustLayout(false); });
+        });
         if (document.fonts && document.fonts.ready) {
-            document.fonts.ready.then(adjustLayout);
+            // 字体若在用户已经调整过窗口后才加载完，不再强制重排，避免把内容突然拉走
+            document.fonts.ready.then(function () { if (!userResized) adjustLayout(true); });
         }
     })();
     </script>
