@@ -478,8 +478,10 @@
             .capsule-afd { line-height: 1.55; }
         }
         /* ========== 卡片全屏弹层：iframe 100% 视口、不缩放不变形，卡片与独立打开时尺寸完全一致；主页不卸载 → 音乐不中断 ========== */
-        #cardFrameMask { position: fixed; inset: 0; width: 100vw; height: 100vh; height: 100dvh; z-index: 999990; background: #0b0b0d; display: none; overflow: hidden; }
+        #cardFrameMask { position: fixed; inset: 0; width: 100vw; height: 100vh; height: 100dvh; z-index: 999990; background: #0b0b0d; display: none; opacity: 0; transition: opacity 0.18s ease; overflow: hidden; }
         #cardFrameMask.show { display: block; }
+        /* iframe 内容完成首帧绘制后才淡入，避免“先黑一下再出内容”；加载期间主页保持可见，音乐也不会断 */
+        #cardFrameMask.ready { opacity: 1; }
         #cardFrame { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; margin: 0; padding: 0; background: #0b0b0d; display: block; }
     </style>
 </head>
@@ -1014,19 +1016,14 @@
             }
             for (let i = 0; i < snowNum; i++) flakes.push(new Snow());
 
-            let snowFrameTick = 0, snowIdleCleared = false;
             function render() {
-                requestAnimationFrame(render);
+                ctx.clearRect(0, 0, width, height);
                 if (!window.__snowActive) {
-                    // 特效关闭/卡片跳转期间：只清一次画布后空转，不再每帧全屏 clearRect，省掉无效重绘
-                    if (!snowIdleCleared) { ctx.clearRect(0, 0, width, height); snowIdleCleared = true; }
+                    requestAnimationFrame(render);
                     return;
                 }
-                snowIdleCleared = false;
-                flakes.forEach(s => s.update());           // 位移每帧计算，保持原下落速度
-                if ((snowFrameTick++ & 1) === 0) return;   // 隔帧绘制锁 30fps：观感不变、绘制开销减半
-                ctx.clearRect(0, 0, width, height);
-                flakes.forEach(s => s.draw());
+                flakes.forEach(s => { s.update(); s.draw(); });
+                requestAnimationFrame(render);
             }
             render();
         }
@@ -1471,19 +1468,19 @@
                 }
             }
 
-            let rainFrameTick = 0, rainIdleCleared = false;
             function animateRain() {
                 requestAnimationFrame(animateRain);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
                 if (!window.__rainActive) {
-                    // 同雪花：关闭/卡片跳转期间只清一次后空转，避免每帧全屏重绘
-                    if (!rainIdleCleared) { ctx.clearRect(0, 0, canvas.width, canvas.height); rainIdleCleared = true; }
                     return;
                 }
-                rainIdleCleared = false;
-                for (const drop of raindrops) drop.update();    // 位移每帧计算，保持原下落速度
-                if ((rainFrameTick++ & 1) === 0) return;        // 隔帧绘制锁 30fps，绘制开销减半
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                for (const drop of raindrops) drop.draw();
+
+                for (const drop of raindrops) {
+                    drop.update();
+                    drop.draw();
+                }
+
                 drawRipples();
             }
             animateRain();
@@ -2077,6 +2074,23 @@
             window.__snowActive = savedEffects.snow; window.__rainActive = savedEffects.rain; window.__thunderMode = savedEffects.thunder;
             savedEffects = null;
         }
+        let cardRevealTimer = null;
+        function revealCardWhenReady() {
+            clearTimeout(cardRevealTimer);
+            let revealed = false;
+            function reveal() {
+                if (revealed || !cardOpen) return;
+                revealed = true;
+                // 再等两帧，确保 iframe 内首屏内容真正上屏，而不是只露出卡片页的黑色底色
+                requestAnimationFrame(() => requestAnimationFrame(() => mask.classList.add('ready')));
+            }
+            frame.onload = function () {
+                if (frame.getAttribute('src') === 'about:blank') return;
+                reveal();
+            };
+            // 兜底：个别情况下 load 事件异常，300ms 后也必须显示，不能一直卡在主页
+            cardRevealTimer = setTimeout(reveal, 300);
+        }
         window.__openCard = function (href) {
             if (!href) return;
             document.body.classList.remove('mobile-menu-open');
@@ -2085,7 +2099,9 @@
                 try { baseHistLen = history.length; } catch (e) { baseHistLen = 0; }
                 pauseParentEffects();
                 applyFrameSize();
+                mask.classList.remove('ready');   // 先保持透明，主页不被黑底盖住
                 mask.classList.add('show');
+                revealCardWhenReady();
                 try { history.pushState({ nxCard: true }, '', href); historyPushed = true; } catch (e) { historyPushed = false; }
             }
             if (frame.getAttribute('src') !== href) frame.src = href;
@@ -2095,8 +2111,10 @@
             cardOpen = false;
             historyPushed = false;
             baseHistLen = 0;
+            clearTimeout(cardRevealTimer);
+            frame.onload = null;
             resumeParentEffects();
-            mask.classList.remove('show');
+            mask.classList.remove('ready', 'show');
             setTimeout(() => { if (!cardOpen) frame.src = 'about:blank'; }, 260);
         }
         window.__closeCard = function () {
