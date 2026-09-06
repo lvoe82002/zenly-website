@@ -481,6 +481,7 @@
         #cardFrameMask { position: fixed; inset: 0; width: 100vw; height: 100vh; height: 100dvh; z-index: 999990; background: #0b0b0d; display: none; overflow: hidden; }
         #cardFrameMask.show { display: block; }
         #cardFrame { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; margin: 0; padding: 0; background: #0b0b0d; display: block; }
+        @media (max-width: 768px) { #cardFrame { background: transparent !important; } }
     </style>
 </head>
 <body class="pre-blur">
@@ -2094,111 +2095,42 @@
             window.__snowActive = savedEffects.snow; window.__rainActive = savedEffects.rain; window.__thunderMode = savedEffects.thunder;
             savedEffects = null;
         }
-        let cardRevealIv = null, cardRevealTo = null;
-        function clearCardRevealTimers() {
-            if (cardRevealIv) { clearInterval(cardRevealIv); cardRevealIv = null; }
-            if (cardRevealTo) { clearTimeout(cardRevealTo); cardRevealTo = null; }
-        }
-        // 手机端：卡片页背景是一张随机壁纸，没加载完时是 #0b0b0d 黑底。
-        // 点下后先让 iframe 在弹层隐藏状态下把文档和壁纸加载好，这期间“冻结”当前菜单画面不动
-        //（不先收回主页、也不露黑底）；就绪后由 enter() 在同一帧收起菜单并显示卡片，无缝进入。
-        // 电脑端不等待，点下立即 enter()。
-        function revealCardWhenReady(enter) {
-            clearCardRevealTimers();
-            let revealed = false, decodeArmed = false;
-            const reveal = () => {
-                if (revealed || !cardOpen) return;
-                revealed = true;
-                clearCardRevealTimers();
-                requestAnimationFrame(() => requestAnimationFrame(() => { if (cardOpen) enter(); }));
-            };
-            const startedAt = Date.now();
-            cardRevealIv = setInterval(() => {
-                if (!cardOpen) { clearCardRevealTimers(); return; }
-                if (Date.now() - startedAt > 1000) { reveal(); return; } // 硬兜底：最多等 1s，绝不让点击没反应
-                let doc = null, win = null;
-                try { doc = frame.contentDocument; win = frame.contentWindow; } catch (e) { doc = null; }
-                // 注意：文档还没建立好/还在加载，都属于“没就绪”，必须继续冻结等待，
-                // 绝不能在这时候显示——否则露出的就是卡片还没上壁纸的 #0b0b0d 黑底（真机黑屏的根源）。
-                if (!doc) return;
-                if (doc.readyState !== 'complete' || !doc.body || !doc.body.children.length) return;
-                const layer = doc.getElementById('wallpaper-layer');
-                if (!layer) { reveal(); return; }                            // 该卡片没有壁纸层，直接显示
-                if (decodeArmed) return;
-                // 找到“卡片自己那张壁纸”的下载记录（重定向后的最终地址），下完并解码后再显示
-                let entry = null;
-                try {
-                    const res = win.performance.getEntriesByType('resource');
-                    for (let i = 0; i < res.length; i++) {
-                        // 记录在资源“加载完成”时才入列；跨域图的 responseEnd 在内核里可能被置 0，故只按是否出现判断
-                        if (res[i].name.indexOf('mwm.moe') >= 0) { entry = res[i]; break; }
-                    }
-                } catch (e) { entry = null; }
-                if (!entry) {
-                    // performance 不可用时退化为文档 complete 即显示
-                    try { if (!win.performance) reveal(); } catch (e) { reveal(); }
-                    return;                                                 // 壁纸还没下完，继续等，不提前黑
-                }
-                decodeArmed = true;
-                let fin = false;
-                const ok = () => { if (!fin) { fin = true; reveal(); } };
-                try {
-                    const im = new win.Image();
-                    im.onload = () => {
-                        try {
-                            if (im.decode) { const pr = im.decode(); if (pr && pr.then) { pr.then(ok).catch(ok); return; } }
-                        } catch (e) {}
-                        ok();
-                    };
-                    im.onerror = ok;
-                    cardRevealTo = setTimeout(ok, 500);
-                    im.src = entry.name;   // 与卡片壁纸同一最终地址，命中缓存，确保解码完成
-                } catch (e) { reveal(); }
-            }, 40);
-        }
         window.__openCard = function (href) {
             if (!href) return;
-            const firstOpen = !cardOpen;
-            if (firstOpen) {
+            document.body.classList.remove('mobile-menu-open');
+            if (!cardOpen) {
                 cardOpen = true;
                 try { baseHistLen = history.length; } catch (e) { baseHistLen = 0; }
+                pauseParentEffects();
                 applyFrameSize();
+                // 仅把加载极短空档的纯黑底，换成“与主页相同、已解码”的壁纸；进入节奏与动画一律不变
+                try {
+                    const __hw = document.getElementById('wallpaper-layer');
+                    if (__hw) {
+                        const __bi = getComputedStyle(__hw).backgroundImage;
+                        if (__bi && __bi !== 'none') {
+                            mask.style.background = 'linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), ' + __bi + ' no-repeat center center';
+                            mask.style.backgroundSize = 'cover';
+                        }
+                    }
+                } catch (e) {}
+                mask.classList.add('show');   // 点下同一刻直接显示弹层，保持原有进入节奏
                 try { history.pushState({ nxCard: true }, '', href); historyPushed = true; } catch (e) { historyPushed = false; }
             }
-            // 真正进入卡片的同一帧：收起手机菜单、暂停主页特效、显示弹层（一起完成，中间不露出主页）
-            const enter = () => {
-                document.body.classList.remove('mobile-menu-open');
-                if (firstOpen) pauseParentEffects();
-                mask.classList.add('show');
-            };
-            if (frame.getAttribute('src') !== href) {
-                if (window.innerWidth <= 768) {
-                    // 手机端：后台加载期间冻结在菜单画面，就绪后同一帧进入——不闪主页、不露黑
-                    mask.classList.remove('show');
-                    frame.src = href;
-                    revealCardWhenReady(enter);
-                } else {
-                    // 电脑端：点下立即进入
-                    frame.src = href;
-                    enter();
-                }
-            } else {
-                enter();
-            }
+            if (frame.getAttribute('src') !== href) frame.src = href;
         };
         function hideCard() {
             if (!cardOpen) return;
             cardOpen = false;
             historyPushed = false;
             baseHistLen = 0;
-            clearCardRevealTimers();
             resumeParentEffects();
             mask.classList.remove('show');
+            mask.style.background = '';
             setTimeout(() => { if (!cardOpen) frame.src = 'about:blank'; }, 260);
         }
         window.__closeCard = function () {
-            // 先无条件关闭弹层、回到主页（保证点“返回主页”一定有反应、不被历史步数卡住），
-            // 再尽力把历史条目一次性退回主页；两步互不依赖，历史回退失败也不影响弹层已关闭。
+            // 先无条件关闭弹层回主页，再尽力回退历史，避免真机历史步数算偏时卡住（不改变进入效果）
             let steps = 1;
             try { steps = Math.max(1, history.length - baseHistLen); } catch (e) { steps = 1; }
             const pushed = historyPushed;
