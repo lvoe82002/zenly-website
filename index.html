@@ -2167,14 +2167,13 @@
             setTimeout(() => { if (!cardOpen) frame.src = 'about:blank'; }, 260);
         }
         window.__closeCard = function () {
-            // 联合历史长度差值 = pushState + iframe 内全部跳转层数，一次性退回主页
-            if (historyPushed) {
-                let steps = 1;
-                try { steps = Math.max(1, history.length - baseHistLen); } catch (e) {}
-                historyPushed = false;
-                try { history.go(-steps); return; } catch (e) {}
-            }
+            // 先无条件关闭弹层、回到主页（保证点“返回主页”一定有反应、不被历史步数卡住），
+            // 再尽力把历史条目一次性退回主页；两步互不依赖，历史回退失败也不影响弹层已关闭。
+            let steps = 1;
+            try { steps = Math.max(1, history.length - baseHistLen); } catch (e) { steps = 1; }
+            const pushed = historyPushed;
             hideCard();
+            if (pushed) { try { history.go(-steps); } catch (e) {} }
         };
         window.addEventListener('popstate', e => {
             // 回到主页条目（state 不再是 nxCard）时关闭弹层；iframe 内部回退不会触发父窗口 popstate
