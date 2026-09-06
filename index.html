@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh" style="background:#0b0b0d">
+<html lang="zh">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -69,8 +69,6 @@
         .interactive-badge .badge-text { font-size: 16px; letter-spacing: 1px; margin-left: 24px; color: #fff; line-height: 1.4; padding-top: 4px; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        /* 时光胶囊专用入场：起始即半可见、无位移，160ms 内到位，杜绝“先黑屏再出内容”，也避免带 backdrop-filter 的层做位移重绘 */
-        @keyframes capsuleIn { from { opacity: .55; } to { opacity: 1; } }
 
         /* ========== 时光胶囊：调整为右侧占约60%宽度 ========== */
         #capsuleOverlay {
@@ -86,7 +84,7 @@
             align-items: center;
             padding-left: 45%;   /* 修改：原为50%，现在为40%，胶囊占右侧约60% */
             padding-right: 5%;   /* 保持不变 */
-            transition: opacity 0.18s ease;
+            transition: all 0.3s ease;
             cursor: default;
         }
         body.capsule-open #capsuleOverlay { display: flex !important; }
@@ -104,7 +102,7 @@
             pointer-events: auto;
             position: relative;
             overflow-y: auto;
-            animation: capsuleIn 0.16s ease-out;
+            animation: fadeIn 0.5s ease;
         }
         .capsule-header { display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; margin: 0.2rem 0 1.5rem; position: relative; }
         .capsule-header .capsule-title { display: flex; align-items: center; gap: 10px; }
@@ -372,7 +370,7 @@
             .copyright-bar .copyright-text { display: block !important; font-size: 12px !important; line-height: 1.5 !important; white-space: nowrap !important; word-break: normal !important; opacity: 1 !important; color: #fff !important; letter-spacing: 0.5px !important; }
             /* 底部版权底板占住位置后，手机端悬浮菜单按钮上移避让（仅手机端） */
             body .mobile-menu-toggle { bottom: 54px !important; }
-            .footer-box { position: relative !important; height: 100vh !important; width: 100vw !important; display: flex !important; flex-direction: column !important; justify-content: center !important; align-items: center !important; /* 手机端：底部多留 120px，让居中的内容组（logo/时光胶囊/社交图标）整体上移约 60px；底部固定的菜单开关与版权条位置不变 */ padding: 0 20px 120px !important; margin: 0 !important; }
+            .footer-box { position: relative !important; height: 100vh !important; width: 100vw !important; display: flex !important; flex-direction: column !important; justify-content: center !important; align-items: center !important; padding: 0 20px !important; margin: 0 !important; }
             .bottom-area-wrapper { position: relative !important; width: 100% !important; min-height: 0 !important; flex: none !important; display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; gap: 0 !important; padding: 0 !important; margin: 0 !important; }
             .center-logo-flow.moved-logo { position: relative !important; top: auto !important; left: auto !important; right: auto !important; width: auto !important; max-width: calc(100vw - 48px) !important; margin: 0 0 18px 0 !important; z-index: 10 !important; transform: none !important; align-self: flex-start !important; order: 1 !important; }
             .center-logo-flow.moved-logo .logo { gap: 14px !important; align-items: center !important; }
@@ -427,7 +425,7 @@
         .capsule-music .music-player-card { background: rgba(255,255,255,.07); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 12px; border: 1px solid rgba(255,255,255,.14); box-shadow: none; overflow: hidden; max-width: none; width: 100%; margin: 0; }
         .capsule-music .card-header { padding: 13px 16px; border-bottom: 1px solid rgba(255,255,255,.1); font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; color: #fff; }
         .capsule-music .card-header .head-icon { display: inline-flex; align-items: center; color: #fff; }
-        .capsule-music .card-header .head-icon svg { width: 28px; height: 28px; display: block; }
+        .capsule-music .card-header .head-icon svg { width: 17px; height: 17px; display: block; }
         .capsule-music .netease-svg { display: block; flex-shrink: 0; }
         .capsule-music .card-body { padding: 0 14px 12px; }
         .capsule-music .cd-section { display: flex; justify-content: center; margin-bottom: 8px; padding-top: 14px; }
@@ -878,10 +876,7 @@
                 setTimeout(finish, 6000);
             });
         }
-        let __revealed = false;
         function startReveal() {
-            if (__revealed) return;
-            __revealed = true;
             document.body.classList.add('loading');      // 左右黑幕向两侧拉开
             document.body.classList.add('page-clear');  // 壁纸 + 全部内容模糊渐清
             document.body.classList.remove('pre-blur');
@@ -891,27 +886,8 @@
                 tryShowWelcomeAfterLoad();
             }, 700);
         }
-        // 正常：等 load + 壁纸就绪再揭幕，首屏依旧是“模糊渐清”的效果
         Promise.all([waitWindowLoad(), waitWallpaperReady()]).then(() => {
             setTimeout(startReveal, 300);
-        });
-        // 兜底：随机壁纸/外部资源在手机上偏慢时，绝不让深色幕布一直盖住——最多 1.2s 必拉开
-        setTimeout(startReveal, 1200);
-        // 从外部整页链接返回（bfcache 历史恢复）：首次 pageshow 交给正常流程，之后的 pageshow 都是“返回”，立刻揭幕并强制重绘，杜绝返回后整页发黑
-        let __firstPageshow = true;
-        window.addEventListener('pageshow', function () {
-            if (__firstPageshow) { __firstPageshow = false; return; }
-            // 返回/历史恢复：不管之前是否揭幕过，都无条件恢复到清晰可见，并立刻移除可能残留的深色幕布
-            __revealed = true;
-            document.body.classList.add('loading', 'page-clear');
-            document.body.classList.remove('pre-blur');
-            const __lb = document.getElementById('loading-box'); if (__lb) __lb.remove();
-            const wp = document.getElementById('wallpaper-layer');
-            requestAnimationFrame(function () {
-                if (!wp) return;
-                wp.style.transform = 'translateZ(0) scale(1.001)';
-                requestAnimationFrame(function () { wp.style.transform = ''; });
-            });
         });
 
         function getGreeting() {
@@ -1802,6 +1778,7 @@
         if (!topSpace || !copyright) return;
 
         var lastLayoutWidth = null;      // 上次完成布局时的视口宽度
+        var frozenSpacerHeight = null;   // 冻结的顶部留白高度：仅高度变化时保持内容顶部不动
 
         function adjustLayout(forceRecent) {
             var wrapper = document.querySelector('.bottom-area-wrapper');
@@ -1834,19 +1811,24 @@
                 if (r.top < minTop) minTop = r.top;
                 if (r.bottom > maxBottom) maxBottom = r.bottom;
             });
-            // 视觉中心相对视口几何中心的上移量：按 F11 全屏后内容看着略偏下，整体再抬高一点（只影响电脑端布局）
-            var centerLift = 40;
             var centerFit = bottomFit;
             if (minTop !== Infinity) {
                 var visualCenterOffset = (minTop + maxBottom) / 2 - wrapperRect.top;
-                centerFit = viewportH / 2 - centerLift - visualCenterOffset - wrapperRect.top;
+                centerFit = viewportH / 2 - visualCenterOffset - wrapperRect.top;
             }
 
-            // 无论首次加载、宽度变化，还是仅高度变化（按 F11 全屏 / 退出全屏、地址栏显隐），
-            // 都按当前视口重新垂直居中：整组内容（logo、一言、卡片、时钟等）始终位于视口上下中部，
-            // 顶部留白与底部版权条间距同步重算，上下距离保持协调
-            var spacer = (centerFit <= bottomFit) ? Math.max(30, centerFit) : Math.max(30, bottomFit);
-            lastLayoutWidth = window.innerWidth;
+            // 只有“宽度变化 / 首次加载 / 字体加载完成（强制）”时才重新垂直居中；
+            // 仅高度变化（F11 全屏切换、浏览器地址栏/任务栏显隐）时沿用上次的顶部留白，
+            // 整组内容（含左侧 logo、一言）顶部位置保持不动，避免按 F11 后整体下移
+            var widthChanged = lastLayoutWidth === null || lastLayoutWidth !== window.innerWidth;
+            var spacer;
+            if (forceRecent || widthChanged || frozenSpacerHeight === null) {
+                spacer = (centerFit <= bottomFit) ? Math.max(30, centerFit) : Math.max(30, bottomFit);
+                frozenSpacerHeight = spacer;
+                lastLayoutWidth = window.innerWidth;
+            } else {
+                spacer = frozenSpacerHeight;
+            }
             topSpace.style.height = spacer + 'px';
 
             // 顶部位置定好后，剩余/多出的高度全部交给底部版权条间距吸收，版权条始终贴近视口底部。
@@ -1863,7 +1845,7 @@
         var userResized = false;
         adjustLayout(true);
         window.addEventListener('load', function () { adjustLayout(true); });
-        // 任意 resize（含 F11 只改高度）都经 rAF 合并后重新垂直居中，避免连续触发时抖动
+        // F11 等只改高度的 resize 不强制重排，内容不上下跳动；改宽度时自动重新居中（rAF 合并连续触发）
         var resizeRaf = null;
         window.addEventListener('resize', function () {
             userResized = true;
@@ -2007,7 +1989,7 @@
         if (root) {
             root.innerHTML =
                 '<div class="music-player-card">' +
-                '  <div class="card-header"><span class="head-icon">' + neteaseIcon(28) + '</span><span>音乐播放器</span></div>' +
+                '  <div class="card-header"><span class="head-icon">' + neteaseIcon(17) + '</span><span>音乐播放器</span></div>' +
                 '  <div class="card-body">' +
                 '    <div class="cd-section"><div class="cd-disc" data-role="disc"><div class="cd-center-hole"></div><div class="wave-ring" data-role="ring"></div></div></div>' +
                 '    <div class="track-info"><span class="title" data-role="title"></span><span class="artist" data-role="artist"></span></div>' +
@@ -2037,15 +2019,11 @@
                 ring.classList.toggle('playing', s.isPlaying);
                 toggleBtn.textContent = s.isPlaying ? '⏸' : '▶';
                 if (document.activeElement !== seekBar) seekBar.value = s.progress;
-                const listSig = s.tracks.length + ':' + s.index;
-                if (list.dataset.sig !== listSig) {
-                    list.dataset.sig = listSig;
-                    list.innerHTML = s.tracks.map((t, i) =>
-                        '<div class="playlist-item ' + (i === s.index ? 'active' : '') + '" data-i="' + i + '">' +
-                        '<span class="index">' + String(i + 1).padStart(2, '0') + '</span><span class="t">' + t.title + '</span></div>'
-                    ).join('');
-                    list.querySelectorAll('.playlist-item').forEach(el => el.onclick = () => MusicPlayer.select(+el.dataset.i));
-                }
+                list.innerHTML = s.tracks.map((t, i) =>
+                    '<div class="playlist-item ' + (i === s.index ? 'active' : '') + '" data-i="' + i + '">' +
+                    '<span class="index">' + String(i + 1).padStart(2, '0') + '</span><span class="t">' + t.title + '</span></div>'
+                ).join('');
+                list.querySelectorAll('.playlist-item').forEach(el => el.onclick = () => MusicPlayer.select(+el.dataset.i));
             });
             MusicPlayer.loadTracks();
         }
@@ -2102,7 +2080,7 @@
                 try { baseHistLen = history.length; } catch (e) { baseHistLen = 0; }
                 pauseParentEffects();
                 applyFrameSize();
-                mask.classList.add('show');   // 点下同一刻直接显示弹层，不做“先黑再淡入”
+                mask.classList.add('show');
                 try { history.pushState({ nxCard: true }, '', href); historyPushed = true; } catch (e) { historyPushed = false; }
             }
             if (frame.getAttribute('src') !== href) frame.src = href;
@@ -2134,22 +2112,6 @@
             const d = ev.data;
             if (!d || typeof d !== 'object') return;
             if (d.type === 'nx-close-card') window.__closeCard();
-        });
-        // 从外部整页链接返回（bfcache 恢复）时，部分手机内页浏览器不会自动重绘会白一下：
-        // 仅在“历史恢复(persisted)”时确保页面清晰可见并触发一次合成层重绘；首次正常加载完全不干预。
-        window.addEventListener('pageshow', function (ev) {
-            if (!ev.persisted) return;
-            try {
-                const box = document.getElementById('loading-box'); if (box) box.remove();
-                document.body.classList.add('loading', 'page-clear');
-                document.body.classList.remove('pre-blur');
-                const wp = document.getElementById('wallpaper-layer');
-                requestAnimationFrame(function () {
-                    if (!wp) return;
-                    wp.style.transform = 'translateZ(0) scale(1.001)';
-                    requestAnimationFrame(function () { wp.style.transform = ''; });
-                });
-            } catch (e) {}
         });
     })();
     </script>
