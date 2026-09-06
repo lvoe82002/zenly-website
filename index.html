@@ -2105,7 +2105,7 @@
         // 电脑端不等待，点下立即 enter()。
         function revealCardWhenReady(enter) {
             clearCardRevealTimers();
-            let revealed = false;
+            let revealed = false, decodeArmed = false;
             const reveal = () => {
                 if (revealed || !cardOpen) return;
                 revealed = true;
@@ -2115,21 +2115,45 @@
             const startedAt = Date.now();
             cardRevealIv = setInterval(() => {
                 if (!cardOpen) { clearCardRevealTimers(); return; }
-                if (Date.now() - startedAt > 900) { reveal(); return; }  // 兜底：最多等 0.9s，绝不让点击没反应
+                if (Date.now() - startedAt > 1000) { reveal(); return; } // 硬兜底：最多等 1s，绝不让点击没反应
                 let doc = null, win = null;
                 try { doc = frame.contentDocument; win = frame.contentWindow; } catch (e) { doc = null; }
-                if (!doc || doc.readyState !== 'complete' || !doc.body || !doc.body.children.length) { reveal(); return; }
+                // 注意：文档还没建立好/还在加载，都属于“没就绪”，必须继续冻结等待，
+                // 绝不能在这时候显示——否则露出的就是卡片还没上壁纸的 #0b0b0d 黑底（真机黑屏的根源）。
+                if (!doc) return;
+                if (doc.readyState !== 'complete' || !doc.body || !doc.body.children.length) return;
                 const layer = doc.getElementById('wallpaper-layer');
                 if (!layer) { reveal(); return; }                            // 该卡片没有壁纸层，直接显示
-                let wpDone = true;
+                if (decodeArmed) return;
+                // 找到“卡片自己那张壁纸”的下载记录（重定向后的最终地址），下完并解码后再显示
+                let entry = null;
                 try {
-                    wpDone = false;
                     const res = win.performance.getEntriesByType('resource');
                     for (let i = 0; i < res.length; i++) {
-                        if (res[i].name.indexOf('mwm.moe') >= 0 && res[i].responseEnd > 0) { wpDone = true; break; }
+                        // 记录在资源“加载完成”时才入列；跨域图的 responseEnd 在内核里可能被置 0，故只按是否出现判断
+                        if (res[i].name.indexOf('mwm.moe') >= 0) { entry = res[i]; break; }
                     }
-                } catch (e) { wpDone = true; }
-                if (wpDone) reveal();
+                } catch (e) { entry = null; }
+                if (!entry) {
+                    // performance 不可用时退化为文档 complete 即显示
+                    try { if (!win.performance) reveal(); } catch (e) { reveal(); }
+                    return;                                                 // 壁纸还没下完，继续等，不提前黑
+                }
+                decodeArmed = true;
+                let fin = false;
+                const ok = () => { if (!fin) { fin = true; reveal(); } };
+                try {
+                    const im = new win.Image();
+                    im.onload = () => {
+                        try {
+                            if (im.decode) { const pr = im.decode(); if (pr && pr.then) { pr.then(ok).catch(ok); return; } }
+                        } catch (e) {}
+                        ok();
+                    };
+                    im.onerror = ok;
+                    cardRevealTo = setTimeout(ok, 500);
+                    im.src = entry.name;   // 与卡片壁纸同一最终地址，命中缓存，确保解码完成
+                } catch (e) { reveal(); }
             }, 40);
         }
         window.__openCard = function (href) {
