@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh" style="background:#0b0b0d">
+<html lang="zh">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -478,8 +478,10 @@
             .capsule-afd { line-height: 1.55; }
         }
         /* ========== 卡片全屏弹层：iframe 100% 视口、不缩放不变形，卡片与独立打开时尺寸完全一致；主页不卸载 → 音乐不中断 ========== */
-        #cardFrameMask { position: fixed; inset: 0; width: 100vw; height: 100vh; height: 100dvh; z-index: 999990; background: #0b0b0d; display: none; overflow: hidden; }
+        #cardFrameMask { position: fixed; inset: 0; width: 100vw; height: 100vh; height: 100dvh; z-index: 999990; background: #0b0b0d; display: none; opacity: 0; transition: opacity 0.18s ease; overflow: hidden; }
         #cardFrameMask.show { display: block; }
+        /* iframe 内容完成首帧绘制后才淡入，避免“先黑一下再出内容”；加载期间主页保持可见，音乐也不会断 */
+        #cardFrameMask.ready { opacity: 1; }
         #cardFrame { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; margin: 0; padding: 0; background: #0b0b0d; display: block; }
     </style>
 </head>
@@ -2072,6 +2074,23 @@
             window.__snowActive = savedEffects.snow; window.__rainActive = savedEffects.rain; window.__thunderMode = savedEffects.thunder;
             savedEffects = null;
         }
+        let cardRevealTimer = null;
+        function revealCardWhenReady() {
+            clearTimeout(cardRevealTimer);
+            let revealed = false;
+            function reveal() {
+                if (revealed || !cardOpen) return;
+                revealed = true;
+                // 再等两帧，确保 iframe 内首屏内容真正上屏，而不是只露出卡片页的黑色底色
+                requestAnimationFrame(() => requestAnimationFrame(() => mask.classList.add('ready')));
+            }
+            frame.onload = function () {
+                if (frame.getAttribute('src') === 'about:blank') return;
+                reveal();
+            };
+            // 兜底：个别情况下 load 事件异常，300ms 后也必须显示，不能一直卡在主页
+            cardRevealTimer = setTimeout(reveal, 300);
+        }
         window.__openCard = function (href) {
             if (!href) return;
             document.body.classList.remove('mobile-menu-open');
@@ -2080,7 +2099,9 @@
                 try { baseHistLen = history.length; } catch (e) { baseHistLen = 0; }
                 pauseParentEffects();
                 applyFrameSize();
-                mask.classList.add('show');   // 点下同一刻直接显示弹层，不做“先黑再淡入”
+                mask.classList.remove('ready');   // 先保持透明，主页不被黑底盖住
+                mask.classList.add('show');
+                revealCardWhenReady();
                 try { history.pushState({ nxCard: true }, '', href); historyPushed = true; } catch (e) { historyPushed = false; }
             }
             if (frame.getAttribute('src') !== href) frame.src = href;
@@ -2090,8 +2111,10 @@
             cardOpen = false;
             historyPushed = false;
             baseHistLen = 0;
+            clearTimeout(cardRevealTimer);
+            frame.onload = null;
             resumeParentEffects();
-            mask.classList.remove('show');
+            mask.classList.remove('ready', 'show');
             setTimeout(() => { if (!cardOpen) frame.src = 'about:blank'; }, 260);
         }
         window.__closeCard = function () {
@@ -2112,22 +2135,6 @@
             const d = ev.data;
             if (!d || typeof d !== 'object') return;
             if (d.type === 'nx-close-card') window.__closeCard();
-        });
-        // 从外部整页链接返回（bfcache 恢复）时，部分手机内页浏览器不会自动重绘会白一下：
-        // 仅在“历史恢复(persisted)”时确保页面清晰可见并触发一次合成层重绘；首次正常加载完全不干预。
-        window.addEventListener('pageshow', function (ev) {
-            if (!ev.persisted) return;
-            try {
-                const box = document.getElementById('loading-box'); if (box) box.remove();
-                document.body.classList.add('loading', 'page-clear');
-                document.body.classList.remove('pre-blur');
-                const wp = document.getElementById('wallpaper-layer');
-                requestAnimationFrame(function () {
-                    if (!wp) return;
-                    wp.style.transform = 'translateZ(0) scale(1.001)';
-                    requestAnimationFrame(function () { wp.style.transform = ''; });
-                });
-            } catch (e) {}
         });
     })();
     </script>
