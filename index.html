@@ -2043,6 +2043,12 @@
         const frame = document.getElementById('cardFrame');
         if (!mask || !frame) return;
         let cardOpen = false, historyPushed = false, savedEffects = null, baseHistLen = 0;
+        // —— 仅手机端（<=768px）历史加固用，电脑端不启用、行为与原来完全一致 ——
+        // 部分手机浏览器 / APP 内核对“先 pushState、再让同源 iframe 跳转”会误发一个 state 为空的
+        // 幽灵 popstate，旧逻辑会把它误判成“返回主页”而立刻关掉第二页。下列变量用于区分它与真实回退。
+        let openedAsMobile = false, cardHref = '', closeFbTimer = null;
+        const isMobileView = () => window.innerWidth <= 768;
+        function clearCloseFb() { if (closeFbTimer) { clearTimeout(closeFbTimer); closeFbTimer = null; } }
         // 卡片页均未写 viewport meta，手机浏览器独立打开时按 980px 虚拟宽度缩放渲染。
         // iframe 内必须复刻同样的 980 布局再等比缩回屏幕宽度，保证手机端卡片大小与独立打开完全一致。
         const MOBILE_LAYOUT_W = 980;
@@ -2096,13 +2102,24 @@
             document.body.classList.remove('mobile-menu-open');
             if (!cardOpen) {
                 cardOpen = true;
+                cardHref = href;
+                openedAsMobile = isMobileView();
                 try { baseHistLen = history.length; } catch (e) { baseHistLen = 0; }
                 pauseParentEffects();
                 applyFrameSize();
                 mask.classList.remove('ready');   // 先保持透明，主页不被黑底盖住
                 mask.classList.add('show');
                 revealCardWhenReady();
-                try { history.pushState({ nxCard: true }, '', href); historyPushed = true; } catch (e) { historyPushed = false; }
+                try {
+                    if (openedAsMobile) {
+                        // 手机端：先给当前“主页条目”原地打上 nxMain 标记（replaceState 不新增历史），再压入卡片条目 nxCard
+                        history.replaceState({ nxMain: true }, '', location.href);
+                        history.pushState({ nxCard: true }, '', href);
+                    } else {
+                        history.pushState({ nxCard: true }, '', href); // 电脑端：保持原有逻辑不变
+                    }
+                    historyPushed = true;
+                } catch (e) { historyPushed = false; }
             }
             if (frame.getAttribute('src') !== href) frame.src = href;
         };
@@ -2111,6 +2128,9 @@
             cardOpen = false;
             historyPushed = false;
             baseHistLen = 0;
+            openedAsMobile = false;
+            cardHref = '';
+            clearCloseFb();
             clearTimeout(cardRevealTimer);
             frame.onload = null;
             resumeParentEffects();
@@ -2123,13 +2143,28 @@
                 let steps = 1;
                 try { steps = Math.max(1, history.length - baseHistLen); } catch (e) {}
                 historyPushed = false;
-                try { history.go(-steps); return; } catch (e) {}
+                try {
+                    history.go(-steps);
+                    // 手机端兜底：个别内核 history.go 后不抛 popstate，360ms 后确保一定能关掉
+                    if (openedAsMobile) { clearCloseFb(); closeFbTimer = setTimeout(() => { if (cardOpen) hideCard(); }, 360); }
+                    return;
+                } catch (e) {}
             }
             hideCard();
         };
         window.addEventListener('popstate', e => {
-            // 回到主页条目（state 不再是 nxCard）时关闭弹层；iframe 内部回退不会触发父窗口 popstate
-            if (cardOpen && !(e.state && e.state.nxCard)) hideCard();
+            if (!cardOpen) return;
+            const st = e.state;
+            if (st && st.nxCard) return;   // 仍在卡片层（iframe 内部回退），保持第二页
+            if (openedAsMobile) {
+                if (st && st.nxMain) { clearCloseFb(); hideCard(); return; }  // 真正回到主页 → 关闭
+                // 手机内核因同源 iframe 导航误发的幽灵 popstate（state 为空/非本页标记）：
+                // 不关闭卡片，原地补回卡片标记，让页面继续停留在第二个页面
+                try { history.replaceState({ nxCard: true }, '', cardHref); } catch (err) {}
+                return;
+            }
+            // 电脑端：回到主页条目（state 不再是 nxCard）时关闭弹层；iframe 内部回退不会触发父窗口 popstate
+            hideCard();
         });
         window.addEventListener('message', ev => {
             const d = ev.data;
