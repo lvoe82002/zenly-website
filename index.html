@@ -481,7 +481,6 @@
         #cardFrameMask { position: fixed; inset: 0; width: 100vw; height: 100vh; height: 100dvh; z-index: 999990; background: #0b0b0d; display: none; overflow: hidden; }
         #cardFrameMask.show { display: block; }
         #cardFrame { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; margin: 0; padding: 0; background: #0b0b0d; display: block; }
-        @media (max-width: 768px) { #cardFrame { background: transparent !important; } }
     </style>
 </head>
 <body class="pre-blur">
@@ -2103,18 +2102,7 @@
                 try { baseHistLen = history.length; } catch (e) { baseHistLen = 0; }
                 pauseParentEffects();
                 applyFrameSize();
-                // 仅把加载极短空档的纯黑底，换成“与主页相同、已解码”的壁纸；进入节奏与动画一律不变
-                try {
-                    const __hw = document.getElementById('wallpaper-layer');
-                    if (__hw) {
-                        const __bi = getComputedStyle(__hw).backgroundImage;
-                        if (__bi && __bi !== 'none') {
-                            mask.style.background = 'linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5)), ' + __bi + ' no-repeat center center';
-                            mask.style.backgroundSize = 'cover';
-                        }
-                    }
-                } catch (e) {}
-                mask.classList.add('show');   // 点下同一刻直接显示弹层，保持原有进入节奏
+                mask.classList.add('show');   // 点下同一刻直接显示弹层，不做“先黑再淡入”
                 try { history.pushState({ nxCard: true }, '', href); historyPushed = true; } catch (e) { historyPushed = false; }
             }
             if (frame.getAttribute('src') !== href) frame.src = href;
@@ -2126,16 +2114,17 @@
             baseHistLen = 0;
             resumeParentEffects();
             mask.classList.remove('show');
-            mask.style.background = '';
             setTimeout(() => { if (!cardOpen) frame.src = 'about:blank'; }, 260);
         }
         window.__closeCard = function () {
-            // 先无条件关闭弹层回主页，再尽力回退历史，避免真机历史步数算偏时卡住（不改变进入效果）
-            let steps = 1;
-            try { steps = Math.max(1, history.length - baseHistLen); } catch (e) { steps = 1; }
-            const pushed = historyPushed;
+            // 联合历史长度差值 = pushState + iframe 内全部跳转层数，一次性退回主页
+            if (historyPushed) {
+                let steps = 1;
+                try { steps = Math.max(1, history.length - baseHistLen); } catch (e) {}
+                historyPushed = false;
+                try { history.go(-steps); return; } catch (e) {}
+            }
             hideCard();
-            if (pushed) { try { history.go(-steps); } catch (e) {} }
         };
         window.addEventListener('popstate', e => {
             // 回到主页条目（state 不再是 nxCard）时关闭弹层；iframe 内部回退不会触发父窗口 popstate
