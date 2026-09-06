@@ -2063,12 +2063,24 @@
         const frame = document.getElementById('cardFrame');
         if (!mask || !frame) return;
         let cardOpen = false, historyPushed = false, savedEffects = null, baseHistLen = 0;
-        // 手机端与电脑端采用完全相同的跳转逻辑：iframe 直接铺满整个弹层（width/height 100%），
-        // 不再做 980px 虚拟宽度 + transform:scale 缩放，避免手机端缩放合成层导致的跳转黑屏。
+        // 卡片页均未写 viewport meta，手机浏览器独立打开时按 980px 虚拟宽度缩放渲染。
+        // iframe 内必须复刻同样的 980 布局再等比缩回屏幕宽度，保证手机端卡片大小与独立打开完全一致。
+        const MOBILE_LAYOUT_W = 980;
         function applyFrameSize() {
-            frame.style.inset = ''; frame.style.left = ''; frame.style.top = '';
-            frame.style.width = ''; frame.style.height = '';
-            frame.style.transform = ''; frame.style.transformOrigin = '';
+            const vw = window.innerWidth, vh = window.innerHeight;
+            if (vw <= 768) {
+                const scale = vw / MOBILE_LAYOUT_W;
+                frame.style.inset = 'auto';
+                frame.style.left = '0'; frame.style.top = '0';
+                frame.style.width = MOBILE_LAYOUT_W + 'px';
+                frame.style.height = (vh / scale) + 'px';
+                frame.style.transformOrigin = '0 0';
+                frame.style.transform = 'scale(' + scale + ')';
+            } else {
+                frame.style.inset = ''; frame.style.left = ''; frame.style.top = '';
+                frame.style.width = ''; frame.style.height = '';
+                frame.style.transform = ''; frame.style.transformOrigin = '';
+            }
         }
         window.addEventListener('resize', () => { if (cardOpen) applyFrameSize(); });
         window.addEventListener('orientationchange', () => setTimeout(() => { if (cardOpen) applyFrameSize(); }, 200));
@@ -2082,6 +2094,43 @@
             window.__snowActive = savedEffects.snow; window.__rainActive = savedEffects.rain; window.__thunderMode = savedEffects.thunder;
             savedEffects = null;
         }
+        let cardRevealIv = null, cardRevealTo = null;
+        function clearCardRevealTimers() {
+            if (cardRevealIv) { clearInterval(cardRevealIv); cardRevealIv = null; }
+            if (cardRevealTo) { clearTimeout(cardRevealTo); cardRevealTo = null; }
+        }
+        // 手机端：卡片页背景是一张随机壁纸，没加载完时是 #0b0b0d 黑底。
+        // 所以先让 iframe 在弹层隐藏状态下把文档和壁纸都加载好，期间主页照常可见；
+        // 等卡片真正绘制完成的同一帧再显示弹层，全程不会先露出黑底。电脑端不走这里，维持立即显示。
+        function revealCardWhenReady() {
+            clearCardRevealTimers();
+            let revealed = false;
+            const reveal = () => {
+                if (revealed || !cardOpen) return;
+                revealed = true;
+                clearCardRevealTimers();
+                requestAnimationFrame(() => requestAnimationFrame(() => { if (cardOpen) mask.classList.add('show'); }));
+            };
+            const startedAt = Date.now();
+            cardRevealIv = setInterval(() => {
+                if (!cardOpen) { clearCardRevealTimers(); return; }
+                if (Date.now() - startedAt > 900) { reveal(); return; }  // 兜底：最多等 0.9s，绝不让点击没反应
+                let doc = null, win = null;
+                try { doc = frame.contentDocument; win = frame.contentWindow; } catch (e) { doc = null; }
+                if (!doc || doc.readyState !== 'complete' || !doc.body || !doc.body.children.length) { reveal(); return; }
+                const layer = doc.getElementById('wallpaper-layer');
+                if (!layer) { reveal(); return; }                            // 该卡片没有壁纸层，直接显示
+                let wpDone = true;
+                try {
+                    wpDone = false;
+                    const res = win.performance.getEntriesByType('resource');
+                    for (let i = 0; i < res.length; i++) {
+                        if (res[i].name.indexOf('mwm.moe') >= 0 && res[i].responseEnd > 0) { wpDone = true; break; }
+                    }
+                } catch (e) { wpDone = true; }
+                if (wpDone) reveal();
+            }, 40);
+        }
         window.__openCard = function (href) {
             if (!href) return;
             document.body.classList.remove('mobile-menu-open');
@@ -2090,16 +2139,29 @@
                 try { baseHistLen = history.length; } catch (e) { baseHistLen = 0; }
                 pauseParentEffects();
                 applyFrameSize();
-                mask.classList.add('show');   // 点下同一刻直接显示弹层，不做“先黑再淡入”
                 try { history.pushState({ nxCard: true }, '', href); historyPushed = true; } catch (e) { historyPushed = false; }
             }
-            if (frame.getAttribute('src') !== href) frame.src = href;
+            if (frame.getAttribute('src') !== href) {
+                if (window.innerWidth <= 768) {
+                    // 手机端：后台加载绘制完成再显示，不露黑底
+                    mask.classList.remove('show');
+                    frame.src = href;
+                    revealCardWhenReady();
+                } else {
+                    // 电脑端：维持原有逻辑，点下立即显示
+                    frame.src = href;
+                    mask.classList.add('show');
+                }
+            } else {
+                mask.classList.add('show');
+            }
         };
         function hideCard() {
             if (!cardOpen) return;
             cardOpen = false;
             historyPushed = false;
             baseHistLen = 0;
+            clearCardRevealTimers();
             resumeParentEffects();
             mask.classList.remove('show');
             setTimeout(() => { if (!cardOpen) frame.src = 'about:blank'; }, 260);
