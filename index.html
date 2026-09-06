@@ -483,6 +483,20 @@
         /* iframe 内容完成首帧绘制后才淡入，避免“先黑一下再出内容”；加载期间主页保持可见，音乐也不会断 */
         #cardFrameMask.ready { opacity: 1; }
         #cardFrame { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; margin: 0; padding: 0; background: #0b0b0d; display: block; }
+        /* ===== 仅手机端：点下框的同一帧遮罩就不透明盖住全屏（含加载转圈），任何异步时刻都不会露出主页；电脑端不启用、维持原样 ===== */
+        #cardLoader { display: none; }
+        @keyframes nxCardSpin { to { transform: rotate(360deg); } }
+        @media (max-width: 768px) {
+            #cardFrameMask.show { opacity: 1; }                 /* 手机端一点击即不透明，不再等 iframe 加载 */
+            #cardFrameMask { transition: none; }               /* 首帧即完全不透明，杜绝淡入首帧半透明露出主页 */
+            #cardFrame { z-index: 2; }
+            #cardLoader { display: flex; position: absolute; inset: 0; z-index: 1; align-items: center; justify-content: center;
+                background: #0b0b0d; opacity: 1; transition: opacity 0.22s ease; -webkit-transition: opacity 0.22s ease; }
+            #cardFrameMask.ready #cardLoader { opacity: 0; pointer-events: none; }
+            #cardLoader .nx-spin { width: 40px; height: 40px; border-radius: 50%;
+                border: 3px solid rgba(255, 255, 255, 0.16); border-top-color: #ffffff;
+                animation: nxCardSpin 0.8s linear infinite; -webkit-animation: nxCardSpin 0.8s linear infinite; }
+        }
     </style>
 </head>
 <body class="pre-blur">
@@ -847,6 +861,7 @@
     </div>
     <!-- 卡片全屏弹层：主页常驻不卸载，跳转只在 iframe 内发生，保证音乐不中断 -->
     <div id="cardFrameMask">
+        <div id="cardLoader"><div class="nx-spin"></div></div>
         <iframe id="cardFrame" title="card" referrerpolicy="no-referrer"></iframe>
     </div>
 
@@ -2074,33 +2089,49 @@
             window.__snowActive = savedEffects.snow; window.__rainActive = savedEffects.rain; window.__thunderMode = savedEffects.thunder;
             savedEffects = null;
         }
-        let cardRevealTimer = null;
+        let cardRevealTimer = null, cardPoll = null;
         function revealCardWhenReady() {
             clearTimeout(cardRevealTimer);
+            if (cardPoll) { clearInterval(cardPoll); cardPoll = null; }
             let revealed = false;
             function reveal() {
                 if (revealed || !cardOpen) return;
                 revealed = true;
                 // 再等两帧，确保 iframe 内首屏内容真正上屏，而不是只露出卡片页的黑色底色
-                requestAnimationFrame(() => requestAnimationFrame(() => {
-                    mask.classList.add('ready');
-                    // 手机端：遮罩(卡片)淡入约 0.18s，等其完全盖住后再收起菜单，过渡空档就不会露出正常主页
-                    if (window.innerWidth <= 768) {
-                        setTimeout(function () { document.body.classList.remove('mobile-menu-open'); }, 200);
-                    }
-                }));
+                requestAnimationFrame(() => requestAnimationFrame(() => mask.classList.add('ready')));
             }
-            frame.onload = function () {
-                if (frame.getAttribute('src') === 'about:blank') return;
-                reveal();
-            };
-            // 兜底：load 事件异常时也要显示。手机端延长到 1200ms，等待期间保持菜单画面（不露主页、不黑屏）；电脑端维持 300ms
-            cardRevealTimer = setTimeout(reveal, (window.innerWidth <= 768) ? 600 : 300);
+            if (window.innerWidth <= 768) {
+                // 手机端：iframe 初始 about:blank 也会触发一次 onload（此时 src 已被改成目标页，旧判断拦不住），
+                // 会让转圈在真实内容到达前提前消失。改为轮询内部文档，确认载入的是目标页且 DOM 就绪后再淡入。
+
+                function frameContentReady() {
+                    try {
+                        const w = frame.contentWindow, d = frame.contentDocument;
+                        if (!w || !d) return false;
+                        if (/about:blank/i.test(w.location.href)) return false;   // 仍是初始空白文档
+                        if (d.readyState === 'loading') return false;
+                        // 导航“提交”后 location 会先变成目标地址，但旧空白文档仍在，必须等新文档真有 DOM 才算就绪
+                        return !!(d.body && d.body.children.length > 0);
+                    } catch (e) { return true; }   // 跨域读不到时退回为可显示
+                }
+                cardPoll = setInterval(function () {
+                    if (revealed || !cardOpen) { if (cardPoll) { clearInterval(cardPoll); cardPoll = null; } return; }
+                    if (frameContentReady()) { if (cardPoll) { clearInterval(cardPoll); cardPoll = null; } reveal(); }
+                }, 16);
+                frame.onload = function () { if (frameContentReady()) reveal(); };
+                cardRevealTimer = setTimeout(reveal, 1500);
+            } else {
+                // 电脑端：保持原有逻辑不变
+                frame.onload = function () {
+                    if (frame.getAttribute('src') === 'about:blank') return;
+                    reveal();
+                };
+                cardRevealTimer = setTimeout(reveal, 300);
+            }
         }
         window.__openCard = function (href) {
             if (!href) return;
-            // 电脑端维持原样（本就没有该类）；手机端加载空档先保留菜单画面，等卡片淡入盖住后再收起，避免中间“闪一下主页”
-            if (window.innerWidth > 768) document.body.classList.remove('mobile-menu-open');
+            document.body.classList.remove('mobile-menu-open');
             if (!cardOpen) {
                 cardOpen = true;
                 try { baseHistLen = history.length; } catch (e) { baseHistLen = 0; }
@@ -2118,8 +2149,8 @@
             cardOpen = false;
             historyPushed = false;
             baseHistLen = 0;
-            document.body.classList.remove('mobile-menu-open');
             clearTimeout(cardRevealTimer);
+            if (cardPoll) { clearInterval(cardPoll); cardPoll = null; }
             frame.onload = null;
             resumeParentEffects();
             mask.classList.remove('ready', 'show');
