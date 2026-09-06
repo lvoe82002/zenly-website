@@ -2100,16 +2100,17 @@
             if (cardRevealTo) { clearTimeout(cardRevealTo); cardRevealTo = null; }
         }
         // 手机端：卡片页背景是一张随机壁纸，没加载完时是 #0b0b0d 黑底。
-        // 所以先让 iframe 在弹层隐藏状态下把文档和壁纸都加载好，期间主页照常可见；
-        // 等卡片真正绘制完成的同一帧再显示弹层，全程不会先露出黑底。电脑端不走这里，维持立即显示。
-        function revealCardWhenReady() {
+        // 点下后先让 iframe 在弹层隐藏状态下把文档和壁纸加载好，这期间“冻结”当前菜单画面不动
+        //（不先收回主页、也不露黑底）；就绪后由 enter() 在同一帧收起菜单并显示卡片，无缝进入。
+        // 电脑端不等待，点下立即 enter()。
+        function revealCardWhenReady(enter) {
             clearCardRevealTimers();
             let revealed = false;
             const reveal = () => {
                 if (revealed || !cardOpen) return;
                 revealed = true;
                 clearCardRevealTimers();
-                requestAnimationFrame(() => requestAnimationFrame(() => { if (cardOpen) mask.classList.add('show'); }));
+                requestAnimationFrame(() => requestAnimationFrame(() => { if (cardOpen) enter(); }));
             };
             const startedAt = Date.now();
             cardRevealIv = setInterval(() => {
@@ -2133,27 +2134,32 @@
         }
         window.__openCard = function (href) {
             if (!href) return;
-            document.body.classList.remove('mobile-menu-open');
-            if (!cardOpen) {
+            const firstOpen = !cardOpen;
+            if (firstOpen) {
                 cardOpen = true;
                 try { baseHistLen = history.length; } catch (e) { baseHistLen = 0; }
-                pauseParentEffects();
                 applyFrameSize();
                 try { history.pushState({ nxCard: true }, '', href); historyPushed = true; } catch (e) { historyPushed = false; }
             }
+            // 真正进入卡片的同一帧：收起手机菜单、暂停主页特效、显示弹层（一起完成，中间不露出主页）
+            const enter = () => {
+                document.body.classList.remove('mobile-menu-open');
+                if (firstOpen) pauseParentEffects();
+                mask.classList.add('show');
+            };
             if (frame.getAttribute('src') !== href) {
                 if (window.innerWidth <= 768) {
-                    // 手机端：后台加载绘制完成再显示，不露黑底
+                    // 手机端：后台加载期间冻结在菜单画面，就绪后同一帧进入——不闪主页、不露黑
                     mask.classList.remove('show');
                     frame.src = href;
-                    revealCardWhenReady();
+                    revealCardWhenReady(enter);
                 } else {
-                    // 电脑端：维持原有逻辑，点下立即显示
+                    // 电脑端：点下立即进入
                     frame.src = href;
-                    mask.classList.add('show');
+                    enter();
                 }
             } else {
-                mask.classList.add('show');
+                enter();
             }
         };
         function hideCard() {
