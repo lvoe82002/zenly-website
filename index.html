@@ -1929,6 +1929,31 @@
         const NETEASE_PATH = 'M13.046 9.388a3.919 3.919 0 0 0-.66.19c-.809.312-1.447.991-1.666 1.775a2.269 2.269 0 0 0-.074.81c.048.546.333 1.05.764 1.35a1.483 1.483 0 0 0 2.01-.286c.406-.531.355-1.183.24-1.636-.098-.387-.22-.816-.345-1.249a64.76 64.76 0 0 1-.269-.954zm-.82 10.07c-3.984 0-7.224-3.24-7.224-7.223 0-.98.226-3.02 1.884-4.822A7.188 7.188 0 0 1 9.502 5.6a.792.792 0 1 1 .587 1.472 5.619 5.619 0 0 0-2.795 2.462 5.538 5.538 0 0 0-.707 2.7 5.645 5.645 0 0 0 5.638 5.638c1.844 0 3.627-.953 4.542-2.428 1.042-1.68.772-3.931-.627-5.238a3.299 3.299 0 0 0-1.437-.777c.172.589.334 1.18.494 1.772.284 1.12.1 2.181-.519 2.989-.39.51-.956.888-1.592 1.064a3.038 3.038 0 0 1-2.58-.44 3.45 3.45 0 0 1-1.44-2.514c-.04-.467.002-.93.128-1.376.35-1.256 1.356-2.339 2.622-2.826a5.5 5.5 0 0 1 .823-.246l-.134-.505c-.37-1.371.25-2.579 1.547-3.007.329-.109.68-.145 1.025-.105.792.09 1.476.592 1.709 1.023.258.507-.096 1.153-.706 1.153a.788.788 0 0 1-.54-.213c-.088-.08-.163-.174-.259-.247a.825.825 0 0 0-.632-.166.807.807 0 0 0-.634.551c-.056.191-.031.406.02.595.07.256.159.597.217.82 1.11.098 2.162.54 2.97 1.296 1.974 1.844 2.35 4.886.892 7.233-1.197 1.93-3.509 3.177-5.889 3.177z';
         function neteaseIcon(size) { return '<svg class="netease-svg" viewBox="0 0 24 24" width="' + size + '" height="' + size + '" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="' + NETEASE_PATH + '"/></svg>'; }
 
+        /* ==================================================================
+           ★★★ 歌曲自动读取：以后换歌只动 music 文件夹里的 mp3，不用改代码 ★★★
+           播放器会自动列出 GitHub 仓库 music/ 文件夹里的所有 .mp3：
+           · 文件名格式：序号.歌手 - 歌名.mp3
+             例：03.邓紫棋 - A.I.N.Y. 爱你.mp3
+             - 按序号从小到大自动排序，开头的“03.”只用于排序、不会显示；
+             - 不写“歌手 - ”也行，整个文件名会直接当作歌名显示；
+           · 加歌：把 mp3 上传到仓库 music 文件夹即可（约 1~2 分钟后刷新出现）；
+           · 删歌：在仓库里删掉对应的 mp3；
+           · 换歌：删掉旧 mp3、上传新 mp3（建议直接用新文件名，避免缓存旧歌）；
+           · 封面（可选）：上传同名图片即可，如 03.邓紫棋 - A.I.N.Y. 爱你.jpg。
+           下面的 FALLBACK_NAMES 只在网络读取失败时兜底，正常情况下不用改。
+           ================================================================== */
+        const REPO = 'lvoe82002/zenly-website';
+        const BRANCH = 'main';
+        const MUSIC_DIR = 'music';
+        const CDN_BASE = 'https://cdn.jsdelivr.net/gh/' + REPO + '@' + BRANCH + '/' + MUSIC_DIR + '/';
+        const FALLBACK_NAMES = [
+            '01.忆殇 - ブルーバード.mp3',
+            '02.Field of View - DAN DAN心魅かれていく.mp3',
+            '03.邓紫棋 - A.I.N.Y. 爱你.mp3',
+            '04.林俊杰、G.E.M.邓紫棋 - 手心的蔷薇.mp3',
+            '05.冠希的歌 - 他很信任你.mp3'
+        ];
+
         const MusicPlayer = (function () {
             const audio = new Audio(); audio.preload = 'auto';
             const state = {
@@ -1960,22 +1985,64 @@
                 if (!state.userPaused && state.tracks.length > 1) setTimeout(next, 1500);
                 emit();
             });
+            // 读取仓库 music 文件夹里的文件名：优先 GitHub 目录接口，失败再用 jsDelivr 目录接口
+            async function listRemoteNames() {
+                try {
+                    const res = await fetch('https://api.github.com/repos/' + REPO + '/contents/' + MUSIC_DIR + '?ref=' + BRANCH, { cache: 'no-cache' });
+                    if (!res.ok) throw new Error('github ' + res.status);
+                    const arr = await res.json();
+                    return arr.filter(x => x.type === 'file').map(x => x.name);
+                } catch (e1) {
+                    const res = await fetch('https://data.jsdelivr.com/v1/packages/gh/' + REPO + '@' + BRANCH + '?structure=flat', { cache: 'no-cache' });
+                    const json = await res.json();
+                    const prefix = '/' + MUSIC_DIR + '/';
+                    return (json.files || [])
+                        .map(f => f.name)
+                        .filter(n => n.indexOf(prefix) === 0)
+                        .map(n => decodeURIComponent(n.slice(prefix.length)));
+                }
+            }
+            // 文件名 → 歌曲信息：去掉 .mp3 和开头序号，按“歌手 - 歌名”拆分
+            function trackFromName(name) {
+                const base = name.replace(/\.mp3$/i, '');
+                const clean = base.replace(/^\d{1,3}\s*[.、\-_]\s*/, '');
+                let title = clean, artist = '';
+                const m = clean.match(/^(.*?)\s+[-–—]\s+(.+)$/);
+                if (m) { artist = m[1].trim(); title = m[2].trim(); }
+                return {
+                    title: title || base,
+                    artist: artist,
+                    url: CDN_BASE + encodeURIComponent(name),
+                    cover: '',
+                    baseName: base
+                };
+            }
+            // 探测同名封面图（.jpg/.png/.webp），存在就自动用作唱片封面
+            function tryCover(t) {
+                const exts = ['.jpg', '.png', '.webp'];
+                let i = 0;
+                (function next() {
+                    if (i >= exts.length) return;
+                    const url = CDN_BASE + encodeURIComponent(t.baseName + exts[i++]);
+                    const img = new Image();
+                    img.onload = function () { t.cover = url; emit(); };
+                    img.onerror = next;
+                    img.src = url;
+                })();
+            }
+            // 自动歌单：拉取 music 目录 → 只留 mp3 → 按文件名自然排序（01、02…）
             async function loadTracks() {
                 if (state.loaded) return;
-                const fallback = [
-                    { id: 4, title: 'ブルーバード', artist: '忆殇', url: 'https://videotourl.com/audio/1785656110156-f37de81e-eac5-4dc9-830b-c3f671c89499.mp3', cover: 'https://img3.kuwo.cn/star/albumcover/500/s4s48/17/1426696007.jpg' },
-                    { id: 1, title: 'DAN DAN心魅かれていく', artist: 'Field of View', url: 'https://videotourl.com/audio/1785656638911-a8cae60b-1a9d-4ef4-9448-f3077dc35a9b.mp3', cover: 'https://ts3.tc.mm.bing.net/th/id/OIP-C.5L2Ya403EjY37iBMqPREUgHaER?w=200' }
-                ];
-                try {
-                    const res = await fetch('https://chortle.asia/api/music/playlist');
-                    const json = await res.json();
-                    const list = (json.data || []).map(n => ({ id: n.id, title: n.title, artist: n.artist, url: n.url, cover: n.cover }));
-                    state.tracks = list.length ? list : fallback;
-                } catch (err) {
-                    console.warn('接口请求失败，使用内置示例歌单：', err);
-                    state.tracks = fallback;
-                }
+                let names = [];
+                try { names = await listRemoteNames(); }
+                catch (e) { console.warn('在线歌单读取失败，使用内置兜底：', e); }
+                names = names.filter(n => /\.mp3$/i.test(n))
+                    .sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
+                if (!names.length) names = FALLBACK_NAMES.slice(); // 目录为空或读取失败时兜底
+                state.tracks = names.map(trackFromName);
+                if (state.index >= state.tracks.length) state.index = 0;
                 state.loaded = true; emit();
+                state.tracks.forEach(tryCover);
             }
             function togglePlay() {
                 const cur = state.current;
