@@ -1930,28 +1930,21 @@
         function neteaseIcon(size) { return '<svg class="netease-svg" viewBox="0 0 24 24" width="' + size + '" height="' + size + '" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="' + NETEASE_PATH + '"/></svg>'; }
 
         /* ==================================================================
-           ★★★ 歌曲自动读取：以后换歌只动 music 文件夹里的 mp3，不用改代码 ★★★
-           播放器会自动列出 GitHub 仓库 music/ 文件夹里的所有 .mp3：
-           · 文件名格式：序号.歌手 - 歌名.mp3
-             例：03.邓紫棋 - A.I.N.Y. 爱你.mp3
-             - 按序号从小到大自动排序，开头的“03.”只用于排序、不会显示；
-             - 不写“歌手 - ”也行，整个文件名会直接当作歌名显示；
-           · 加歌：把 mp3 上传到仓库 music 文件夹即可（约 1~2 分钟后刷新出现）；
-           · 删歌：在仓库里删掉对应的 mp3；
-           · 换歌：删掉旧 mp3、上传新 mp3（建议直接用新文件名，避免缓存旧歌）；
-           · 封面（可选）：上传同名图片即可，如 03.邓紫棋 - A.I.N.Y. 爱你.jpg。
-           下面的 FALLBACK_NAMES 只在网络读取失败时兜底，正常情况下不用改。
+           ★★★ 我的歌单：想加歌 / 换歌 / 删歌，只改下面这一段，别处都不用动 ★★★
+           每首歌写成一行 { ... }，两首歌之间用英文逗号隔开。四个字段：
+             title  —— 歌名（播放器里显示的名字）
+             artist —— 歌手（没有就写两个单引号 ''）
+             url    —— 歌曲 mp3 直链：粘到浏览器地址栏回车能直接播放/下载的 https 链接
+             cover  —— 封面图链接（没有就写 ''）
+           · 加歌：复制任意一整行 { ... }, 换行粘贴，再改成新歌的信息；
+           · 删歌：把那一整行删掉即可；
+           · 调顺序：把整行上下移动即可，第一首就是打开播放器默认的歌。
            ================================================================== */
-        const REPO = 'lvoe82002/zenly-website';
-        const BRANCH = 'main';
-        const MUSIC_DIR = 'music';
-        const CDN_BASE = 'https://cdn.jsdelivr.net/gh/' + REPO + '@' + BRANCH + '/' + MUSIC_DIR + '/';
-        const FALLBACK_NAMES = [
-            '01.忆殇 - ブルーバード.mp3',
-            '02.Field of View - DAN DAN心魅かれていく.mp3',
-            '03.邓紫棋 - A.I.N.Y. 爱你.mp3',
-            '04.林俊杰、G.E.M.邓紫棋 - 手心的蔷薇.mp3',
-            '05.冠希的歌 - 他很信任你.mp3'
+        const MY_MUSIC_PLAYLIST = [
+            { title: 'DAN DAN心魅かれていく', artist: 'Field of View', url: 'https://cdn.jsdelivr.net/gh/lvoe82002/zenly-website@main/music/dandan.mp3', cover: 'https://ts3.tc.mm.bing.net/th/id/OIP-C.5L2Ya403EjY37iBMqPREUgHaER?w=200' },
+            { title: 'A.I.N.Y. 爱你', artist: '邓紫棋', url: 'https://cdn.jsdelivr.net/gh/lvoe82002/zenly-website@main/music/ainy.mp3', cover: '' }
+            { title: '手心的蔷薇', artist: '林俊杰 G.E.M.邓紫棋', url: 'https://cdn.jsdelivr.net/gh/lvoe82002/zenly-website@main/music/bluebird.mp3', cover: 'https://cdn-us.imgs.moe/2026/09/07/6b673fc7a934840deeac918d38ae07c4.webp' },
+            { title: '他很信任你', artist: '冠希的歌', url: 'https://cdn.jsdelivr.net/gh/lvoe82002/zenly-website@main/music/bluebird.mp3', cover: 'https://cdn-us.imgs.moe/2026/09/07/e7d1ff3b26f8754a2486cd744a8cd3f1.png' },
         ];
 
         const MusicPlayer = (function () {
@@ -1985,64 +1978,18 @@
                 if (!state.userPaused && state.tracks.length > 1) setTimeout(next, 1500);
                 emit();
             });
-            // 读取仓库 music 文件夹里的文件名：优先 GitHub 目录接口，失败再用 jsDelivr 目录接口
-            async function listRemoteNames() {
-                try {
-                    const res = await fetch('https://api.github.com/repos/' + REPO + '/contents/' + MUSIC_DIR + '?ref=' + BRANCH, { cache: 'no-cache' });
-                    if (!res.ok) throw new Error('github ' + res.status);
-                    const arr = await res.json();
-                    return arr.filter(x => x.type === 'file').map(x => x.name);
-                } catch (e1) {
-                    const res = await fetch('https://data.jsdelivr.com/v1/packages/gh/' + REPO + '@' + BRANCH + '?structure=flat', { cache: 'no-cache' });
-                    const json = await res.json();
-                    const prefix = '/' + MUSIC_DIR + '/';
-                    return (json.files || [])
-                        .map(f => f.name)
-                        .filter(n => n.indexOf(prefix) === 0)
-                        .map(n => decodeURIComponent(n.slice(prefix.length)));
-                }
-            }
-            // 文件名 → 歌曲信息：去掉 .mp3 和开头序号，按“歌手 - 歌名”拆分
-            function trackFromName(name) {
-                const base = name.replace(/\.mp3$/i, '');
-                const clean = base.replace(/^\d{1,3}\s*[.、\-_]\s*/, '');
-                let title = clean, artist = '';
-                const m = clean.match(/^(.*?)\s+[-–—]\s+(.+)$/);
-                if (m) { artist = m[1].trim(); title = m[2].trim(); }
-                return {
-                    title: title || base,
-                    artist: artist,
-                    url: CDN_BASE + encodeURIComponent(name),
-                    cover: '',
-                    baseName: base
-                };
-            }
-            // 探测同名封面图（.jpg/.png/.webp），存在就自动用作唱片封面
-            function tryCover(t) {
-                const exts = ['.jpg', '.png', '.webp'];
-                let i = 0;
-                (function next() {
-                    if (i >= exts.length) return;
-                    const url = CDN_BASE + encodeURIComponent(t.baseName + exts[i++]);
-                    const img = new Image();
-                    img.onload = function () { t.cover = url; emit(); };
-                    img.onerror = next;
-                    img.src = url;
-                })();
-            }
-            // 自动歌单：拉取 music 目录 → 只留 mp3 → 按文件名自然排序（01、02…）
-            async function loadTracks() {
+            // 歌单直接读取上方代码里的 MY_MUSIC_PLAYLIST，不再请求任何外部接口
+            function loadTracks() {
                 if (state.loaded) return;
-                let names = [];
-                try { names = await listRemoteNames(); }
-                catch (e) { console.warn('在线歌单读取失败，使用内置兜底：', e); }
-                names = names.filter(n => /\.mp3$/i.test(n))
-                    .sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
-                if (!names.length) names = FALLBACK_NAMES.slice(); // 目录为空或读取失败时兜底
-                state.tracks = names.map(trackFromName);
+                state.tracks = MY_MUSIC_PLAYLIST.map((t, i) => ({
+                    id: i,
+                    title: t.title || '未命名歌曲',
+                    artist: t.artist || '',
+                    url: t.url || '',
+                    cover: t.cover || ''
+                }));
                 if (state.index >= state.tracks.length) state.index = 0;
                 state.loaded = true; emit();
-                state.tracks.forEach(tryCover);
             }
             function togglePlay() {
                 const cur = state.current;
