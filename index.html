@@ -2145,18 +2145,9 @@
                 window.__openCard && window.__openCard(href);
             }
         };
-        // 起始页：不能用 location.reload()（重载会销毁音频造成断音），改为 2 秒后软复位回主页视图
+        // 起始页：整页刷新（点击即重新加载当前主页）
         window.__goHome = function () {
-            if (goTimer) { clearTimeout(goTimer); goTimer = null; }
-            goTimer = setTimeout(function () {
-                goTimer = null;
-                try { window.__closeCard && window.__closeCard(); } catch (e) {}
-                document.body.classList.remove('mobile-menu-open', 'settings-open');
-                const sm = document.getElementById('settingsModal');
-                if (sm) sm.classList.remove('open');
-                window.scrollTo(0, 0);
-                if (window.showSiteTip) window.showSiteTip('已回到起始页，音乐继续播放', 2000);
-            }, 2000);
+            location.reload();
         };
         function hideCard() {
             if (!cardOpen) return;
