@@ -1940,11 +1940,12 @@
            · 删歌：把那一整行删掉即可；
            · 调顺序：把整行上下移动即可，第一首就是打开播放器默认的歌。
            ================================================================== */
+        // 注意：除了最后一行，每一行结尾都必须有英文逗号 , 漏了逗号整个播放器会不显示！
         const MY_MUSIC_PLAYLIST = [
-            { title: 'DAN DAN心魅かれていく', artist: 'Field of View', url: 'https://cdn.jsdelivr.net/gh/lvoe82002/zenly-website@main/music/dandan.mp3', cover: 'https://ts3.tc.mm.bing.net/th/id/OIP-C.5L2Ya403EjY37iBMqPREUgHaER?w=200' },
-            { title: 'A.I.N.Y. 爱你', artist: '邓紫棋', url: 'https://cdn.jsdelivr.net/gh/lvoe82002/zenly-website@main/music/ainy.mp3', cover: '' }
-            { title: '手心的蔷薇', artist: '林俊杰 G.E.M.邓紫棋', url: 'https://cdn.jsdelivr.net/gh/lvoe82002/zenly-website@main/music/bluebird.mp3', cover: 'https://cdn-us.imgs.moe/2026/09/07/6b673fc7a934840deeac918d38ae07c4.webp' },
-            { title: '他很信任你', artist: '冠希的歌', url: 'https://cdn.jsdelivr.net/gh/lvoe82002/zenly-website@main/music/bluebird.mp3', cover: 'https://cdn-us.imgs.moe/2026/09/07/e7d1ff3b26f8754a2486cd744a8cd3f1.png' },
+            { title: 'DAN DAN心魅かれていく', artist: 'Field of View', url: 'https://cdn.jsdelivr.net/gh/lvoe82002/zenly-website@main/music/01.Field%20of%20View%20-%20DAN%20DAN%E5%BF%83%E9%AD%85%E3%81%8B%E3%82%8C%E3%81%A6%E3%81%84%E3%81%8F.mp3', cover: 'https://ts3.tc.mm.bing.net/th/id/OIP-C.5L2Ya403EjY37iBMqPREUgHaER?w=200' },
+            { title: 'A.I.N.Y. 爱你', artist: '邓紫棋', url: 'https://cdn.jsdelivr.net/gh/lvoe82002/zenly-website@main/music/02.%E9%82%93%E7%B4%AB%E6%A3%8B%20-%20A.I.N.Y.%20%E7%88%B1%E4%BD%A0.mp3', cover: 'https://cdn-us.imgs.moe/2026/09/07/705321a580834483e9844276d3eeda82.jpeg' },
+            { title: '手心的蔷薇', artist: '林俊杰、G.E.M.邓紫棋', url: 'https://cdn.jsdelivr.net/gh/lvoe82002/zenly-website@main/music/03.%E6%9E%97%E4%BF%8A%E6%9D%B0%E3%80%81G.E.M.%E9%82%93%E7%B4%AB%E6%A3%8B%20-%20%E6%89%8B%E5%BF%83%E7%9A%84%E8%94%B7%E8%96%87.mp3', cover: 'https://cdn-us.imgs.moe/2026/09/07/6b673fc7a934840deeac918d38ae07c4.webp' },
+            { title: '他很信任你', artist: '冠希的歌', url: 'https://cdn.jsdelivr.net/gh/lvoe82002/zenly-website@main/music/04.%E5%86%A0%E5%B8%8C%E7%9A%84%E6%AD%8C%20-%20%E4%BB%96%E5%BE%88%E4%BF%A1%E4%BB%BB%E4%BD%A0.mp3', cover: 'https://cdn-us.imgs.moe/2026/09/07/e7d1ff3b26f8754a2486cd744a8cd3f1.png' }
         ];
 
         const MusicPlayer = (function () {
