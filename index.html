@@ -47,7 +47,8 @@
         .center-logo-flow { position: relative; z-index: 1; width: 820px; margin: 70px auto 30px; display: flex; justify-content: center; pointer-events: none; }
         .center-logo-flow .logo { pointer-events: auto; }
         .logo { display: flex; align-items: center; gap: 20px; }
-        .logo-img { width: 85px; height: 85px; object-fit: contain; border-radius: 6px; }
+        .logo-img { width: 85px; height: 85px; object-fit: contain; border-radius: 6px; flex: 0 0 auto; max-width: none; align-self: center; }
+.logo img { width: 85px; height: 85px; object-fit: contain; flex: 0 0 auto; max-width: none; }
         .name .bg { font-family: 'Dancing Script', cursive; font-size: 70px; font-weight: 700; letter-spacing: 14px; background: linear-gradient(120deg, #ffffff, #ffe8ef); -webkit-background-clip: text; background-clip: text; color: transparent; white-space: nowrap; text-shadow: 0 0 16px rgba(255, 255, 255, 0.95), 0 0 30px rgba(255, 200, 200, 0.5); }
         .top-empty-space { height: 400px; }
 
@@ -220,7 +221,7 @@
         .link-bar:hover { background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3); }
         .icon-item { display: flex; justify-content: center; align-items: center; width: 42px; height: 42px; border-radius: 0; transition: transform 0.12s; color: #fff; cursor: pointer; user-select: none; flex-shrink: 0; }
         .icon-item:active { transform: scale(0.92); }
-        .icon-item svg, .icon-item img { width: 22px; height: 22px; display: block; }
+        .icon-item svg, .icon-item img { width: 22px !important; height: 22px !important; display: block; object-fit: contain; flex: 0 0 auto; max-width: none; }
         .icon-item img { filter: invert(1); }
         .social-icon { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
         .bar-text { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #ffffff; font-size: 14px; white-space: nowrap; opacity: 0; transition: opacity 0.3s ease; pointer-events: none; flex-shrink: 0; z-index: 2; }
@@ -600,7 +601,7 @@
             </div>
             <div class="center-logo-flow moved-logo">
                 <div class="logo">
-                    <img class="logo-img" src="https://cdn.jsdelivr.net/gh/lvoe82002/zenly-website@main/wind.png" alt="logo">
+                    <img class="logo-img" src="https://cdn.jsdelivr.net/gh/lvoe82002/zenly-website@main/wind.svg" alt="wind">
                     <div class="name text-hidden">
                         <span class="bg">zenlydsp<span class="top-small">.top</span></span>
                     </div>
