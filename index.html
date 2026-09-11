@@ -378,7 +378,7 @@
             .center-logo-flow.moved-logo { position: relative !important; top: auto !important; left: auto !important; right: auto !important; width: auto !important; max-width: calc(100vw - 48px) !important; margin: 0 0 18px 0 !important; z-index: 10 !important; transform: none !important; align-self: flex-start !important; order: 1 !important; }
             .center-logo-flow.moved-logo .logo { gap: 14px !important; align-items: center !important; }
             .center-logo-flow.moved-logo .logo-img { width: 78px !important; height: 78px !important; border-radius: 50% !important; border: 2px solid rgba(255,255,255,0.35) !important; object-fit: cover !important; transform: translateY(10px); }
-                        .center-logo-flow.moved-logo .name .bg { font-size: 65px !important; letter-spacing: 2px !important; position: relative !important; top: -10px !important; }
+                        .center-logo-flow.moved-logo .name .bg { font-size: 65px !important; letter-spacing: 2px !important; position: relative !important; top: -10px !important; left: -6px !important; }
             .interactive-badge { position: relative !important; top: auto !important; left: auto !important; transform: none !important; width: 100% !important; max-width: 440px !important; min-width: 0 !important; margin: 0 auto !important; padding: 26px 30px !important; background: rgba(0,0,0,0.35) !important; backdrop-filter: blur(10px) !important; -webkit-backdrop-filter: blur(10px) !important; order: 2 !important; }
             .interactive-badge .badge-title { font-size: 26px !important; margin-left: 20px !important; }
             .interactive-badge .badge-text { font-size: 15px !important; margin-left: 20px !important; line-height: 1.6 !important; }
@@ -397,7 +397,7 @@
             body.capsule-open .mobile-menu-toggle { display: none !important; }
             body.mobile-menu-open .center-logo-flow.moved-logo { top: auto !important; order: 0 !important; margin: 0 0 16px 0 !important; position: relative !important; }
             body.mobile-menu-open .center-logo-flow.moved-logo .logo-img { display: none !important; }
-            body.mobile-menu-open .center-logo-flow.moved-logo .name .bg { font-size: 95px !important; letter-spacing: 1px !important; }
+            body.mobile-menu-open .center-logo-flow.moved-logo .name .bg { font-size: 95px !important; letter-spacing: 1px !important; left: 0 !important; top: 10px !important; }
             body.mobile-menu-open .interactive-badge, body.mobile-menu-open .social { display: none !important; }
             body.mobile-menu-open .digital-clock-card { display: block !important; position: relative !important; top: auto !important; right: auto !important; left: auto !important; transform: none !important; width: 100% !important; max-width: 440px !important; margin: 0 auto 24px !important; padding: 22px 28px !important; order: 1 !important; }
             body.mobile-menu-open .clock-date { font-size: 17px !important; margin-bottom: 14px !important; }
@@ -466,9 +466,7 @@
         /* ===== 仅电脑端：隐藏时光胶囊滚动长条（仍可滚轮/触摸滑动）；面板高度随内容收缩，
            去掉“本博客已靠爱发电”文字下方的多余空白（内容超过 80% 视口时才滚动）；手机端保持原样 ===== */
         @media (min-width: 1025px) {
-            .capsule-inner { scrollbar-width: none; -ms-overflow-style: none; padding-bottom: 10px; height: auto; max-height: 80%; }
-            .capsule-inner::-webkit-scrollbar { width: 0; height: 0; display: none; }
-            .capsule-afd { line-height: 1.55; }
+            .center-logo-flow.moved-logo .name .bg { left: -13px; }
         }
         /* ===== 仅手机端（max-width:768px）：与电脑端保持一致——面板高度随内容收缩，
            去掉“本博客已靠爱发电”文字下方的多余空白（内容超高时仍可触摸滑动），
