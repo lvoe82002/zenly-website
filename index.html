@@ -483,6 +483,192 @@
         #cardFrameMask { position: fixed; inset: 0; width: 100vw; height: 100vh; height: 100dvh; z-index: 999990; background: #0b0b0d; display: none; overflow: hidden; }
         #cardFrameMask.show { display: block; }
         #cardFrame { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; margin: 0; padding: 0; background: #0b0b0d; display: block; }
+
+        /* =====================================================================
+           公告组件（整合自独立版「公告组件.html」）
+           · 电脑端（>768px）：入口在「网站列表」播放器架构按钮正上方，左右边缘与该按钮对齐
+             （入口与播放器架构同占第 2 列网格，再整体上移）；通知列表面板屏幕居中弹出。
+           · 手机端（≤768px）：入口在社交信息栏正下方居中；详情为底部弹层。
+           ===================================================================== */
+        /* 手机挂载点不产生盒子（入口节点由脚本在电脑/手机两个挂载点之间迁移） */
+        #noticeMountMobile { display: contents; }
+        .nav-notice-item { list-style: none; display: flex; width: 100%; pointer-events: auto; }
+
+        /* —— 公告入口按钮：手机端使用深色毛玻璃；电脑端在下方媒体查询中恢复原组件的无底框样式 —— */
+        .nav-notice-trigger {
+            width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+            cursor: pointer; font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
+            color: #fff; white-space: nowrap;
+            background: rgba(50, 50, 50, 0.4);
+            -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.10); border-radius: 12px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+            transition: background .3s ease, border-color .3s ease, transform .15s ease;
+        }
+        @media (hover: hover) and (pointer: fine) {
+            .nav-notice-trigger:hover { background: rgba(255, 255, 255, 0.15); border-color: rgba(255,255,255,.18); transform: translateY(-2px); }
+        }
+        .nav-notice-trigger:active { transform: scale(.97); }
+        .nav-notice-trigger__icon { width: 18px; height: 18px; flex: 0 0 auto; }
+        .nav-notice-trigger__icon.is-shaking { display: inline-block; transform-origin: 50% 50%; animation: notice-shake 2.6s ease-in-out infinite; }
+        /* 未读时图标循环左右摇动：前 17% 摆动，之后停顿，到点自动重复 */
+        @keyframes notice-shake {
+            0% { transform: translateX(0) rotate(0); }
+            3.5% { transform: translateX(-3px) rotate(-8deg); }
+            7% { transform: translateX(3px) rotate(8deg); }
+            10.5% { transform: translateX(-2.5px) rotate(-5deg); }
+            14% { transform: translateX(2.5px) rotate(5deg); }
+            17%, 100% { transform: translateX(0) rotate(0); }
+        }
+        @media (prefers-reduced-motion: reduce) { .nav-notice-trigger__icon.is-shaking { animation: none; } }
+
+        /* —— 电脑端（>768px）：把第一排 4 个按钮显式锁定到 4 列，公告入口与「播放器架构」同占第 2 列、
+              第 1 行（普通网格项可被拉伸到与按钮等宽，全断点左右边缘精确对齐），再整体上移到按钮正上方 —— */
+        @media (min-width: 769px) {
+            .nav-buttons > a.nav-btn:nth-of-type(1) { grid-column: 1; grid-row: 1; }
+            .nav-buttons > a.nav-btn:nth-of-type(2) { grid-column: 2; grid-row: 1; }
+            .nav-buttons > a.nav-btn:nth-of-type(3) { grid-column: 3; grid-row: 1; }
+            .nav-buttons > a.nav-btn:nth-of-type(4) { grid-column: 4; grid-row: 1; }
+            #noticeMountDesktop {
+                grid-column: 2; grid-row: 1; align-self: start; justify-self: stretch; display: flex; min-width: 0;
+                transform: translateY(calc(-100% - 12px)); z-index: 12; pointer-events: auto;
+            }
+            .nav-notice-trigger {
+                height: 46px; font-size: 14px; font-weight: 600;
+                background: transparent;
+                -webkit-backdrop-filter: none; backdrop-filter: none;
+                border: 0; box-shadow: none;
+            }
+            .nav-notice-trigger:hover,
+            .nav-notice-trigger:focus-visible,
+            .nav-notice-trigger:active {
+                background: rgba(255, 255, 255, .12);
+                border: 0; box-shadow: none; transform: none;
+            }
+            .nav-notice-trigger__icon { width: 18px; height: 18px; }
+        }
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .nav-notice-trigger { height: 42px; font-size: 13px; }
+        }
+
+        /* —— 手机端（≤768px）：电脑挂载点隐藏；入口位于社交信息栏正下方、水平居中 —— */
+        @media (max-width: 768px) {
+            #noticeMountDesktop { display: none; }
+            #noticeEntry { order: 4; width: 100%; margin-top: 14px; display: flex; justify-content: center; }
+            #noticeEntry .nav-notice-trigger { width: auto; height: 40px; padding: 0 20px; font-size: 14px; font-weight: 600; border-radius: 10px; }
+            #noticeEntry .nav-notice-trigger__icon { width: 18px; height: 18px; }
+        }
+        /* 时光胶囊 / 设置 / 手机菜单打开时，公告入口一并隐藏 */
+        body.capsule-open #noticeEntry,
+        body.settings-open #noticeEntry,
+        body.mobile-menu-open #noticeEntry { display: none !important; }
+
+        /* —— 公告「系统通知」列表面板：手机/电脑统一屏幕居中悬浮（fixed 置于 body 顶层，
+              避免被带 backdrop-filter 的祖先改变包含块而无法居中）；深色毛玻璃 —— */
+        .nav-notice-popover { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 1300; width: min(380px, calc(100vw - 2rem)); min-width: 0; text-align: left; }
+        .notice-popup {
+            width: 100%; max-width: 380px; padding: .85rem; border-radius: .75rem;
+            color: #eaf2ff;
+            background: rgba(15, 23, 42, .42);
+            border: 1px solid rgba(255, 255, 255, .14);
+            box-shadow: 0 16px 48px rgba(2, 8, 23, .45);
+            -webkit-backdrop-filter: blur(18px) saturate(150%); backdrop-filter: blur(18px) saturate(150%);
+            font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
+        }
+        .notice-popup__header { display: flex; align-items: center; justify-content: space-between; gap: .75rem; margin-bottom: .9rem; padding-bottom: .85rem; border-bottom: 1px solid rgba(255,255,255,.12); }
+        .notice-popup__header > div { display: flex; align-items: center; }
+        .notice-popup__title { font-size: 1.05rem; line-height: 1; font-weight: 700; color: #fff; }
+        .notice-popup__count { flex: 0 0 auto; min-width: 3.2rem; height: 2rem; padding: 0 .8rem; border-radius: 999px; background: rgba(96,165,250,.18); color: #bfdbfe; font-size: .72rem; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; }
+        .notice-popup__state { padding: 1rem .25rem .25rem; color: rgba(226,232,240,.65); font-size: .88rem; text-align: center; }
+        .notice-popup__state--error { color: #fca5a5; }
+        .notice-popup__list { display: grid; gap: .75rem; max-height: 430px; overflow: auto; padding-right: .25rem; }
+        .notice-item {
+            padding: .9rem; border-radius: .75rem;
+            background: rgba(255, 255, 255, .08);
+            -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, .10);
+            transition: transform .2s, box-shadow .2s, border-color .2s, background .2s; cursor: pointer;
+        }
+        .notice-item:hover { transform: translateY(-2px); background: rgba(255,255,255,.14); border-color: rgba(96,165,250,.45); box-shadow: 0 10px 28px rgba(2,8,23,.35); }
+        .notice-item__top { display: flex; align-items: center; justify-content: space-between; gap: .6rem; margin-bottom: .55rem; }
+        .notice-item__level, .notice-item__type { display: inline-flex; align-items: center; padding: .2rem .55rem; border-radius: 999px; font-size: .7rem; white-space: nowrap; line-height: 1.4; }
+        .notice-item__level.is-high { background: rgba(248,113,113,.16); color: #fca5a5; }
+        .notice-item__level.is-medium { background: rgba(251,191,36,.16); color: #fcd34d; }
+        .notice-item__level.is-low { background: rgba(74,222,128,.16); color: #86efac; }
+        .notice-item__type { background: rgba(96,165,250,.18); color: #bfdbfe; }
+        .notice-item__title { margin: 0 0 .4rem; font-size: .95rem; line-height: 1.5; color: #fff; }
+        .notice-item__content { margin: 0; color: rgba(231,238,250,.82); font-size: .86rem; line-height: 1.65; overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+        .notice-item__content p { margin: 0 0 .35rem; }
+        .notice-item__content p.notice-bullet { position: relative; padding-left: 1.05em; margin-top: .7rem; margin-bottom: 0; }
+        .notice-item__content p.notice-bullet::before { content: '•'; position: absolute; left: .12em; top: 0; font-weight: 700; }
+        .notice-item__content img { display: block; max-width: 100%; height: auto; margin: .4rem 0; border-radius: .5rem; }
+        .notice-item__content a { color: inherit; text-decoration: underline; }
+        /* 折叠列表只留两行文字预览，媒体在详情里看 */
+        .notice-popup__list .notice-item__content img,
+        .notice-popup__list .notice-item__content video,
+        .notice-popup__list .notice-item__content iframe { display: none; }
+        .notice-item hr { border: none; border-top: 1px solid rgba(255,255,255,.10); margin: .6rem 0; }
+        .notice-item__meta, .notice-item__footer { display: flex; flex-wrap: wrap; gap: .35rem .75rem; margin-top: .65rem; font-size: .75rem; color: rgba(226,232,240,.62); }
+        .notice-item__footer { align-items: center; }
+        .notice-item__footer > span { display: inline-flex; align-items: center; gap: .2rem; }
+        .notice-item__footer span.is-unread { color: #fca5a5; font-weight: 700; }
+        .notice-popup__list::-webkit-scrollbar { width: 6px; }
+        .notice-popup__list::-webkit-scrollbar-thumb { background: rgba(255,255,255,.28); border-radius: 999px; }
+        .notice-popup__pager { display: flex; align-items: center; justify-content: space-between; gap: .75rem; margin-top: .85rem; padding-top: .75rem; border-top: 1px solid rgba(255,255,255,.12); }
+        .notice-popup__pager-btn { min-width: 72px; height: 1.9rem; padding: 0 .85rem; border: 1px solid rgba(255,255,255,.20); border-radius: .35rem; background: rgba(255,255,255,.10); color: #eaf2ff; font-size: .78rem; cursor: pointer; transition: all .2s; }
+        .notice-popup__pager-btn:hover:not(:disabled) { background: rgba(255,255,255,.18); border-color: rgba(96,165,250,.55); color: #fff; }
+        .notice-popup__pager-btn:disabled { cursor: not-allowed; opacity: .5; }
+        .notice-popup__pager-info { color: rgba(226,232,240,.65); font-size: .78rem; }
+
+        /* —— 公告详情模态框（两端共用，深色玻璃大卡片） —— */
+        .notice-detail-overlay { position: fixed; inset: 0; z-index: 2000; display: none; align-items: center; justify-content: center; padding: 1rem; background: rgba(8,15,28,.40); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+        .notice-detail-overlay.show { display: flex; }
+        .notice-detail-modal {
+            width: min(720px, 100%); max-height: min(80vh, 900px); padding: 1.1rem 1.15rem; border-radius: 1rem;
+            color: #eaf2ff;
+            background: rgba(15, 23, 42, .55);
+            border: 1px solid rgba(255, 255, 255, .14);
+            box-shadow: 0 28px 70px rgba(2, 8, 23, .55);
+            -webkit-backdrop-filter: blur(26px) saturate(150%); backdrop-filter: blur(26px) saturate(150%);
+            font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
+            overflow: hidden; display: flex; flex-direction: column; animation: notice-modal-in .22s ease;
+        }
+        @keyframes notice-modal-in { from { opacity: 0; transform: scale(.96); } to { opacity: 1; transform: scale(1); } }
+        .notice-detail-modal__header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: .85rem; }
+        .notice-detail-modal__title { margin: 0; font-size: 1.08rem; line-height: 1.5; color: #fff; }
+        .notice-detail-modal__meta { display: flex; flex-wrap: wrap; gap: .35rem .75rem; margin-top: .45rem; font-size: .8rem; color: rgba(226,232,240,.62); }
+        .notice-detail-modal__close { border: none; background: transparent; cursor: pointer; font-size: 1.7rem; line-height: 1; color: rgba(226,232,240,.7); }
+        .notice-detail-modal__close:hover { color: #fff; }
+        .notice-detail-modal__error { margin-bottom: .85rem; padding: .75rem .85rem; border-radius: .75rem; background: rgba(248,113,113,.14); color: #fca5a5; font-size: .86rem; }
+        .notice-detail-modal__tags { display: flex; flex-wrap: wrap; gap: .45rem; margin-bottom: .85rem; }
+        .notice-detail-modal__tag { padding: .2rem .55rem; border-radius: 999px; background: rgba(96,165,250,.18); color: #bfdbfe; font-size: .74rem; }
+        .notice-detail-modal__tag.is-high { background: rgba(248,113,113,.16); color: #fca5a5; }
+        .notice-detail-modal__tag.is-medium { background: rgba(251,191,36,.16); color: #fcd34d; }
+        .notice-detail-modal__tag.is-low { background: rgba(74,222,128,.16); color: #86efac; }
+        .notice-detail-modal__content { flex: 1; min-height: 0; overflow: auto; color: rgba(231,238,250,.85); font-size: .92rem; line-height: 1.75; }
+        .notice-detail-modal__content img { display: block; max-width: 100%; height: auto; margin: .5rem 0; border-radius: .5rem; }
+        .notice-detail-modal__content p { margin: 0 0 .55rem; }
+        .notice-detail-modal__content p.notice-bullet { position: relative; padding-left: 1.2em; margin-top: 1.05rem; margin-bottom: 0; line-height: 1.85; }
+        .notice-detail-modal__content p.notice-bullet::before { content: '•'; position: absolute; left: .15em; top: 0; font-weight: 700; font-size: 1.05em; }
+        .notice-detail-modal__content::-webkit-scrollbar { width: 6px; }
+        .notice-detail-modal__content::-webkit-scrollbar-thumb { background: rgba(255,255,255,.28); border-radius: 999px; }
+
+        /* 弹层进出场 */
+        .pop-enter { animation: notice-pop-in .2s ease; }
+        @keyframes notice-pop-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+        .toast { position: fixed; left: 50%; bottom: 2.2rem; transform: translateX(-50%) translateY(20px); background: rgba(15,23,42,.9); color: #fff; padding: .6rem 1.1rem; border-radius: .6rem; font-size: .85rem; opacity: 0; pointer-events: none; transition: all .25s; z-index: 3000; font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif; }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        /* —— 手机端（≤768px）：列表面板铺满留边；详情改为底部弹层；toast 抬高避开版权条/菜单钮 —— */
+        @media (max-width: 768px) {
+            .notice-popup { max-width: none; padding: .7rem; }
+            .notice-item { padding: .7rem; border-radius: .68rem; }
+            .notice-detail-overlay { padding: .35rem; align-items: flex-end; }
+            .notice-detail-modal { width: 100%; max-height: calc(100vh - .7rem); padding: .85rem .85rem .8rem; border-radius: .85rem; }
+            .toast { bottom: 7.8rem; }
+        }
+
     </style>
 </head>
 <body class="pre-blur">
@@ -745,6 +931,20 @@
                     <span>网站列表</span>
                 </div>
                 <div class="nav-buttons">
+                    <!-- 电脑端公告入口挂载点：与「播放器架构」同占第 2 列、悬于其正上方（手机端入口由脚本迁移到社交栏下方） -->
+                    <div id="noticeMountDesktop">
+                        <div class="nav-notice-item" id="noticeEntry">
+                            <button class="nav-notice-trigger" id="noticeTrigger" type="button" aria-label="公告">
+                                <svg class="nav-notice-trigger__icon" id="noticeBell" viewBox="0 0 24 24" aria-hidden="true">
+                                    <rect x="4" y="3" width="16" height="18" rx="2.6" fill="#ffffff"/>
+                                    <rect x="8" y="8.3" width="8" height="1.8" rx=".9" fill="#28424c"/>
+                                    <rect x="8" y="12.1" width="8" height="1.8" rx=".9" fill="#28424c"/>
+                                    <rect x="8" y="15.9" width="5.4" height="1.8" rx=".9" fill="#28424c"/>
+                                </svg>
+                                <span>公告</span>
+                            </button>
+                        </div>
+                    </div>
                     <a href="javascript:void(0)" class="nav-btn" onclick="window.__go && window.__go('blog.html');">
                         <svg style="width:22px;height:22px;fill:currentColor;" viewBox="0 0 512 512">
                             <path d="M172.2 226.8c-14.6-2.9-28.2 8.9-28.2 23.8V301c0 10.2 7.1 18.4 16.7 22 18.2 6.8 31.3 24.4 31.3 45 0 26.5-21.5 48-48 48s-48-21.5-48-48V120c0-13.3-10.7-24-24-24H24c-13.3 0-24 10.7-24 24v248c0 89.5 82.1 160.2 175 140.7 54.4-11.4 98.3-55.4 109.7-109.7 17.4-82.9-37-157.2-112.5-172.2zM209 0c-9.2-.5-17 6.8-17 16v31.6c0 8.5 6.6 15.5 15 15.9 129.4 7 233.4 112 240.9 241.5.5 8.4 7.5 15 15.9 15h32.1c9.2 0 16.5-7.8 16-17C503.4 139.8 372.2 8.6 209 0zm.3 96c-9.3-.7-17.3 6.7-17.3 16.1v32.1c0 8.4 6.5 15.3 14.8 15.9 76.8 6.3 138 68.2 144.9 145.2.8 8.3 7.6 14.7 15.9 14.7h32.2c9.3 0 16.8-8 16.1-17.3-8.4-110.1-96.5-198.2-206.6-206.7z"/>
@@ -819,6 +1019,9 @@
                 </div>
             </div>
 
+            <!-- 手机端公告入口挂载点：社交信息栏正下方居中（电脑端为空；入口节点由脚本在两个挂载点之间迁移） -->
+            <div id="noticeMountMobile"></div>
+
             <div class="digital-clock-card">
                 <div class="clock-date" id="clockDate">2026年08月07日 星期五</div>
                 <div class="clock-time-row">
@@ -839,6 +1042,15 @@
             <span class="copyright-text">Copyright © 2026 小阿修 & Made by <a class="copyright-link" href="https://github.com/lvoe82002/zenly-website" target="_blank" rel="noopener noreferrer">imsyy</a></span>
         </div>
     </div>
+
+    <!-- ===== 公告组件：通知列表面板 / 详情模态框 / toast / 模板图片（固定定位，置于 body 顶层） ===== -->
+    <div class="nav-notice-popover" id="noticePopover" hidden></div>
+    <div class="notice-detail-overlay" id="detailOverlay">
+        <div class="notice-detail-modal" id="detailModal"></div>
+    </div>
+    <div class="toast" id="toast"></div>
+    <!-- 静态占位：供内嵌脚本扫描到公告图片，实际内容由 JS 引用其 src -->
+    <img hidden id="tplNoticeImg" src="https://iili.io/nfVZBTP.webp" alt="壁纸bg.jpg">
 
     <div class="particles" id="particles"></div>
     <div class="mobile-menu-toggle" id="mobileMenuToggle">
@@ -2234,6 +2446,184 @@
                 });
             } catch (e) {}
         });
+    })();
+    </script>
+
+    <!-- ===== 公告组件：入口挂载点迁移脚本 ===== -->
+    <script>
+    /* 公告入口在两个挂载点之间迁移：
+       · 电脑端（>768px）：网站列表「播放器架构」按钮正上方，与该按钮左右对齐；
+       · 手机端（≤768px）：社交信息栏正下方居中。 */
+    (function () {
+        var entry = document.getElementById('noticeEntry');
+        var mountDesktop = document.getElementById('noticeMountDesktop');
+        var mountMobile = document.getElementById('noticeMountMobile');
+        if (!entry || !mountDesktop || !mountMobile) return;
+        var lastWide = null;
+        function placeEntry() {
+            var useDesktopMount = window.innerWidth > 768;
+            if (useDesktopMount === lastWide) return;
+            (useDesktopMount ? mountDesktop : mountMobile).appendChild(entry);
+            lastWide = useDesktopMount;
+        }
+        placeEntry();
+        window.addEventListener('resize', placeEntry);
+        window.addEventListener('orientationchange', function () { setTimeout(placeEntry, 300); });
+    })();
+    </script>
+
+    <!-- ===== 公告组件：数据 / 列表 / 详情 / 已读摇动逻辑（整合自独立版） ===== -->
+    <script>
+    (function(){
+      "use strict";
+      var READ_KEY='notice_read_ids';
+
+      /* ===== 内置数据（模拟 GET /api/notice/list 的真实返回） ===== */
+      var NOTICE_IMG=document.getElementById('tplNoticeImg').src;
+      var MOCK={
+        total:'1',
+        rows:[{
+          id:'1',
+          title:'开发完成，进入全面测试阶段',
+          content:'<p>现在大体都开发完成了，接下来进入全面测试阶段，主要任务就是测试和找 Bug</p>'+
+                   '<p class="notice-bullet">测试期间如果遇到 Bug、页面显示异常，或者有好的建议，欢迎通过社交栏的 QQ 给我留言，也可以到 Github 仓库提 Issue，感谢大家帮忙踩坑～</p>'+
+                   '<p class="notice-bullet">本次新增了时光胶囊、音乐播放器、公告通知等功能，欢迎多多体验；测试阶段功能可能随时调整，若遇到显示异常，可尝试强制刷新（电脑端 Ctrl + F5）清除缓存。</p>'+
+                   '<p class="notice-bullet">天气组件基于高德 IP 定位，需要在 WiFi / 宽带网络下使用；手机流量或部分公共 WiFi（如校园网）的出口 IP 无法被高德识别时，会提示“天气信息获取失败”，这属于网络环境限制、并非代码问题，切换网络后即可恢复。</p>'+
+                   '<p><img src="'+NOTICE_IMG+'" alt="壁纸bg.jpg" style="width:375px;max-width:100%;height:auto;margin-top:.9rem;"></p>',
+          type:2, level:'L', isRead:'0', targetType:'1', targetName:'',
+          publisherName:'执笔写修', publishTime:'2026-09-10 15:28:40'
+        }]
+      };
+      var PAGE_SIZE=5, page=1;
+      var list=MOCK.rows.slice();
+
+      /* ===== 字典 ===== */
+      function typeText(t){return {1:'站点公告',2:'系统通知',3:'功能更新',4:'活动通知',5:'其他通知'}[Number(t)]||'其他通知';}
+      function levelText(l){var v=String(l||'').toUpperCase();if(v==='H'||v==='HIGH')return'重要';if(v==='M'||v==='MEDIUM')return'提醒';return'普通';}
+      function levelClass(l){var v=String(l||'').toUpperCase();if(v==='H'||v==='HIGH')return'is-high';if(v==='M'||v==='MEDIUM')return'is-medium';return'is-low';}
+      function targetText(n){if(Array.isArray(n))return n.filter(Boolean).join('、')||'全体用户';return String(n||'').trim()||'全体用户';}
+
+      /* ===== 已读：localStorage ===== */
+      function getReadIds(){try{var a=JSON.parse(localStorage.getItem(READ_KEY)||'[]');return Array.isArray(a)?a.map(String):[];}catch(e){return[];}}
+      function isRead(id){return getReadIds().indexOf(String(id))>-1;}
+      function markRead(id){var a=getReadIds(),s=String(id);if(a.indexOf(s)<0){a.push(s);localStorage.setItem(READ_KEY,JSON.stringify(a));}}
+      function effectiveRead(item){return String(item.isRead)==='1'||isRead(item.id)?'1':'0';}
+
+      /* ===== DOM 引用 ===== */
+      var trigger=document.getElementById('noticeTrigger');
+      var bell=document.getElementById('noticeBell');
+      var popover=document.getElementById('noticePopover');
+      var overlay=document.getElementById('detailOverlay');
+      var modal=document.getElementById('detailModal');
+      var toastEl=document.getElementById('toast');
+      var toastTimer=null;
+      function toast(msg){toastEl.textContent=msg;toastEl.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(function(){toastEl.classList.remove('show');},1600);}
+
+      function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+      /* ===== 渲染弹窗列表 ===== */
+      function renderPopup(){
+        var total=Number(MOCK.total||0);
+        var totalPages=Math.max(1,Math.ceil(total/PAGE_SIZE));
+        var html='<aside class="notice-popup pop-enter">'
+          +'<div class="notice-popup__header"><div><h3 class="notice-popup__title">系统通知</h3></div>'
+          +'<span class="notice-popup__count">'+total+' 条</span></div>';
+        if(!list.length){
+          html+='<div class="notice-popup__state">暂无公告</div>';
+        }else{
+          html+='<div class="notice-popup__list">';
+          list.forEach(function(item){
+            var read=effectiveRead(item);
+            html+='<article class="notice-item" role="button" tabindex="0" data-id="'+esc(item.id)+'">'
+              +'<div class="notice-item__top">'
+              +'<span class="notice-item__level '+levelClass(item.level)+'">'+levelText(item.level)+'</span>'
+              +'<span class="notice-item__type">'+typeText(item.type)+'</span></div>'
+              +'<h4 class="notice-item__title">'+esc(item.title)+'</h4>'
+              +'<div class="notice-item__content">'+item.content+'</div><hr>'
+              +'<div class="notice-item__meta"><span>发布人：'+esc(item.publisherName||'-')+'</span>'
+              +'<span>发布时间：'+esc(item.publishTime||'-')+'</span></div>'
+              +'<div class="notice-item__footer"><span> 读取状态： '
+              +'<span class="'+(read!=='1'?'is-unread':'')+'">'+(read==='1'?'已读':'未读')+'</span></span>'
+              +'<span>接收人：'+targetText(item.targetName)+'</span></div>'
+              +'</article>';
+          });
+          html+='</div>';
+        }
+        if(total>PAGE_SIZE){
+          html+='<div class="notice-popup__pager">'
+            +'<button class="notice-popup__pager-btn" data-page="prev" '+(page<=1?'disabled':'')+'>上一页</button>'
+            +'<span class="notice-popup__pager-info">'+page+' / '+totalPages+'</span>'
+            +'<button class="notice-popup__pager-btn" data-page="next" '+(page>=totalPages?'disabled':'')+'>下一页</button></div>';
+        }
+        html+='</aside>';
+        popover.innerHTML=html;
+      }
+
+      /* ===== 渲染详情 ===== */
+      function renderDetail(item){
+        modal.innerHTML=
+          '<div class="notice-detail-modal__header"><div>'
+          +'<h3 class="notice-detail-modal__title">'+esc(item.title)+'</h3>'
+          +'<div class="notice-detail-modal__meta"><span>发布人：'+esc(item.publisherName||'-')+'</span>'
+          +'<span>发布时间：'+esc(item.publishTime||'-')+'</span></div></div>'
+          +'<button class="notice-detail-modal__close" id="detailClose" type="button">&times;</button></div>'
+          +'<div class="notice-detail-modal__tags">'
+          +'<span class="notice-detail-modal__tag">'+typeText(item.type)+'</span>'
+          +'<span class="notice-detail-modal__tag '+levelClass(item.level)+'">'+levelText(item.level)+'</span>'
+          +'<span class="notice-detail-modal__tag">接收类型：'+(String(item.targetType)==='2'?'指定':'全体')+'</span>'
+          +'<span class="notice-detail-modal__tag">接收人：'+targetText(item.targetName)+'</span></div>'
+          +'<div class="notice-detail-modal__content">'+item.content+'</div>';
+        document.getElementById('detailClose').addEventListener('click',closeDetail);
+      }
+
+      /* ===== 开关逻辑 ===== */
+      function openPopup(){popover.hidden=false;renderPopup();updateShake();}
+      function closePopup(){popover.hidden=true;}
+      function togglePopup(){popover.hidden?openPopup():closePopup();}
+      function openDetail(item){
+        markRead(item.id);
+        var t=list.find(function(x){return String(x.id)===String(item.id);});if(t)t.isRead='1';
+        renderDetail(item);
+        overlay.classList.add('show');
+        renderPopup();           // 同步列表已读状态（供下次打开时展示）
+        closePopup();            // 点开公告后收起居中的「系统通知」列表，只保留详情卡片
+        updateShake();           // 全部已读后停止摇动
+      }
+      function closeDetail(){overlay.classList.remove('show');}
+      function hasUnread(){return list.some(function(x){return effectiveRead(x)!=='1';});}
+
+      /* ===== 图标摇动：有未读就加 is-shaking（CSS 无限循环），全部已读则移除 ===== */
+      function updateShake(){bell.classList.toggle('is-shaking',hasUnread());}
+
+      /* ===== 事件绑定 ===== */
+      trigger.addEventListener('click',function(e){e.stopPropagation();togglePopup();});
+      popover.addEventListener('click',function(e){e.stopPropagation();
+        var art=e.target.closest('.notice-item');
+        if(art){var item=list.find(function(x){return String(x.id)===String(art.dataset.id);});if(item)openDetail(item);}
+        var btn=e.target.closest('[data-page]');
+        if(btn&&!btn.disabled){toast('演示数据仅 1 条，无更多页');}
+      });
+      // 键盘可达性：卡片标了 role=button、tabindex=0，就必须响应 Enter / 空格
+      popover.addEventListener('keydown',function(e){
+        if(e.key!=='Enter'&&e.key!==' '&&e.keyCode!==32)return;
+        var art=e.target.closest&&e.target.closest('.notice-item');
+        if(!art)return;
+        e.preventDefault();
+        var item=list.find(function(x){return String(x.id)===String(art.dataset.id);});
+        if(item)openDetail(item);
+      });
+      overlay.addEventListener('click',function(e){if(e.target===overlay)closeDetail();});
+      document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeDetail();closePopup();}});
+      document.addEventListener('click',function(e){
+        if(!e.target.closest('.nav-notice-item'))closePopup();
+      });
+
+      /* ===== 初始化：未读即开始摇动提醒 =====
+         演示文件：每次打开先清掉历史已读记录，保证一进来就是未读、能看到摇动。
+         接真实后端时删掉下面 removeItem 这行，已读状态由后端 isRead 决定即可。 */
+      localStorage.removeItem(READ_KEY);
+      list.forEach(function(x){x.isRead=effectiveRead(x);});
+      updateShake();
     })();
     </script>
 </body>
