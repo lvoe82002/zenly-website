@@ -466,6 +466,9 @@
         /* ===== 仅电脑端：隐藏时光胶囊滚动长条（仍可滚轮/触摸滑动）；面板高度随内容收缩，
            去掉“本博客已靠爱发电”文字下方的多余空白（内容超过 80% 视口时才滚动）；手机端保持原样 ===== */
         @media (min-width: 1025px) {
+            .capsule-inner { scrollbar-width: none; -ms-overflow-style: none; padding-bottom: 10px; height: auto; max-height: 80%; }
+            .capsule-inner::-webkit-scrollbar { width: 0; height: 0; display: none; }
+            .capsule-afd { line-height: 1.55; }
             .center-logo-flow.moved-logo .name .bg { left: -13px; }
         }
         /* ===== 仅手机端（max-width:768px）：与电脑端保持一致——面板高度随内容收缩，
@@ -787,7 +790,7 @@
                     <a class="icon-item" href="https://qm.qq.com/q/QfvK9qq9ii" target="_blank" data-tooltip="有什么事吗？">
                         <img src="https://www.svgrepo.com/show/447108/qq-fill.svg" alt="QQ" style="filter: brightness(0) invert(1) brightness(1.5);">
                     </a>
-                    <a class="icon-item" href="mailto:jiuran@163.com" target="_blank" data-tooltip="来封Email～">
+                    <a class="icon-item" href="/cdn-cgi/l/email-protection#016b687473606f413037322f626e6c" target="_blank" data-tooltip="来封Email～">
                         <svg class="social-icon" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="3" y="5" width="18" height="14" rx="2" />
                             <path d="M3 7l9 6 9-6" />
@@ -847,7 +850,7 @@
         <iframe id="cardFrame" title="card" referrerpolicy="no-referrer"></iframe>
     </div>
 
-    <script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
         /* ===== 模糊渐清：等页面 load + 壁纸图片真正下载完成后，再拉开帷幕，壁纸和全部内容一起由模糊渐变清晰（6 秒兜底，防止卡死） ===== */
         function getInitialWallpaperUrl() {
             const map = {
@@ -1752,6 +1755,25 @@
                     if (window.enqueueTopTip) window.enqueueTopTip('天气信息获取失败', 3000, 'close');
                 })();
             }
+            // ===== 天气本地缓存（第①点）：30 分钟内直接读缓存，不请求高德 =====
+            var WEATHER_CACHE_KEY = 'zenly_weather_cache';
+            var WEATHER_CACHE_TTL = 30 * 60 * 1000; // 缓存有效期 30 分钟，想更久就改这里的 30
+            function readWeatherCache() {
+                try {
+                    var rawCache = localStorage.getItem(WEATHER_CACHE_KEY);
+                    if (!rawCache) return null;
+                    var c = JSON.parse(rawCache);
+                    if (!c || !c.t || !c.text) return null;
+                    if (Date.now() - c.t > WEATHER_CACHE_TTL) return null; // 缓存过期
+                    return c;
+                } catch (e) { return null; }
+            }
+            function writeWeatherCache(text) {
+                try {
+                    localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify({ t: Date.now(), text: text }));
+                } catch (e) {}
+            }
+
             async function updateWeather() {
                 if (document.hidden) return;
                 weatherEl.textContent = '正在定位…';
@@ -1775,21 +1797,32 @@
                     const live = w.lives[0];
                     let city = Array.isArray(loc.city) ? '' : loc.city;
                     city = live.city || city || loc.province || '';
-                    weatherEl.textContent = (city ? city + ' ' : '') + live.weather + ' ' + live.temperature + '℃ ' + formatWind(live.winddirection, live.windpower);
+                    var weatherText = (city ? city + ' ' : '') + live.weather + ' ' + live.temperature + '℃ ' + formatWind(live.winddirection, live.windpower);
+                    weatherEl.textContent = weatherText;
+                    writeWeatherCache(weatherText); // 成功才写缓存；失败不写，下次触发会自动重试
                 } catch (err) {
                     showWeatherFail();
                 }
             }
 
-            updateWeather();
+            // 统一入口（第③点）：缓存没过期就直接显示缓存、0 请求；过期或没有缓存才请求高德
+            function getWeather() {
+                var cached = readWeatherCache();
+                if (cached) { weatherEl.textContent = cached.text; return; }
+                updateWeather();
+            }
+
+            getWeather(); // 打开/刷新/点起始页进入：先吃缓存
             // 网络在 WiFi/流量之间切换时立即重新判定（如中途切到流量，也会补一次失败提示）
             const conn = getConnection();
             if (conn && conn.addEventListener) {
-                conn.addEventListener('change', updateWeather);
+                conn.addEventListener('change', getWeather);
             }
-            setInterval(updateWeather, 5 * 60 * 1000);
+            // 第②点（你自己改）：把下面的 5 改成 30 或 60 即拉长轮询；整行删掉即不轮询。
+            // 走了缓存后，即使这里保持 5 分钟，也只有缓存过期（30 分钟）才会真正请求一次
+            setInterval(getWeather, 5 * 60 * 1000);
             document.addEventListener('visibilitychange', function() {
-                if (!document.hidden) updateWeather();
+                if (!document.hidden) getWeather(); // 切回页面：缓存没过期就不请求
             });
         })();
     </script>
