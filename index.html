@@ -416,9 +416,9 @@
             body.mobile-menu-open .mobile-menu-toggle .icon-close { display: block !important; }
             #capsuleOverlay { padding-right: 0 !important; justify-content: center !important; padding: 20px !important; padding-top: 140px !important; }
             .capsule-inner { width: 100% !important; max-width: 380px !important; }
-            body.capsule-open .interactive-badge { position: fixed !important; top: 10px !important; left: 50% !important; transform: translateX(-50%) !important; width: calc(100% - 40px) !important; max-width: 440px !important; margin: 0 !important; z-index: 100000 !important; pointer-events: auto !important; order: unset !important; background: rgba(0,0,0,0.35) !important; }
-            body.capsule-open .interactive-badge .badge-title { font-size: 26px !important; }
-            body.capsule-open .interactive-badge .badge-text { font-size: 15px !important; }
+            body.capsule-open .interactive-badge { position: fixed !important; top: 70px !important; left: 50% !important; transform: translateX(-50%) !important; width: 90% !important; max-width: 380px !important; margin: 0 !important; z-index: 100000 !important; pointer-events: auto !important; order: unset !important; background: rgba(0,0,0,0.45) !important; }
+            body.capsule-open .interactive-badge .badge-title { font-size: 24px !important; }
+            body.capsule-open .interactive-badge .badge-text { font-size: 14px !important; }
             .settings-modal-box { width: 95% !important; padding: 24px 20px !important; max-height: 90vh !important; }
             .settings-modal-body { flex-direction: column !important; gap: 20px !important; }
             .settings-col-left, .settings-col-right { flex: none !important; min-width: 0 !important; }
@@ -466,7 +466,7 @@
         /* ===== 仅电脑端：隐藏时光胶囊滚动长条（仍可滚轮/触摸滑动）；面板高度随内容收缩，
            去掉“本博客已靠爱发电”文字下方的多余空白（内容超过 80% 视口时才滚动）；手机端保持原样 ===== */
         @media (min-width: 1025px) {
-            .capsule-inner { scrollbar-width: none; -ms-overflow-style: none; padding-bottom: 10px; height: auto; max-height: 95%; }
+            .capsule-inner { scrollbar-width: none; -ms-overflow-style: none; padding-bottom: 10px; height: auto; max-height: 88%; }
             .capsule-inner::-webkit-scrollbar { width: 0; height: 0; display: none; }
             .capsule-afd { line-height: 1.55; }
             .center-logo-flow.moved-logo .name .bg { left: -13px; }
@@ -475,7 +475,7 @@
            去掉“本博客已靠爱发电”文字下方的多余空白（内容超高时仍可触摸滑动），
            同时隐藏滚动长条、收紧爱发电行高；电脑端规则不做任何改动 ===== */
         @media (max-width: 768px) {
-            .capsule-inner { scrollbar-width: none; -ms-overflow-style: none; padding-bottom: 10px; height: auto; max-height: 91%; }
+            .capsule-inner { scrollbar-width: none; -ms-overflow-style: none; padding-bottom: 10px; height: auto; max-height: 80%; }
             .capsule-inner::-webkit-scrollbar { width: 0; height: 0; display: none; }
             .capsule-afd { line-height: 1.55; }
         }
@@ -483,233 +483,6 @@
         #cardFrameMask { position: fixed; inset: 0; width: 100vw; height: 100vh; height: 100dvh; z-index: 999990; background: #0b0b0d; display: none; overflow: hidden; }
         #cardFrameMask.show { display: block; }
         #cardFrame { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; margin: 0; padding: 0; background: #0b0b0d; display: block; }
-
-/* ==================== 公告通知组件（原版「公告组件.html」并入） ==================== */
-
-/* ===== 公告组件主题变量（原版变量，--wallpaper 由首页壁纸体系接管，不需要） ===== */
-:root{
-  --board-bg-color: rgba(245,255,250,.96);
-  --post-text-color:#2c3e50;
-  --sec-text-color:#94a3b8;
-  --text-color:#475569;
-  --link-hover-color:#409eff;
-  --notice-divider: rgba(148,163,184,.18);
-}
-.nav-notice-popover,.notice-detail-overlay,.toast,.nav-notice-trigger{font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;}
-
-/* ===== 公告入口（电脑端 ≥1025px）：定位在右侧「网站列表」框（含“关于我”按钮）正上方，与时钟卡/按钮列右对齐 ===== */
-.nav-notice-item{position:absolute;right:15%;top:-204px;z-index:11;width:128px;margin:0;padding:0;list-style:none;}
-.nav-notice-trigger{
-  width:100%;height:54px;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:0;
-  border-radius:12px;background:rgba(50,50,50,.4);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
-  border:1px solid rgba(255,255,255,.08);box-shadow:0 8px 32px rgba(0,0,0,.4);color:#fff;cursor:pointer;
-  transition:background .3s ease,transform .3s ease,box-shadow .3s ease;font-family:inherit;
-}
-.nav-notice-trigger:hover{background:rgba(255,255,255,.15);transform:translateY(-4px);}
-.nav-notice-trigger__icon{width:21px;height:21px;flex:0 0 auto;}
-.notice-trigger-text{font-size:14px;font-weight:600;white-space:nowrap;}
-/* ≥1680px 宽屏：右列整体上移 20px（与时钟卡/网站列表框同步） */
-@media (min-width:1680px){.nav-notice-item{top:-224px;}}
-
-/* ===== 平板（769~1024px）：底部居中玻璃胶囊入口 ===== */
-@media (max-width:1024px){
-  .nav-notice-item{position:fixed;left:calc(50% - 55px);right:auto;top:auto;bottom:40px;transform:none;width:110px;z-index:200;}
-  .nav-notice-trigger{width:110px;height:46px;border-radius:14px;background:rgba(255,255,255,.18);
-    border:1px solid rgba(255,255,255,.25);box-shadow:0 4px 20px rgba(0,0,0,.3);gap:6px;}
-  .notice-trigger-text{font-size:13px;}
-}
-/* ===== 手机端（≤768px）：社交图标栏与底部汉堡菜单键之间的居中位置（截图圈选处），图标+“公告”文字胶囊 ===== */
-@media (max-width:768px){
-  .nav-notice-item{left:50%;transform:translateX(-50%);bottom:190px;width:auto;}
-  .nav-notice-trigger{width:auto;height:50px;padding:0 22px;border-radius:999px;gap:8px;}
-  .notice-trigger-text{display:inline-block;font-size:14px;}
-  .nav-notice-trigger__icon{width:22px;height:22px;}
-  .nav-notice-trigger:active{transform:scale(.92);}
-}
-/* 矮屏手机（高度≤740px）：社交栏与汉堡键之间空隙变小，胶囊贴近汉堡键，避免压住社交栏 */
-@media (max-width:768px) and (max-height:740px){
-  .nav-notice-item{bottom:126px;}
-}
-/* 时光胶囊 / 设置 / 手机菜单 等全屏面板打开时，公告入口与弹层一并隐藏 */
-body.settings-open .nav-notice-item,
-body.capsule-open .nav-notice-item,
-body.mobile-menu-open .nav-notice-item,
-body.settings-open .nav-notice-popover,
-body.capsule-open .nav-notice-popover,
-body.settings-open .notice-detail-overlay,
-body.capsule-open .notice-detail-overlay{display:none !important;}
-
-/* ----- 以下为公告组件原版样式（仅弹层定位与 z-index 按首页环境调整） ----- */
-/* ============ 导航公告入口 ============ */
-.nav-notice-popover{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:90000;width:calc(100vw - 2rem);max-width:360px;min-width:0;text-align:left;font-family:"PingFang SC","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif}
-.nav-notice-trigger__icon.is-shaking{display:inline-block;transform-origin:50% 50%;animation:notice-shake 2.6s ease-in-out infinite}
-/* 未读时循环左右摇动：前 17%（约 .45s）摆动，之后停顿，到点自动重复 */
-@keyframes notice-shake{
-  0%{transform:translateX(0) rotate(0)}
-  3.5%{transform:translateX(-3px) rotate(-8deg)}
-  7%{transform:translateX(3px) rotate(8deg)}
-  10.5%{transform:translateX(-2.5px) rotate(-5deg)}
-  14%{transform:translateX(2.5px) rotate(5deg)}
-  17%,100%{transform:translateX(0) rotate(0)}
-}
-@media (prefers-reduced-motion: reduce){.nav-notice-trigger__icon.is-shaking{animation:none}}
-
-/* ============ 公告弹窗 ============ */
-.notice-popup{width:100%;max-width:360px;padding:.85rem;border-radius:.75rem;background:var(--board-bg-color);border:1px solid rgba(148,163,184,.22);box-shadow:0 12px 30px rgba(15,23,42,.22);color:var(--post-text-color)}
-.notice-popup__header{display:flex;align-items:center;justify-content:space-between;gap:.75rem;margin-bottom:.9rem;padding-bottom:.85rem;border-bottom:1px solid var(--notice-divider)}
-.notice-popup__header>div{display:flex;align-items:center}
-.notice-popup__title{font-size:1.05rem;line-height:1;font-weight:700;color:var(--post-text-color)}
-.notice-popup__count{flex:0 0 auto;min-width:3.2rem;height:2rem;padding:0 .8rem;border-radius:999px;background:rgba(59,130,246,.08);color:var(--link-hover-color);font-size:.72rem;font-weight:600;display:inline-flex;align-items:center;justify-content:center}
-.notice-popup__state{padding:1rem .25rem .25rem;color:var(--sec-text-color);font-size:.88rem;text-align:center}
-.notice-popup__state--error{color:#dc2626}
-.notice-popup__list{display:grid;gap:.75rem;max-height:430px;overflow:auto;padding-right:.25rem}
-.notice-item{padding:.9rem;border-radius:.75rem;background:rgba(248,250,252,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid rgba(148,163,184,.18);transition:transform .2s,box-shadow .2s,border-color .2s;cursor:pointer}
-.notice-item:hover{transform:translateY(-2px);border-color:rgba(96,165,250,.3);box-shadow:0 8px 20px rgba(15,23,42,.10)}
-.notice-item__top{display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-bottom:.55rem}
-.notice-item__level,.notice-item__type{display:inline-flex;align-items:center;padding:.2rem .55rem;border-radius:999px;font-size:.7rem;white-space:nowrap;line-height:1.4}
-.notice-item__level.is-high{background:rgba(239,68,68,.12);color:#dc2626}
-.notice-item__level.is-medium{background:rgba(245,158,11,.14);color:#d97706}
-.notice-item__level.is-low{background:rgba(34,197,94,.12);color:#16a34a}
-.notice-item__type{background:rgba(59,130,246,.08);color:var(--link-hover-color)}
-.notice-item__title{margin:0 0 .4rem;font-size:.95rem;line-height:1.5;color:var(--post-text-color)}
-.notice-item__content{margin:0;color:var(--sec-text-color);font-size:.86rem;line-height:1.65;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}
-.notice-item__content p{margin:0 0 .35rem}
-/* 公告正文的「圆点条目」段落：每条上方留出明显间距（留多余空间），圆点由 CSS 生成，正文里不用手敲 • */
-.notice-item__content p.notice-bullet{position:relative;padding-left:1.05em;margin-top:.7rem;margin-bottom:0}
-.notice-item__content p.notice-bullet::before{content:'•';position:absolute;left:.12em;top:0;font-weight:700}
-.notice-item__content img{display:block;max-width:100%;height:auto;margin:.4rem 0;border-radius:.5rem}
-.notice-item__content a{color:inherit;text-decoration:underline}
-/* 折叠列表只留两行文字预览，媒体在详情里看（对齐原站效果，line-clamp 的兜底） */
-.notice-popup__list .notice-item__content img,
-.notice-popup__list .notice-item__content video,
-.notice-popup__list .notice-item__content iframe{display:none}
-.notice-item hr{border:none;border-top:1px solid var(--notice-divider);margin:.6rem 0}
-.notice-item__meta,.notice-item__footer{display:flex;flex-wrap:wrap;gap:.35rem .75rem;margin-top:.65rem;font-size:.75rem;color:#64748b}
-.notice-item__footer{align-items:center}
-.notice-item__footer>span{display:inline-flex;align-items:center;gap:.2rem}
-.notice-item__footer span.is-unread{color:#dc2626;font-weight:700}
-.notice-popup__list::-webkit-scrollbar{width:6px}
-.notice-popup__list::-webkit-scrollbar-thumb{background:rgba(148,163,184,.5);border-radius:999px}
-.notice-popup__pager{display:flex;align-items:center;justify-content:space-between;gap:.75rem;margin-top:.85rem;padding-top:.75rem;border-top:1px solid rgba(148,163,184,.18)}
-.notice-popup__pager-btn{min-width:72px;height:1.9rem;padding:0 .85rem;border:1px solid rgba(148,163,184,.25);border-radius:.35rem;background:#fff;color:var(--text-color);font-size:.78rem;cursor:pointer;transition:all .2s}
-.notice-popup__pager-btn:hover:not(:disabled){border-color:rgba(96,165,250,.45);color:var(--link-hover-color)}
-.notice-popup__pager-btn:disabled{cursor:not-allowed;opacity:.5}
-.notice-popup__pager-info{color:var(--sec-text-color);font-size:.78rem}
-
-/* ============ 详情模态框 ============ */
-.notice-detail-overlay{position:fixed;inset:0;z-index:92000;display:none;align-items:center;justify-content:center;padding:1rem;background:rgba(15,23,42,.45);backdrop-filter:blur(4px)}
-.notice-detail-overlay.show{display:flex}
-.notice-detail-modal{width:min(720px,100%);max-height:min(80vh,900px);padding:1.1rem 1.15rem;border-radius:1rem;background:rgba(255,255,255,.98);border:1px solid rgba(148,163,184,.22);box-shadow:0 24px 60px rgba(15,23,42,.30);color:var(--post-text-color);overflow:hidden;display:flex;flex-direction:column;animation:modal-in .22s ease}
-@keyframes modal-in{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
-.notice-detail-modal__header{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:.85rem}
-.notice-detail-modal__title{margin:0;font-size:1.08rem;line-height:1.5}
-.notice-detail-modal__meta{display:flex;flex-wrap:wrap;gap:.35rem .75rem;margin-top:.45rem;font-size:.8rem;color:var(--sec-text-color)}
-.notice-detail-modal__close{border:none;background:transparent;cursor:pointer;font-size:1.7rem;line-height:1;color:var(--sec-text-color)}
-.notice-detail-modal__error{margin-bottom:.85rem;padding:.75rem .85rem;border-radius:.75rem;background:rgba(239,68,68,.08);color:#dc2626;font-size:.86rem}
-.notice-detail-modal__tags{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:.85rem}
-.notice-detail-modal__tag{padding:.2rem .55rem;border-radius:999px;background:rgba(59,130,246,.08);color:var(--link-hover-color);font-size:.74rem}
-.notice-detail-modal__tag.is-high{background:rgba(239,68,68,.12);color:#dc2626}
-.notice-detail-modal__tag.is-medium{background:rgba(245,158,11,.14);color:#d97706}
-.notice-detail-modal__tag.is-low{background:rgba(34,197,94,.12);color:#16a34a}
-.notice-detail-modal__content{flex:1;min-height:0;overflow:auto;color:var(--text-color);font-size:.92rem;line-height:1.75}
-.notice-detail-modal__content img{display:block;max-width:100%;height:auto;margin:.5rem 0;border-radius:.5rem}
-.notice-detail-modal__content p{margin:0 0 .55rem}
-/* 详情页圆点条目：间距比列表预览更大，每条之间明显“留多余空间”，长段落行距放宽便于阅读 */
-.notice-detail-modal__content p.notice-bullet{position:relative;padding-left:1.2em;margin-top:1.05rem;margin-bottom:0;line-height:1.85}
-.notice-detail-modal__content p.notice-bullet::before{content:'•';position:absolute;left:.15em;top:0;font-weight:700;font-size:1.05em}
-.notice-detail-modal__content::-webkit-scrollbar{width:6px}
-.notice-detail-modal__content::-webkit-scrollbar-thumb{background:rgba(148,163,184,.5);border-radius:999px}
-
-/* 弹窗/弹层进出场 */
-.pop-enter{animation:pop-in .2s ease}
-@keyframes pop-in{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
-
-.toast{position:fixed;left:50%;bottom:2.2rem;transform:translateX(-50%) translateY(20px);background:rgba(15,23,42,.9);color:#fff;padding:.6rem 1.1rem;border-radius:.6rem;font-size:.85rem;opacity:0;pointer-events:none;transition:all .25s;z-index:93000}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-/* ============ 响应式（断点同原站） ============ */
-@media (max-width:991px){
-  .nav-notice-popover{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:calc(100vw - 2rem);max-width:320px;min-width:0;z-index:90000}
-  .notice-popup{max-width:none;width:100%;padding:.75rem}
-  .notice-item{padding:.7rem;border-radius:.68rem}
-  .notice-detail-overlay{padding:.5rem}
-  .notice-detail-modal{width:min(720px,calc(100vw - 1rem));max-height:calc(100vh - 1rem);margin:auto;padding:.95rem;border-radius:.9rem}
-}
-@media (max-width:767px){
-  .header-inner{padding:.7rem .8rem}
-  .brand{font-size:1rem}
-  .nav-link{font-size:.8rem;padding:.4rem .45rem}
-  .notice-popup{padding:.65rem;border-radius:.7rem}
-  .notice-detail-overlay{padding:.35rem;align-items:flex-end}
-  .notice-detail-modal{width:100%;max-height:calc(100vh - .7rem);padding:.8rem .8rem .75rem;border-radius:.8rem}
-}
-
-/* ============ 仅电脑端（≥992px）：公告组件改为「半透明玻璃卡片」样式（与主页时钟/一言卡片同款深色毛玻璃） ============
-   注意：本块所有规则都包在 min-width:992px 里，手机端（≤991px）继续使用上面的浅色不透明原样样式，一行都不改动。 */
-@media (min-width:992px){
-  /* —— 公告列表弹层：主卡片深色半透明 + 毛玻璃，壁纸可透过来 —— */
-  .notice-popup{
-    color:#eaf2ff;
-    background:rgba(15,23,42,.42);
-    border:1px solid rgba(255,255,255,.14);
-    box-shadow:0 16px 48px rgba(2,8,23,.45);
-    -webkit-backdrop-filter:blur(18px) saturate(150%);
-    backdrop-filter:blur(18px) saturate(150%);
-  }
-  .notice-popup__header{border-bottom-color:rgba(255,255,255,.12)}
-  .notice-popup__title{color:#fff}
-  .notice-popup__count{background:rgba(96,165,250,.18);color:#bfdbfe}
-  .notice-popup__state{color:rgba(226,232,240,.65)}
-  .notice-popup__state--error{color:#fca5a5}
-  /* —— 每条公告：弹层内的半透明子卡片 —— */
-  .notice-item{
-    background:rgba(255,255,255,.08);
-    border:1px solid rgba(255,255,255,.10);
-    -webkit-backdrop-filter:blur(8px);
-    backdrop-filter:blur(8px);
-  }
-  .notice-item:hover{background:rgba(255,255,255,.14);border-color:rgba(96,165,250,.45);box-shadow:0 10px 28px rgba(2,8,23,.35)}
-  .notice-item__title{color:#fff}
-  .notice-item__content{color:rgba(231,238,250,.82)}
-  .notice-item hr{border-top-color:rgba(255,255,255,.10)}
-  .notice-item__meta,.notice-item__footer{color:rgba(226,232,240,.62)}
-  .notice-item__footer span.is-unread{color:#fca5a5}
-  /* 等级 / 类型标签：换成深底上可读的浅色 */
-  .notice-item__level.is-high{background:rgba(248,113,113,.16);color:#fca5a5}
-  .notice-item__level.is-medium{background:rgba(251,191,36,.16);color:#fcd34d}
-  .notice-item__level.is-low{background:rgba(74,222,128,.16);color:#86efac}
-  .notice-item__type{background:rgba(96,165,250,.18);color:#bfdbfe}
-  /* —— 分页条 —— */
-  .notice-popup__pager{border-top-color:rgba(255,255,255,.12)}
-  .notice-popup__pager-info{color:rgba(226,232,240,.65)}
-  .notice-popup__pager-btn{background:rgba(255,255,255,.10);border-color:rgba(255,255,255,.20);color:#eaf2ff}
-  .notice-popup__pager-btn:hover:not(:disabled){background:rgba(255,255,255,.18);border-color:rgba(96,165,250,.55);color:#fff}
-  .notice-popup__list::-webkit-scrollbar-thumb{background:rgba(255,255,255,.28);border-radius:999px}
-
-  /* —— 公告详情：半透明玻璃大卡片 —— */
-  .notice-detail-overlay{background:rgba(8,15,28,.40);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
-  .notice-detail-modal{
-    color:#eaf2ff;
-    background:rgba(15,23,42,.55);
-    border:1px solid rgba(255,255,255,.14);
-    box-shadow:0 28px 70px rgba(2,8,23,.55);
-    -webkit-backdrop-filter:blur(26px) saturate(150%);
-    backdrop-filter:blur(26px) saturate(150%);
-  }
-  .notice-detail-modal__title{color:#fff}
-  .notice-detail-modal__meta{color:rgba(226,232,240,.62)}
-  .notice-detail-modal__close{color:rgba(226,232,240,.7)}
-  .notice-detail-modal__close:hover{color:#fff}
-  .notice-detail-modal__content{color:rgba(231,238,250,.85)}
-  .notice-detail-modal__error{background:rgba(248,113,113,.14);color:#fca5a5}
-  .notice-detail-modal__tag{background:rgba(96,165,250,.18);color:#bfdbfe}
-  .notice-detail-modal__tag.is-high{background:rgba(248,113,113,.16);color:#fca5a5}
-  .notice-detail-modal__tag.is-medium{background:rgba(251,191,36,.16);color:#fcd34d}
-  .notice-detail-modal__tag.is-low{background:rgba(74,222,128,.16);color:#86efac}
-  .notice-detail-modal__content::-webkit-scrollbar-thumb{background:rgba(255,255,255,.28);border-radius:999px}
-}
-
-/* ==================== 公告通知组件样式 END ==================== */
     </style>
 </head>
 <body class="pre-blur">
@@ -964,21 +737,6 @@ body.capsule-open .notice-detail-overlay{display:none !important;}
                 </div>
             </div>
 
-
-            <!-- ===== 公告通知入口（原版「公告组件.html」并入；电脑端在“关于我/网站列表”框上方，手机端在社交栏与汉堡键之间） ===== -->
-            <div class="nav-item nav-notice-item">
-                <button class="nav-notice-trigger" id="noticeTrigger" type="button" aria-label="公告">
-                    <!-- 原版代码绘制的「文档/列表」公告图标（白色页面 + 三条横线） -->
-                    <svg class="nav-notice-trigger__icon" id="noticeBell" viewBox="0 0 24 24" aria-hidden="true">
-                        <rect x="4" y="3" width="16" height="18" rx="2.6" fill="#ffffff"/>
-                        <rect x="8" y="8.3" width="8" height="1.8" rx=".9" fill="#28424c"/>
-                        <rect x="8" y="12.1" width="8" height="1.8" rx=".9" fill="#28424c"/>
-                        <rect x="8" y="15.9" width="5.4" height="1.8" rx=".9" fill="#28424c"/>
-                    </svg>
-                    <span class="notice-trigger-text">公告</span>
-                </button>
-            </div>
-
             <div class="nav-group-cards">
                 <div class="nav-title">
                     <svg style="width:1em;height:1em;fill:currentColor;vertical-align:-0.125em;" viewBox="0 0 512 512">
@@ -1088,18 +846,6 @@ body.capsule-open .notice-detail-overlay{display:none !important;}
         <i class="fa-solid fa-xmark icon-close"></i>
     </div>
     <!-- 卡片全屏弹层：站内页面在 iframe 内打开，主页常驻不卸载、音乐不中断；站外链接由 __go 新标签打开，同样不卸载主页 -->
-
-    <!-- ===== 公告：系统通知列表弹层（固定屏幕正中央，内容由原版 JS 渲染） ===== -->
-    <div class="nav-notice-popover" id="noticePopover" hidden></div>
-    <!-- ===== 公告详情模态框（原版） ===== -->
-    <div class="notice-detail-overlay" id="detailOverlay">
-        <div class="notice-detail-modal" id="detailModal"></div>
-    </div>
-    <!-- 轻提示（原版分页演示用） -->
-    <div class="toast" id="toast"></div>
-    <!-- 静态占位：供脚本扫描公告图片地址，实际内容由 JS 引用其 src（原版保留） -->
-    <img hidden id="tplNoticeImg" src="https://iili.io/nfVZBTP.webp" alt="壁纸bg.jpg">
-
     <div id="cardFrameMask">
         <iframe id="cardFrame" title="card" referrerpolicy="no-referrer"></iframe>
     </div>
@@ -2489,161 +2235,6 @@ body.capsule-open .notice-detail-overlay{display:none !important;}
             } catch (e) {}
         });
     })();
-    </script>
-
-    <!-- ================== 公告通知组件脚本（原版「公告组件.html」逐字并入） ================== -->
-    <script>
-(function(){
-  "use strict";
-  var READ_KEY='notice_read_ids';
-
-  /* ===== 内置数据（模拟 GET /api/notice/list 的真实返回） ===== */
-  var NOTICE_IMG=document.getElementById('tplNoticeImg').src;
-  var MOCK={
-    total:'1',
-    rows:[{
-      id:'1',
-      title:'开发完成，进入全面测试阶段',
-      content:'<p>现在大体都开发完成了，接下来进入全面测试阶段，主要任务就是测试和找 Bug。</p>'+
-               '<p class="notice-bullet">测试期间如果遇到 Bug、页面显示异常，或者有好的建议，欢迎通过社交栏的 QQ 给我留言，也可以到 Github 仓库提 Issue，感谢大家帮忙踩坑～</p>'+
-               '<p class="notice-bullet">本次新增了时光胶囊、音乐播放器、公告通知等功能，欢迎多多体验；测试阶段功能可能随时调整，若遇到显示异常，可尝试强制刷新（电脑端 Ctrl + F5）清除缓存。</p>'+
-               '<p class="notice-bullet">天气组件基于高德 IP 定位，需要在 WiFi / 宽带网络下使用；手机流量或部分公共 WiFi（如校园网）的出口 IP 无法被高德识别时，会提示“天气信息获取失败”，这属于网络环境限制、并非代码问题，切换网络后即可恢复。</p>'+
-               '<p><img src="'+NOTICE_IMG+'" alt="壁纸bg.jpg" style="width:375px;max-width:100%;height:auto;margin-top:.9rem;"></p>',
-      type:2, level:'L', isRead:'0', targetType:'1', targetName:'',
-      publisherName:'执笔写修', publishTime:'2026-09-10 15:28:40'
-    }]
-  };
-  var PAGE_SIZE=5, page=1;
-  var list=MOCK.rows.slice();
-
-  /* ===== 字典 ===== */
-  function typeText(t){return {1:'站点公告',2:'系统通知',3:'功能更新',4:'活动通知',5:'其他通知'}[Number(t)]||'其他通知';}
-  function levelText(l){var v=String(l||'').toUpperCase();if(v==='H'||v==='HIGH')return'重要';if(v==='M'||v==='MEDIUM')return'提醒';return'普通';}
-  function levelClass(l){var v=String(l||'').toUpperCase();if(v==='H'||v==='HIGH')return'is-high';if(v==='M'||v==='MEDIUM')return'is-medium';return'is-low';}
-  function targetText(n){if(Array.isArray(n))return n.filter(Boolean).join('、')||'全体用户';return String(n||'').trim()||'全体用户';}
-
-  /* ===== 已读：localStorage ===== */
-  function getReadIds(){try{var a=JSON.parse(localStorage.getItem(READ_KEY)||'[]');return Array.isArray(a)?a.map(String):[];}catch(e){return[];}}
-  function isRead(id){return getReadIds().indexOf(String(id))>-1;}
-  function markRead(id){var a=getReadIds(),s=String(id);if(a.indexOf(s)<0){a.push(s);localStorage.setItem(READ_KEY,JSON.stringify(a));}}
-  function effectiveRead(item){return String(item.isRead)==='1'||isRead(item.id)?'1':'0';}
-
-  /* ===== DOM 引用 ===== */
-  var trigger=document.getElementById('noticeTrigger');
-  var bell=document.getElementById('noticeBell');
-  var popover=document.getElementById('noticePopover');
-  var overlay=document.getElementById('detailOverlay');
-  var modal=document.getElementById('detailModal');
-  var toastEl=document.getElementById('toast');
-  var toastTimer=null;
-  function toast(msg){toastEl.textContent=msg;toastEl.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(function(){toastEl.classList.remove('show');},1600);}
-
-  function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-
-  /* ===== 渲染弹窗列表 ===== */
-  function renderPopup(){
-    var total=Number(MOCK.total||0);
-    var totalPages=Math.max(1,Math.ceil(total/PAGE_SIZE));
-    var html='<aside class="notice-popup pop-enter">'
-      +'<div class="notice-popup__header"><div><h3 class="notice-popup__title">系统通知</h3></div>'
-      +'<span class="notice-popup__count">'+total+' 条</span></div>';
-    if(!list.length){
-      html+='<div class="notice-popup__state">暂无公告</div>';
-    }else{
-      html+='<div class="notice-popup__list">';
-      list.forEach(function(item){
-        var read=effectiveRead(item);
-        html+='<article class="notice-item" role="button" tabindex="0" data-id="'+esc(item.id)+'">'
-          +'<div class="notice-item__top">'
-          +'<span class="notice-item__level '+levelClass(item.level)+'">'+levelText(item.level)+'</span>'
-          +'<span class="notice-item__type">'+typeText(item.type)+'</span></div>'
-          +'<h4 class="notice-item__title">'+esc(item.title)+'</h4>'
-          +'<div class="notice-item__content">'+item.content+'</div><hr>'
-          +'<div class="notice-item__meta"><span>发布人：'+esc(item.publisherName||'-')+'</span>'
-          +'<span>发布时间：'+esc(item.publishTime||'-')+'</span></div>'
-          +'<div class="notice-item__footer"><span> 读取状态： '
-          +'<span class="'+(read!=='1'?'is-unread':'')+'">'+(read==='1'?'已读':'未读')+'</span></span>'
-          +'<span>接收人：'+targetText(item.targetName)+'</span></div>'
-          +'</article>';
-      });
-      html+='</div>';
-    }
-    if(total>PAGE_SIZE){
-      html+='<div class="notice-popup__pager">'
-        +'<button class="notice-popup__pager-btn" data-page="prev" '+(page<=1?'disabled':'')+'>上一页</button>'
-        +'<span class="notice-popup__pager-info">'+page+' / '+totalPages+'</span>'
-        +'<button class="notice-popup__pager-btn" data-page="next" '+(page>=totalPages?'disabled':'')+'>下一页</button></div>';
-    }
-    html+='</aside>';
-    popover.innerHTML=html;
-  }
-
-  /* ===== 渲染详情 ===== */
-  function renderDetail(item){
-    modal.innerHTML=
-      '<div class="notice-detail-modal__header"><div>'
-      +'<h3 class="notice-detail-modal__title">'+esc(item.title)+'</h3>'
-      +'<div class="notice-detail-modal__meta"><span>发布人：'+esc(item.publisherName||'-')+'</span>'
-      +'<span>发布时间：'+esc(item.publishTime||'-')+'</span></div></div>'
-      +'<button class="notice-detail-modal__close" id="detailClose" type="button">&times;</button></div>'
-      +'<div class="notice-detail-modal__tags">'
-      +'<span class="notice-detail-modal__tag">'+typeText(item.type)+'</span>'
-      +'<span class="notice-detail-modal__tag '+levelClass(item.level)+'">'+levelText(item.level)+'</span>'
-      +'<span class="notice-detail-modal__tag">接收类型：'+(String(item.targetType)==='2'?'指定':'全体')+'</span>'
-      +'<span class="notice-detail-modal__tag">接收人：'+targetText(item.targetName)+'</span></div>'
-      +'<div class="notice-detail-modal__content">'+item.content+'</div>';
-    document.getElementById('detailClose').addEventListener('click',closeDetail);
-  }
-
-  /* ===== 开关逻辑 ===== */
-  function openPopup(){popover.hidden=false;renderPopup();updateShake();}
-  function closePopup(){popover.hidden=true;}
-  function togglePopup(){popover.hidden?openPopup():closePopup();}
-  function openDetail(item){
-    markRead(item.id);
-    var t=list.find(function(x){return String(x.id)===String(item.id);});if(t)t.isRead='1';
-    renderDetail(item);
-    overlay.classList.add('show');
-    renderPopup();           // 同步列表已读状态（供下次打开时展示）
-    closePopup();            // 点开公告后收起「系统通知」列表弹层，只保留详情卡片
-    updateShake();           // 全部已读后停止摇动
-  }
-  function closeDetail(){overlay.classList.remove('show');}
-  function hasUnread(){return list.some(function(x){return effectiveRead(x)!=='1';});}
-
-  /* ===== 图标摇动：有未读就加 is-shaking（CSS 无限循环），全部已读则移除 ===== */
-  function updateShake(){bell.classList.toggle('is-shaking',hasUnread());}
-
-  /* ===== 事件绑定 ===== */
-  trigger.addEventListener('click',function(e){e.stopPropagation();togglePopup();});
-  popover.addEventListener('click',function(e){e.stopPropagation();
-    var art=e.target.closest('.notice-item');
-    if(art){var item=list.find(function(x){return String(x.id)===String(art.dataset.id);});if(item)openDetail(item);}
-    var btn=e.target.closest('[data-page]');
-    if(btn&&!btn.disabled){toast('演示数据仅 1 条，无更多页');}
-  });
-  // 键盘可达性：卡片标了 role=button、tabindex=0，就必须响应 Enter / 空格，否则键盘用户打不开详情
-  popover.addEventListener('keydown',function(e){
-    if(e.key!=='Enter'&&e.key!==' '&&e.keyCode!==32)return;
-    var art=e.target.closest&&e.target.closest('.notice-item');
-    if(!art)return;
-    e.preventDefault();
-    var item=list.find(function(x){return String(x.id)===String(art.dataset.id);});
-    if(item)openDetail(item);
-  });
-  overlay.addEventListener('click',function(e){if(e.target===overlay)closeDetail();});
-  document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeDetail();closePopup();}});
-  document.addEventListener('click',function(e){
-    if(!e.target.closest('.nav-notice-item')&&!e.target.closest('#noticePopover'))closePopup();
-  });
-
-  /* ===== 初始化：未读即开始摇动提醒 =====
-     演示文件：每次打开先清掉历史已读记录，保证一进来就是未读、能看到摇动。
-     接真实后端时删掉下面 removeItem 这行，已读状态由后端 isRead 决定即可。 */
-  localStorage.removeItem(READ_KEY);
-  list.forEach(function(x){x.isRead=effectiveRead(x);});
-  updateShake();
-})();
     </script>
 </body>
 </html>
