@@ -662,12 +662,23 @@
 
         /* —— 手机端（≤768px）：列表面板铺满留边；详情改为底部弹层；toast 抬高避开版权条/菜单钮 —— */
         @media (max-width: 768px) {
-            .notice-popup { max-width: none; padding: .7rem; }
-            .notice-item { padding: .7rem; border-radius: .68rem; }
-            .notice-detail-overlay { padding: .35rem; align-items: flex-end; }
-            .notice-detail-modal { width: 100%; max-height: calc(100vh - .7rem); padding: .85rem .85rem .8rem; border-radius: .85rem; }
-            .toast { bottom: 7.8rem; }
-        }
+               .notice-popup { max-width: none; padding: .7rem; }
+               .notice-item { padding: .7rem; border-radius: .68rem; }
+
+        .notice-detail-overlay {
+                padding: .35rem .35rem 1.5rem;
+                align-items: flex-end;
+      }
+
+       .notice-detail-modal {
+                width: 100%;
+                max-height: calc(100vh - 1.85rem);
+                padding: .85rem .85rem .8rem;
+                border-radius: .85rem;
+      }
+
+         .toast { bottom: 7.8rem; }
+  }
 
     </style>
 </head>
