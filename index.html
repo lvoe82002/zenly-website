@@ -216,6 +216,24 @@
         .nav-btn:hover { background: rgba(255, 255, 255, 0.15); transform: translateY(-4px); }
         .nav-btn i { font-size: 22px; margin-bottom: 6px; }
         .nav-btn span { font-size: 14px; font-weight: 600; }
+        /* ===== 网站列表分页：第 1 页常驻撑住框大小，其余页叠在同一位置切换，底部横线指示器固定不动 ===== */
+        .nav-pages { position: relative; }
+        .nav-page { transition: opacity .35s ease, transform .35s ease; }
+        /* 第 2 页及以后：绝对定位叠在第 1 页同一位置，默认隐藏并停在右侧 */
+        .nav-page + .nav-page { position: absolute; inset: 0; opacity: 0; visibility: hidden; pointer-events: none; transform: translateX(32px); }
+        .nav-page + .nav-page.is-active { opacity: 1; visibility: visible; pointer-events: auto; transform: none; }
+        /* 翻到后面页时，第 1 页仍占位（保证框大小、分页器位置不变），只是视觉上向左淡出 */
+        .nav-pages:not(.at-first) > .nav-page:first-child { opacity: 0; visibility: hidden; pointer-events: none; transform: translateX(-32px); }
+        .nav-pager { display: flex; justify-content: center; gap: 8px; margin-top: 12px; }
+        .nav-dot { border: 0; padding: 0; width: 18px; height: 4px; border-radius: 2px; background: rgba(255,255,255,.28); cursor: pointer; transition: width .3s ease, background .3s ease, opacity .2s ease; }
+        .nav-dot:hover { opacity: .85; }
+        .nav-dot.is-active { width: 30px; background: #fff; cursor: default; }
+        /* 电脑端第二排按钮为悬浮定位，给第 1 页留出第二排高度，避免被裁、并让分页器停在两排按钮正下方 */
+        @media (min-width: 769px) {    .nav-pages > .nav-page:nth-child(2) .nav-buttons { transform: translateX(-190px); }}
+        @media (min-width: 769px) { .nav-pages > .nav-page:first-child { padding-bottom: 90px; } }
+        @media (min-width: 769px) and (max-width: 1024px) { .nav-pages > .nav-page:first-child { padding-bottom: 80px; } }
+        /* 手机端让分页容器占满宽度，按钮网格（1fr）才不会被挤小 */
+        @media (max-width: 768px) { .nav-pages { width: 100%; } }
 
         .social { display: flex; justify-content: flex-start; align-items: center; margin-bottom: 10px; margin-top: -90px; width: 100%; padding-left: 19%; }
         .link-bar { display: flex; align-items: center; gap: 1px; background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none; box-shadow: none; border-radius: 6px; padding: 3px 1px; white-space: nowrap; width: 510px; max-width: 510px; min-width: 510px; flex-shrink: 0; margin-top: -23px; position: relative; transition: background 0.35s ease, box-shadow 0.35s ease; }
@@ -586,7 +604,7 @@
 
         /* —— 公告入口按钮：手机端使用深色毛玻璃；电脑端在下方媒体查询中恢复原组件的无底框样式 —— */
         .nav-notice-trigger {
-            width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+            width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 2px;
             cursor: pointer; font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
             color: #fff; white-space: nowrap;
             background: rgba(50, 50, 50, 0.4);
@@ -621,7 +639,7 @@
             .nav-buttons > a.nav-btn:nth-of-type(4) { grid-column: 4; grid-row: 1; }
             #noticeMountDesktop {
                 grid-column: 2; grid-row: 1; align-self: start; justify-self: stretch; display: flex; min-width: 0;
-                transform: translateY(calc(-100% - 12px)); z-index: 12; pointer-events: auto;
+                transform: translate(285px, calc(-100% - 13px)); z-index: 12; pointer-events: auto;
             }
             .nav-notice-trigger {
                 height: 46px; font-size: 14px; font-weight: 600;
@@ -1006,6 +1024,8 @@
                     </svg>
                     <span>网站列表</span>
                 </div>
+                <div class="nav-pages at-first">
+                <div class="nav-page is-active">
                 <div class="nav-buttons">
                     <!-- 电脑端公告入口挂载点：与「播放器架构」同占第 2 列、悬于其正上方（手机端入口由脚本迁移到社交栏下方） -->
                     <div id="noticeMountDesktop">
@@ -1035,6 +1055,18 @@
                     <a href="https://gitee.com/write-and-repair/termux-rc" target="_blank" rel="noopener noreferrer" class="nav-btn"><svg style="width:22px;height:22px;fill:currentColor;" viewBox="0 0 24 24"><path d="M11.984 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.016 0zm6.09 5.333c.328 0 .593.266.592.593v1.482a.594.594 0 0 1-.593.592H9.777c-.982 0-1.778.796-1.778 1.778v5.63c0 .327.266.592.593.592h5.63c.982 0 1.778-.796 1.778-1.778v-.296a.593.593 0 0 0-.592-.593h-4.15a.592.592 0 0 1-.592-.592v-1.482a.593.593 0 0 1 .593-.592h6.815c.327 0 .593.265.593.592v3.408a4 4 0 0 1-4 4H5.926a.593.593 0 0 1-.593-.593V9.778a4.444 4.444 0 0 1 4.445-4.444h8.296Z"></path></svg><span>Gitee</span></a>
                     <a href="https://raw.githubusercontent.com/lvoe82002/zenly-website/main/index.html" target="_blank" rel="noopener noreferrer" class="nav-btn"><i class="fa-solid fa-code"></i><span>源码</span></a>
                     <a href="javascript:void(0)" class="nav-btn" onclick="window.__goHome && window.__goHome();"><i class="fa-regular fa-compass"></i><span>起始页</span></a>
+                </div>
+                </div>
+            </div>
+                <!-- 第 2 页：以后要加新网站，把下面这个占位框复制一份、改成你的链接/图标/名字即可；也可以把名字和链接发我帮你加 -->
+                <div class="nav-page">
+                    <div class="nav-buttons">
+                        <a href="https://zenlydsp-status.pages.dev/" target="_blank" rel="noopener noreferrer" class="nav-btn"><i class="fa-solid fa-laptop-code"></i><span>站点监测</span></a>
+                    </div>
+                </div>
+                <div class="nav-pager">
+                    <button type="button" class="nav-dot is-active" aria-label="第 1 页"></button>
+                    <button type="button" class="nav-dot" aria-label="第 2 页"></button>
                 </div>
                 </div>
             </div>
@@ -2604,7 +2636,8 @@
           title:'开发完成，进入全面测试阶段',
           content:'<p>现在大体都开发完成了，接下来进入全面测试阶段，主要任务就是测试和找 Bug</p>'+
                    '<p class="notice-bullet">测试期间如果遇到 Bug、页面显示异常，或者有好的建议，欢迎通过社交栏的 QQ 给我留言，也可以到 Github 仓库提 Issue，感谢大家帮忙踩坑～</p>'+
-                   '<p class="notice-bullet">本次新增了时光胶囊、音乐播放器、公告通知等功能，欢迎多多体验；测试阶段功能可能随时调整，若遇到显示异常，可尝试强制刷新（电脑端 Ctrl + F5）清除缓存。</p>'+
+                   '<p class="notice-bullet">本次新增了站点监测、公告通知等功能，欢迎多多体验；测试阶段功能可能随时调整，若遇到显示异常，可尝试强制刷新（电脑端 Ctrl + F5）清除缓存。</p>'+
+                   '<p class="notice-bullet">站点监测功能现已全面开放使用，会定时探测主页、壁纸API、天气API的连通情况，实时展示各项服务可用状态。当服务连续探测失败，系统自动推送邮件告警，以便及时处理故障。</p>'+
                    '<p class="notice-bullet">天气API接口基于高德 IP 定位，需要在 WiFi / 宽带网络下使用；每月5000API配额天气流量包，手机流量或部分公共 WiFi（如校园网）的出口 IP 无法被高德识别时，会提示“天气信息获取失败”，这属于网络环境限制、并非代码问题，切换其它WiFi网络后即可恢复。</p>'+
                    '<p><img src="'+NOTICE_IMG+'" alt="壁纸bg.jpg" style="width:375px;max-width:100%;height:auto;margin-top:.9rem;"></p>',
           type:2, level:'L', isRead:'0', targetType:'1', targetName:'',
@@ -2741,6 +2774,48 @@
       localStorage.removeItem(READ_KEY);
       list.forEach(function(x){x.isRead=effectiveRead(x);});
       updateShake();
+    })();
+    </script>
+    <script>
+    /* ===== 网站列表分页：点击底部横线、或手机左右滑动 / 电脑鼠标左右拖动来翻页 ===== */
+    (function () {
+      function init() {
+        var root = document.querySelector('.nav-pages');
+        if (!root) return;
+        var pages = root.querySelectorAll('.nav-page');
+        var pager = document.querySelector('.nav-pager');
+        var dots = pager ? pager.querySelectorAll('.nav-dot') : [];
+        var idx = 0;
+        function go(n) {
+          n = Math.max(0, Math.min(pages.length - 1, n));
+          if (n === idx) return;
+          pages.forEach(function (p, i) {
+            p.classList.toggle('is-active', i === n);
+          });
+          dots.forEach(function (d, i) { d.classList.toggle('is-active', i === n); });
+          root.classList.toggle('at-first', n === 0);
+          idx = n;
+        }
+        dots.forEach(function (d, i) { d.addEventListener('click', function () { go(i); }); });
+        /* 手机左右滑动 */
+        var sx = 0, sy = 0, tracking = false;
+        root.addEventListener('touchstart', function (e) { sx = e.touches[0].clientX; sy = e.touches[0].clientY; tracking = true; }, { passive: true });
+        root.addEventListener('touchend', function (e) {
+          if (!tracking) return; tracking = false;
+          var t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy;
+          if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) go(idx + (dx < 0 ? 1 : -1));
+        }, { passive: true });
+        /* 电脑鼠标左右拖动翻页（普通点击按钮不受影响） */
+        var mx = 0, down = false;
+        root.addEventListener('mousedown', function (e) { down = true; mx = e.clientX; });
+        window.addEventListener('mouseup', function (e) {
+          if (!down) return; down = false;
+          var dx = e.clientX - mx;
+          if (Math.abs(dx) > 60) go(idx + (dx < 0 ? 1 : -1));
+        });
+      }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+      else init();
     })();
     </script>
 </body>
