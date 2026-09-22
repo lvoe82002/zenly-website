@@ -165,7 +165,7 @@
         .settings-content-box { max-height: 600px; overflow: hidden; transition: max-height 0.35s ease, opacity 0.3s ease, padding 0.35s ease, margin-bottom 0.35s ease, border-color 0.35s ease; }
         .settings-item.collapsed .settings-toggle-icon { transform: rotate(-90deg); }
         .settings-item.collapsed .settings-content-box { max-height: 0 !important; opacity: 0; padding-top: 0 !important; padding-bottom: 0 !important; margin-bottom: 0 !important; border-color: transparent; }
-        /* 版权中的 imsyy 跳转链接（PC + 手机端通用） */
+        /* 版权中的 zenlydsp 跳转链接（PC + 手机端通用） */
         .copyright-link { color: #fff; text-decoration: none; text-underline-offset: 2px; transition: opacity 0.2s ease; }
 
         .copyright-link:hover { opacity: 0.7; }
@@ -1147,7 +1147,7 @@
         </div>
 
         <div class="copyright-bar">
-            <span class="copyright-text">Copyright © 2026 小阿修 & Made by <a class="copyright-link" href="https://github.com/lvoe82002/zenly-website" target="_blank" rel="noopener noreferrer">imsyy</a></span>
+            <span class="copyright-text">Copyright © 2026 小阿修 & Made by <a class="copyright-link" href="https://github.com/lvoe82002/zenly-website" target="_blank" rel="noopener noreferrer">zenlydsp</a></span>
         </div>
     </div>
 
@@ -2202,7 +2202,7 @@
                 if (r.bottom > maxBottom) maxBottom = r.bottom;
             });
             // 视觉中心相对视口几何中心的上移量：按 F11 全屏后内容看着略偏下，整体再抬高一点（只影响电脑端布局）
-            var centerLift = 40;
+            var centerLift = 18;
             var centerFit = bottomFit;
             if (minTop !== Infinity) {
                 var visualCenterOffset = (minTop + maxBottom) / 2 - wrapperRect.top;
