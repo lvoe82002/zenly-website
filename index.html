@@ -476,41 +476,41 @@
         }
         .music-modal-close:hover { color: #fff; background: rgba(255,255,255,.1); }
         .music-modal .music-player-card {
-            background: rgba(15,23,42,.58); backdrop-filter: blur(26px) saturate(1.45); -webkit-backdrop-filter: blur(26px) saturate(1.45);
+            background: rgba(15,23,42,.35); backdrop-filter: blur(30px) saturate(1.5); -webkit-backdrop-filter: blur(30px) saturate(1.5);
             border-radius: 14px; border: 1px solid rgba(255,255,255,.16); box-shadow: 0 24px 70px rgba(0,0,0,.45);
             overflow: hidden; width: 100%; margin: 0;
         }
-        .music-modal .card-header { padding: 13px 48px 13px 16px; border-bottom: 1px solid rgba(255,255,255,.1); font-weight: 600; font-size: 15px; display: flex; align-items: center; gap: 8px; color: #fff; }
+        .music-modal .card-header { padding: 17px 50px 15px 18px; border-bottom: 1px solid rgba(255,255,255,.1); font-weight: 600; font-size: 16px; display: flex; align-items: center; gap: 8px; color: #fff; }
         .music-modal .card-header .head-icon { display: inline-flex; align-items: center; color: #fff; }
         .music-modal .card-header .head-icon svg { width: 24px; height: 24px; display: block; }
         .music-modal .netease-svg { display: block; flex-shrink: 0; }
-        .music-modal .card-body { padding: 0 16px 14px; }
-        .music-modal .cd-section { display: flex; justify-content: center; margin-bottom: 8px; padding-top: 16px; }
-        .music-modal .cd-disc { width: 86px; height: 86px; border-radius: 50%; background-color: #2a2a2a; background-image: conic-gradient(from 0deg,#2a2a2a,#3a3a3a,#2a2a2a,#444,#2a2a2a,#3a3a3a,#2a2a2a,#444,#2a2a2a,#3a3a3a,#2a2a2a,#444,#2a2a2a 360deg); background-size: cover; background-position: center; box-shadow: 0 2px 14px rgba(0,0,0,.4); position: relative; transition: box-shadow .4s ease; }
+        .music-modal .card-body { padding: 0 18px 20px; }
+        .music-modal .cd-section { display: flex; justify-content: center; margin-bottom: 14px; padding-top: 22px; }
+        .music-modal .cd-disc { width: 108px; height: 108px; border-radius: 50%; background-color: #2a2a2a; background-image: conic-gradient(from 0deg,#2a2a2a,#3a3a3a,#2a2a2a,#444,#2a2a2a,#3a3a3a,#2a2a2a,#444,#2a2a2a,#3a3a3a,#2a2a2a,#444,#2a2a2a 360deg); background-size: cover; background-position: center; box-shadow: 0 2px 14px rgba(0,0,0,.4); position: relative; transition: box-shadow .4s ease; }
         .music-modal .cd-disc.spinning { animation: music-spin 8s linear infinite; box-shadow: 0 0 22px rgba(73,177,245,.28); }
-        .music-modal .cd-center-hole { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 16px; height: 16px; border-radius: 50%; background: radial-gradient(circle at 40% 35%,#666,#1a1a1a 80%); box-shadow: inset 0 2px 6px rgba(0,0,0,.6),0 0 0 2px rgba(255,255,255,.08); z-index: 2; }
+        .music-modal .cd-center-hole { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 20px; height: 20px; border-radius: 50%; background: radial-gradient(circle at 40% 35%,#666,#1a1a1a 80%); box-shadow: inset 0 2px 6px rgba(0,0,0,.6),0 0 0 2px rgba(255,255,255,.08); z-index: 2; }
         .music-modal .wave-ring { position: absolute; inset: -6px; border-radius: 50%; border: 2px solid transparent; border-top-color: #49b1f5; border-right-color: #49b1f5; opacity: 0; transition: opacity .4s ease; z-index: 1; box-shadow: 0 0 15px rgba(73,177,245,.15); }
         .music-modal .wave-ring.playing { opacity: 1; animation: music-spin 1.2s linear infinite; }
-        .music-modal .track-info { text-align: center; margin-bottom: 8px; }
-        .music-modal .track-info .title { display: block; font-weight: 600; font-size: 15px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .music-modal .track-info .artist { display: block; font-size: 12px; color: rgba(255,255,255,.62); margin-top: 2px; }
-        .music-modal .progress-area { margin-bottom: 10px; padding: 0 2px; display: flex; align-items: center; }
+        .music-modal .track-info { text-align: center; margin-bottom: 12px; }
+        .music-modal .track-info .title { display: block; font-weight: 600; font-size: 17px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .music-modal .track-info .artist { display: block; font-size: 13px; color: rgba(255,255,255,.62); margin-top: 3px; }
+        .music-modal .progress-area { margin-bottom: 14px; padding: 0 2px; display: flex; align-items: center; }
         .music-modal .progress-area input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 2px; background: rgba(255,255,255,.25); border-radius: 2px; outline: none; cursor: pointer; }
-        .music-modal .progress-area input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 9px; height: 9px; border-radius: 50%; background: #fff; border: 2px solid #49b1f5; }
-        .music-modal .progress-area input[type=range]::-moz-range-thumb { width: 9px; height: 9px; border-radius: 50%; background: #fff; border: 2px solid #49b1f5; }
-        .music-modal .controls-area { display: flex; justify-content: center; align-items: center; gap: 12px; margin-bottom: 10px; }
-        .music-modal .controls-area button { background: transparent; border: none; color: rgba(255,255,255,.78); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 2px; border-radius: 50%; transition: all .2s; width: 32px; height: 32px; font-size: 15px; }
+        .music-modal .progress-area input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 11px; height: 11px; border-radius: 50%; background: #fff; border: 2px solid #49b1f5; }
+        .music-modal .progress-area input[type=range]::-moz-range-thumb { width: 11px; height: 11px; border-radius: 50%; background: #fff; border: 2px solid #49b1f5; }
+        .music-modal .controls-area { display: flex; justify-content: center; align-items: center; gap: 14px; margin-bottom: 14px; }
+        .music-modal .controls-area button { background: transparent; border: none; color: rgba(255,255,255,.78); cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 2px; border-radius: 50%; transition: all .2s; width: 38px; height: 38px; font-size: 16px; }
         .music-modal .controls-area button:hover { background: rgba(73,177,245,.18); color: #49b1f5; }
-        .music-modal .controls-area button.play-btn { background: #49b1f5; color: #fff; width: 40px; height: 40px; }
+        .music-modal .controls-area button.play-btn { background: #49b1f5; color: #fff; width: 48px; height: 48px; }
         .music-modal .controls-area button.play-btn:hover { background: #3a9bd9; transform: scale(1.05); }
-        .music-modal .playlist-collapse { max-height: 180px; overflow-y: auto; border-top: 1px solid rgba(255,255,255,.1); padding-top: 8px; }
+        .music-modal .playlist-collapse { max-height: 280px; overflow-y: auto; border-top: 1px solid rgba(255,255,255,.1); padding-top: 12px; }
         .music-modal .playlist-collapse::-webkit-scrollbar { width: 3px; }
         .music-modal .playlist-collapse::-webkit-scrollbar-thumb { background: rgba(255,255,255,.3); border-radius: 4px; }
-        .music-modal .playlist-item { display: flex; align-items: center; gap: 8px; padding: 5px 7px; border-radius: 6px; cursor: pointer; transition: background .15s; font-size: 12px; color: rgba(255,255,255,.72); }
+        .music-modal .playlist-item { display: flex; align-items: center; gap: 8px; padding: 8px 9px; border-radius: 6px; cursor: pointer; transition: background .15s; font-size: 13px; color: rgba(255,255,255,.72); }
         .music-modal .playlist-item:hover { background: rgba(255,255,255,.08); }
         .music-modal .playlist-item.active { background: rgba(73,177,245,.18); color: #49b1f5; }
         .music-modal .playlist-item.active .index { color: #49b1f5; font-weight: 600; }
-        .music-modal .playlist-item .index { opacity: .55; min-width: 22px; font-size: 10px; font-variant-numeric: tabular-nums; }
+        .music-modal .playlist-item .index { opacity: .55; min-width: 26px; font-size: 11px; font-variant-numeric: tabular-nums; }
         .music-modal .playlist-item .t { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         @keyframes music-spin { from { transform: rotate(0); } to { transform: rotate(360deg); } }
         @keyframes musicModalIn { from { opacity: 0; transform: scale(.96); } to { opacity: 1; transform: scale(1); } }
@@ -520,35 +520,42 @@
             .music-fab { left: 16px; bottom: calc(56px + env(safe-area-inset-bottom)); width: 44px; height: 44px; }
             .music-fab svg { width: 22px; height: 22px; }
             #musicModal { padding: 14px; }
-            .music-modal-box { width: min(360px, calc(100vw - 28px)); max-height: 82vh; }
+            .music-modal-box { width: min(360px, calc(100vw - 28px)); max-height: 92vh; }
             .music-modal-close { width: 44px; height: 44px; top: 6px; right: 8px; }
         }
         /* ===== 仅电脑端：音乐播放器加大加宽（手机端样式保持不变） ===== */
         @media (min-width: 769px) {
-            .music-modal-box { width: min(460px, calc(100vw - 48px)); max-height: 88vh; }
-            .music-modal-close { width: 46px; height: 46px; top: 10px; right: 12px; font-size: 30px; }
-            .music-modal .music-player-card { border-radius: 18px; }
-            .music-modal .card-header { padding: 18px 58px 16px 22px; font-size: 17px; gap: 10px; }
-            .music-modal .card-header .head-icon svg { width: 28px; height: 28px; }
-            .music-modal .card-body { padding: 0 24px 20px; }
-            .music-modal .cd-section { margin-bottom: 14px; padding-top: 22px; }
-            .music-modal .cd-disc { width: 120px; height: 120px; }
-            .music-modal .cd-center-hole { width: 22px; height: 22px; }
-            .music-modal .wave-ring { inset: -8px; border-width: 3px; }
-            .music-modal .track-info { margin-bottom: 14px; }
-            .music-modal .track-info .title { font-size: 18px; }
-            .music-modal .track-info .artist { font-size: 14px; margin-top: 4px; }
-            .music-modal .progress-area { margin-bottom: 16px; }
-            .music-modal .progress-area input[type=range] { height: 4px; border-radius: 4px; }
-            .music-modal .progress-area input[type=range]::-webkit-slider-thumb { width: 13px; height: 13px; border-width: 3px; }
-            .music-modal .progress-area input[type=range]::-moz-range-thumb { width: 13px; height: 13px; border-width: 3px; }
-            .music-modal .controls-area { gap: 18px; margin-bottom: 16px; }
-            .music-modal .controls-area button { width: 42px; height: 42px; font-size: 18px; }
-            .music-modal .controls-area button.play-btn { width: 54px; height: 54px; font-size: 20px; }
-            .music-modal .playlist-collapse { max-height: 260px; padding-top: 12px; }
-            .music-modal .playlist-collapse::-webkit-scrollbar { width: 5px; }
-            .music-modal .playlist-item { gap: 10px; padding: 8px 10px; border-radius: 8px; font-size: 14px; }
-            .music-modal .playlist-item .index { min-width: 28px; font-size: 12px; }
+            .music-modal-box { width: min(1040px, calc(100vw - 40px)); max-height: 92vh; }
+            .music-modal-close { width: 48px; height: 48px; top: 10px; right: 12px; font-size: 30px; }
+            .music-modal .music-player-card { border-radius: 20px; }
+            .music-modal .card-header { padding: 22px 64px 20px 28px; font-size: 19px; gap: 10px; }
+            .music-modal .card-header .head-icon svg { width: 32px; height: 32px; }
+            .music-modal .card-body {
+                display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+                column-gap: 30px; align-items: center; padding: 24px 30px 26px;
+            }
+            .music-modal .cd-section { grid-column: 1; grid-row: 1; margin-bottom: 18px; padding-top: 4px; }
+            .music-modal .track-info { grid-column: 1; grid-row: 2; margin-bottom: 16px; }
+            .music-modal .progress-area { grid-column: 1; grid-row: 3; margin-bottom: 20px; }
+            .music-modal .controls-area { grid-column: 1; grid-row: 4; gap: 22px; margin-bottom: 4px; }
+            .music-modal .playlist-collapse {
+                grid-column: 2; grid-row: 1 / span 4; align-self: stretch; height: 100%;
+                min-height: 420px; max-height: none; margin: 4px 0; padding: 6px 0 6px 24px;
+                border-top: none; border-left: 1px solid rgba(255,255,255,.12);
+            }
+            .music-modal .cd-disc { width: 172px; height: 172px; }
+            .music-modal .cd-center-hole { width: 30px; height: 30px; }
+            .music-modal .wave-ring { inset: -10px; border-width: 3px; }
+            .music-modal .track-info .title { font-size: 21px; }
+            .music-modal .track-info .artist { font-size: 15px; margin-top: 5px; }
+            .music-modal .progress-area input[type=range] { height: 5px; border-radius: 5px; }
+            .music-modal .progress-area input[type=range]::-webkit-slider-thumb { width: 15px; height: 15px; border-width: 3px; }
+            .music-modal .progress-area input[type=range]::-moz-range-thumb { width: 15px; height: 15px; border-width: 3px; }
+            .music-modal .controls-area button { width: 50px; height: 50px; font-size: 20px; }
+            .music-modal .controls-area button.play-btn { width: 64px; height: 64px; font-size: 22px; }
+            .music-modal .playlist-collapse::-webkit-scrollbar { width: 6px; }
+            .music-modal .playlist-item { gap: 10px; padding: 10px 12px; border-radius: 8px; font-size: 15px; }
+            .music-modal .playlist-item .index { min-width: 30px; font-size: 13px; }
         }
         /* 时光胶囊最下方：爱发电计时 */
         .capsule-afd { margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,.12); font-size: .85rem; color: rgba(255,255,255,.72); line-height: 1.95; text-align: center; white-space: nowrap; }
@@ -1051,7 +1058,7 @@
                     <a href="https://localhost.xn--io0a7i/" target="_blank" rel="noopener noreferrer" class="nav-btn"><i class="fa-solid fa-terminal"></i><span>localhost</span></a>
                     <a href="javascript:void(0)" class="nav-btn" onclick="window.__go && window.__go('关于我.html');"><i class="fa-solid fa-user"></i><span>关于我</span></a>
                     <div class="nav-row2">
-                    <a href="https://www.terseai.org/" target="_blank" rel="noopener noreferrer" class="nav-btn"><svg style="width:22px;height:22px;fill:currentColor;" viewBox="0 0 24 24"><path d="M20.5 11H19V7c0-1.1-.9-2-2-2h-4V3.5C13 2.12 11.88 1 10.5 1S8 2.12 8 3.5V5H4c-1.1 0-1.99.9-1.99 2v3.8H3.5c1.49 0 2.7 1.21 2.7 2.7s-1.21 2.7-2.7 2.7H2V20c0 1.1.9 2 2 2h3.8v-1.5c0-1.49 1.21-2.7 2.7-2.7 1.49 0 2.7 1.21 2.7 2.7V22H17c1.1 0 2-.9 2-2v-4h1.5c1.38 0 2.5-1.12 2.5-2.5S21.88 11 20.5 11z"></path></svg><span>Terse AI插件</span></a>
+                    <a href="https://www.terseai.org/" target="_blank" rel="noopener noreferrer" class="nav-btn"><svg style="width:22px;height:22px;fill:currentColor;" viewBox="0 0 24 24"><path d="M20.5 11H19V7c0-1.1-.9-2-2-2h-4V3.5C13 2.12 11.88 1 10.5 1S8 2.12 8 3.5V5H4c-1.1 0-1.99.9-1.99 2v3.8H3.5c1.49 0 2.7 1.21 2.7 2.7s-1.21 2.7-2.7 2.7H2V20c0 1.1.9 2 2 2h3.8v-1.5c0-1.49 1.21-2.7 2.7-2.7 1.49 0 2.7 1.21 2.7 2.7V22H17c1.1 0 2-.9 2-2v-4h1.5c1.38 0 2.5-1.12 2.5-2.5S21.88 11 20.5 11z"></path></svg><span>Terse插件</span></a>
                     <a href="https://gitee.com/write-and-repair/termux-rc" target="_blank" rel="noopener noreferrer" class="nav-btn"><svg style="width:22px;height:22px;fill:currentColor;" viewBox="0 0 24 24"><path d="M11.984 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.016 0zm6.09 5.333c.328 0 .593.266.592.593v1.482a.594.594 0 0 1-.593.592H9.777c-.982 0-1.778.796-1.778 1.778v5.63c0 .327.266.592.593.592h5.63c.982 0 1.778-.796 1.778-1.778v-.296a.593.593 0 0 0-.592-.593h-4.15a.592.592 0 0 1-.592-.592v-1.482a.593.593 0 0 1 .593-.592h6.815c.327 0 .593.265.593.592v3.408a4 4 0 0 1-4 4H5.926a.593.593 0 0 1-.593-.593V9.778a4.444 4.444 0 0 1 4.445-4.444h8.296Z"></path></svg><span>Gitee</span></a>
                     <a href="https://raw.githubusercontent.com/lvoe82002/zenly-website/main/index.html" target="_blank" rel="noopener noreferrer" class="nav-btn"><i class="fa-solid fa-code"></i><span>源码</span></a>
                     <a href="javascript:void(0)" class="nav-btn" onclick="window.__goHome && window.__goHome();"><i class="fa-regular fa-compass"></i><span>起始页</span></a>
@@ -1061,7 +1068,7 @@
                 <!-- 第 2 页：以后要加新网站，把下面这个占位框复制一份、改成你的链接/图标/名字即可；也可以把名字和链接发我帮你加 -->
                 <div class="nav-page">
                     <div class="nav-buttons">
-                        <a href="https://zenlydsp-status.pages.dev/" target="_blank" rel="noopener noreferrer" class="nav-btn"><i class="fa-solid fa-laptop-code"></i><span>站点监测</span></a>
+                        <a href="https://status.zenlydsp.top/" target="_blank" rel="noopener noreferrer" class="nav-btn"><i class="fa-solid fa-laptop-code"></i><span>站点监测</span></a>
                     </div>
                 </div>
                 <div class="nav-pager">
