@@ -802,55 +802,6 @@
          .toast { bottom: 7.8rem; }
   }
 
-        /* ========== APlayer 深色玻璃风（音乐弹窗内） ========== */
-        .music-fab.is-playing { border-color: rgba(73,177,245,.85); background: rgba(73,177,245,.32); box-shadow: 0 0 18px rgba(73,177,245,.35); }
-
-        #musicPlayer .music-player-card { padding-bottom: 4px; }
-        #musicPlayer .aplayer-mount.aplayer { background: transparent; color: #fff; box-shadow: none; border-radius: 0; width: 100%; padding: 0 16px 12px; }
-        #musicPlayer .aplayer .aplayer-pic { box-shadow: 0 0 14px rgba(0,0,0,.4); }
-        #musicPlayer .aplayer .aplayer-info { background: transparent; border-bottom: none; }
-        #musicPlayer .aplayer .aplayer-music .aplayer-title { color: #fff; font-weight: 600; }
-        #musicPlayer .aplayer .aplayer-music .aplayer-author { color: rgba(255,255,255,.58); }
-        #musicPlayer .aplayer .aplayer-controller .aplayer-time { color: rgba(255,255,255,.72); text-shadow: none; }
-        #musicPlayer .aplayer .aplayer-controller .aplayer-time .aplayer-icon path { fill: currentColor; }
-        #musicPlayer .aplayer .aplayer-controller .aplayer-bar-wrap .aplayer-bar .aplayer-loaded { background: rgba(255,255,255,.22); }
-        #musicPlayer .aplayer .aplayer-controller .aplayer-bar-wrap .aplayer-bar .aplayer-played { background: #49b1f5; }
-        #musicPlayer .aplayer .aplayer-controller .aplayer-bar-wrap .aplayer-bar .aplayer-played .aplayer-thumb { background: #49b1f5; box-shadow: 0 0 6px rgba(73,177,245,.7); }
-        #musicPlayer .aplayer .aplayer-controller .aplayer-volume-wrap .aplayer-volume-bar-wrap .aplayer-volume-bar { background: rgba(255,255,255,.2); }
-        #musicPlayer .aplayer .aplayer-controller .aplayer-volume-wrap .aplayer-volume-bar-wrap .aplayer-volume-bar .aplayer-volume { background: #49b1f5; }
-        #musicPlayer .aplayer .aplayer-miniswitcher { background: rgba(255,255,255,.14); }
-        #musicPlayer .aplayer .aplayer-miniswitcher .aplayer-icon path { fill: #fff; }
-        #musicPlayer .aplayer .aplayer-lrc { height: 18px; }
-        #musicPlayer .aplayer .aplayer-lrc::before,
-        #musicPlayer .aplayer .aplayer-lrc::after { display: none; }
-        #musicPlayer .aplayer .aplayer-lrc p { color: rgba(255,255,255,.55); }
-        #musicPlayer .aplayer .aplayer-lrc p.aplayer-lrc-current { color: #fff; }
-        #musicPlayer .aplayer .aplayer-list { background: transparent; }
-        #musicPlayer .aplayer .aplayer-list ol { margin: 0 10px; }
-        #musicPlayer .aplayer .aplayer-list ol li { background: transparent; border-top: 1px solid rgba(255,255,255,.08); color: #fff; }
-        #musicPlayer .aplayer .aplayer-list ol li:hover { background: rgba(73,177,245,.14); }
-        #musicPlayer .aplayer .aplayer-list ol li.aplayer-list-light { background: rgba(73,177,245,.2); }
-        #musicPlayer .aplayer .aplayer-list ol li .aplayer-list-index { color: rgba(255,255,255,.5); }
-        #musicPlayer .aplayer .aplayer-list ol li .aplayer-list-author { color: rgba(255,255,255,.5); }
-        #musicPlayer .aplayer .aplayer-list ol li.aplayer-list-light .aplayer-list-index,
-        #musicPlayer .aplayer .aplayer-list ol li.aplayer-list-light .aplayer-list-author { color: #49b1f5; }
-
-        /* 加载 / 错误状态 */
-        .music-status { padding: 44px 26px; text-align: center; color: rgba(255,255,255,.85); }
-        .music-spinner { width: 38px; height: 38px; margin: 0 auto 16px; border: 3px solid rgba(255,255,255,.18); border-top-color: #49b1f5; border-radius: 50%; animation: music-spin .9s linear infinite; }
-        .music-err-icon { font-size: 34px; color: #f56c6c; margin-bottom: 14px; }
-        .music-err-msg { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
-        .music-err-tip { font-size: 12px; color: rgba(255,255,255,.5); line-height: 1.7; margin-bottom: 18px; }
-        .music-retry { background: #49b1f5; color: #fff; border: none; border-radius: 18px; padding: 8px 30px; font-size: 13px; cursor: pointer; transition: background .2s; }
-        .music-retry:hover { background: #3a9bd9; }
-
-        /* 电脑端：旧版双栏网格已弃用，弹窗收窄为单栏 APlayer（覆盖上方同媒体查询规则） */
-        @media (min-width: 769px) {
-            .music-modal-box { width: min(460px, calc(100vw - 40px)); }
-            .music-modal .music-player-card { border-radius: 18px; }
-            .music-modal .card-header { padding: 18px 58px 15px 24px; font-size: 17px; gap: 9px; }
-            .music-modal .card-header .head-icon svg { width: 24px; height: 24px; }
-        }
     </style>
 </head>
 <body class="pre-blur">
@@ -1143,7 +1094,7 @@
                             <path d="M17.287 39.012C9.703 41.512 11.714 44 17.287 44"></path>
                         </svg>
                     </a>
-                    <a class="icon-item" href="https://space.bilibili.com/673583400" target="_blank" data-tooltip="( ´-` )つ口干杯～">
+                    <a class="icon-item" href="https://space.bilibili.com/673583400" target="_blank" data-tooltip="(゜-゜)つロ干杯~">
                         <svg class="social-icon" viewBox="0 0 24 24">
                             <rect x="2.5" y="5" width="19" height="14" rx="3.5" />
                             <path d="m7 2 3 3" />
@@ -1161,7 +1112,7 @@
                     <a class="icon-item" href="https://qm.qq.com/q/QfvK9qq9ii" target="_blank" data-tooltip="有什么事吗？">
                         <img src="https://www.svgrepo.com/show/447108/qq-fill.svg" alt="QQ" style="filter: brightness(0) invert(1) brightness(1.5);">
                     </a>
-                    <a class="icon-item" href="/cdn-cgi/l/email-protection#016b687473606f413037322f626e6c" target="_blank" data-tooltip="来封Email～">
+                    <a class="icon-item" href="/cdn-cgi/l/email-protection#016b687473606f413037322f626e6c" target="_blank" data-tooltip="来封Email~">
                         <svg class="social-icon" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="3" y="5" width="18" height="14" rx="2" />
                             <path d="M3 7l9 6 9-6" />
@@ -1169,13 +1120,13 @@
                             <path d="M21 17l-6-6" />
                         </svg>
                     </a>
-                    <a class="icon-item" href="https://t.me/你的用户名" target="_blank" data-tooltip="你懂的～">
+                    <a class="icon-item" href="https://t.me/你的用户名" target="_blank" data-tooltip="你懂的~">
                         <svg viewBox="0 0 24 24" fill="none" style="width:22px;height:22px;display:block;">
                             <circle cx="12" cy="12" r="12" fill="white" />
                             <path d="M20.665 3.717l-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42l10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l-.002.001l-.314 4.692c.46 0 .663-.211.921-.46l2.211-2.15l4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.434z" fill="#000000" />
                         </svg>
                     </a>
-                    <a class="icon-item" href="https://twitter.com/你的用户名" target="_blank" data-tooltip="你懂的～">
+                    <a class="icon-item" href="https://twitter.com/你的用户名" target="_blank" data-tooltip="你懂的~">
                         <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z" />
                         </svg>
@@ -2347,115 +2298,120 @@
         fetchHitokoto();
     })();
     </script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js"></script>
     <script>
     /* ==================================================================
-       全局音乐播放器（APlayer + Meting-API，主页常驻单例）
-       - 歌单由自建 Meting-API 实时解析网易云 / QQ音乐，无需手动维护 mp3 直链；
-       - 音频对象只存在于主页文档；卡片页通过全屏 iframe 打开，音乐不中断；
-       - 首次点左下角按钮才请求接口（懒加载），失败可一键重试。
+       全局音乐播放器（主页常驻单例）
+       - 音频对象只存在于主页文档；卡片页通过全屏 iframe 打开，跳转只在
+         iframe 内发生，主页不卸载，所以音乐不中断、不重播。
+       - 播放器 UI 挂在左下角网易云圆圈打开的居中弹窗内，时光胶囊内不再显示播放器。
+       - 一首播完自动播下一首并循环；只有用户按下暂停才会停止。
        ================================================================== */
     (function () {
-        /* ★★★ 音乐配置：换歌单只改下面这一段 ★★★
-           1) 按教程部署：https://github.com/xizeyoupan/Meting-API#deno-deploy
-           2) 把 api 改成你的 Deno Deploy 地址（形如 https://meting-xxx.deno.dev，结尾不要带斜杠）；
-           3) 在网易云打开你喜欢的歌单，浏览器链接里 id= 后面的数字填到 id。
-           server：netease 网易云 / tencent QQ音乐
-           type  ：playlist 歌单 / song 单曲 / artist 歌手 / search 搜索 */
-        const MUSIC_CONFIG = {
-            api: 'https://meting-api-bzrbwyaddvw9.lvoe82002.deno.net',
-            server: 'netease',
-            type: 'playlist',
-            id: '3778678',
-            autoplay: false,
-            theme: '#49b1f5'
-        };
-
         const NETEASE_PATH = 'M13.046 9.388a3.919 3.919 0 0 0-.66.19c-.809.312-1.447.991-1.666 1.775a2.269 2.269 0 0 0-.074.81c.048.546.333 1.05.764 1.35a1.483 1.483 0 0 0 2.01-.286c.406-.531.355-1.183.24-1.636-.098-.387-.22-.816-.345-1.249a64.76 64.76 0 0 1-.269-.954zm-.82 10.07c-3.984 0-7.224-3.24-7.224-7.223 0-.98.226-3.02 1.884-4.822A7.188 7.188 0 0 1 9.502 5.6a.792.792 0 1 1 .587 1.472 5.619 5.619 0 0 0-2.795 2.462 5.538 5.538 0 0 0-.707 2.7 5.645 5.645 0 0 0 5.638 5.638c1.844 0 3.627-.953 4.542-2.428 1.042-1.68.772-3.931-.627-5.238a3.299 3.299 0 0 0-1.437-.777c.172.589.334 1.18.494 1.772.284 1.12.1 2.181-.519 2.989-.39.51-.956.888-1.592 1.064a3.038 3.038 0 0 1-2.58-.44 3.45 3.45 0 0 1-1.44-2.514c-.04-.467.002-.93.128-1.376.35-1.256 1.356-2.339 2.622-2.826a5.5 5.5 0 0 1 .823-.246l-.134-.505c-.37-1.371.25-2.579 1.547-3.007.329-.109.68-.145 1.025-.105.792.09 1.476.592 1.709 1.023.258.507-.096 1.153-.706 1.153a.788.788 0 0 1-.54-.213c-.088-.08-.163-.174-.259-.247a.825.825 0 0 0-.632-.166.807.807 0 0 0-.634.551c-.056.191-.031.406.02.595.07.256.159.597.217.82 1.11.098 2.162.54 2.97 1.296 1.974 1.844 2.35 4.886.892 7.233-1.197 1.93-3.509 3.177-5.889 3.177z';
         function neteaseIcon(size) { return '<svg class="netease-svg" viewBox="0 0 24 24" width="' + size + '" height="' + size + '" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="' + NETEASE_PATH + '"/></svg>'; }
 
+        /* ==================================================================
+           ★★★ 我的歌单：想加歌 / 换歌 / 删歌，只改下面这一段，别处都不用动 ★★★
+           每首歌写成一行 { ... }，两首歌之间用英文逗号隔开。四个字段：
+             title  —— 歌名（播放器里显示的名字）
+             artist —— 歌手（没有就写两个单引号 ''）
+             url    —— 歌曲 mp3 直链：粘到浏览器地址栏回车能直接播放/下载的 https 链接
+             cover  —— 封面图链接（没有就写 ''）
+           · 加歌：复制任意一整行 { ... }, 换行粘贴，再改成新歌的信息；
+           · 删歌：把那一整行删掉即可；
+           · 调顺序：把整行上下移动即可，第一首就是打开播放器默认的歌。
+           ================================================================== */
+        // 注意：除了最后一行，每一行结尾都必须有英文逗号 , 漏了逗号整个播放器会不显示！
+        const MY_MUSIC_PLAYLIST = [
+            { title: 'DAN DAN心魅かれていく', artist: 'Field of View', url: 'https://cdn.jsdelivr.net/gh/lvoe82002/zenly-website@main/music/01.Field%20of%20View%20-%20DAN%20DAN%E5%BF%83%E9%AD%85%E3%81%8B%E3%82%8C%E3%81%A6%E3%81%84%E3%81%8F.mp3', cover: 'https://ts3.tc.mm.bing.net/th/id/OIP-C.5L2Ya403EjY37iBMqPREUgHaER?w=200' },
+            { title: 'A.I.N.Y. 爱你', artist: '邓紫棋', url: 'https://cdn.jsdelivr.net/gh/lvoe82002/zenly-website@main/music/02.%E9%82%93%E7%B4%AB%E6%A3%8B%20-%20A.I.N.Y.%20%E7%88%B1%E4%BD%A0.mp3', cover: 'https://cdn-us.imgs.moe/2026/09/07/705321a580834483e9844276d3eeda82.jpeg' },
+            { title: '手心的蔷薇', artist: '林俊杰、G.E.M.邓紫棋', url: 'https://cdn.jsdelivr.net/gh/lvoe82002/zenly-website@main/music/03.%E6%9E%97%E4%BF%8A%E6%9D%B0%E3%80%81G.E.M.%E9%82%93%E7%B4%AB%E6%A3%8B%20-%20%E6%89%8B%E5%BF%83%E7%9A%84%E8%94%B7%E8%96%87.mp3', cover: 'https://cdn-us.imgs.moe/2026/09/07/6b673fc7a934840deeac918d38ae07c4.webp' },
+            { title: '他很信任你', artist: '冠希的歌', url: 'https://cdn.jsdelivr.net/gh/lvoe82002/zenly-website@main/music/04.%E5%86%A0%E5%B8%8C%E7%9A%84%E6%AD%8C%20-%20%E4%BB%96%E5%BE%88%E4%BF%A1%E4%BB%BB%E4%BD%A0.mp3', cover: 'https://cdn-us.imgs.moe/2026/09/07/e7d1ff3b26f8754a2486cd744a8cd3f1.png' },
+            { title: '刚刚好', artist: '陈壹千', url: 'https://cdn.jsdelivr.net/gh/lvoe82002/zenly-website@main/music/05.%E9%99%88%E5%A3%B9%E5%8D%83%20-%20%E5%88%9A%E5%88%9A%E5%A5%BD.mp3', cover: 'https://cdn-us.imgs.moe/2026/09/07/2ad1ef36e33a07c770ce48aba31dc862.png' },
+            { title: '眼泪的汛期', artist: '王唯旖', url: 'https://cdn.jsdelivr.net/gh/lvoe82002/zenly-website@main/music/06.%E7%8E%8B%E5%94%AF%E6%97%96%20-%20%E7%9C%BC%E6%B3%AA%E7%9A%84%E6%B1%9B%E6%9C%9F.mp3', cover: 'https://cdn-us.imgs.moe/2026/09/07/6c83836d2e89ed05d3d782830aa075d3.jpg' },
+            { title: '请先说你好(说唱版)', artist: '余又/歪歪超', url: 'https://cdn.jsdelivr.net/gh/lvoe82002/zenly-website@main/music/07.%E4%BD%99%E5%8F%88_%E6%AD%AA%E6%AD%AA%E8%B6%85%20-%20%E8%AF%B7%E5%85%88%E8%AF%B4%E4%BD%A0%E5%A5%BD%28%E8%AF%B4%E5%94%B1%E7%89%88%29.mp3', cover: 'https://cdn-us.imgs.moe/2026/09/07/2abfad2b9eec6339134e55b566e33423.jpg' },
+            { title: '依赖成折磨', artist: '本兮', url: 'https://cdn.jsdelivr.net/gh/lvoe82002/zenly-website@main/music/08.%E6%9C%AC%E5%85%AE%20-%20%E4%BE%9D%E8%B5%96%E6%88%90%E6%8A%98%E7%A3%A8.mp3', cover: 'https://cdn-us.imgs.moe/2026/09/07/110905e8c03f52779e296116a9d7ad42.png' },
+            { title: '颜色', artist: 'Gareth.T', url: 'https://cdn.jsdelivr.net/gh/lvoe82002/zenly-website@main/music/09.Gareth.T%20-%20%E9%A2%9C%E8%89%B2.mp3', cover: 'https://cdn-us.imgs.moe/2026/09/07/2656b33ae4fe075185f9baaeaf4190d4.jpg' },
+            { title: '孤雏', artist: 'AGA', url: 'https://cdn.jsdelivr.net/gh/lvoe82002/zenly-website@main/music/10.AGA%20-%20%E5%AD%A4%E9%9B%8F.mp3', cover: 'https://cdn-us.imgs.moe/2026/09/07/c3cd5926fca1efe4ef27ca56023e3026.jpg' },
+            { title: '可笑', artist: 'joysaaaa', url: 'https://cdn.jsdelivr.net/gh/lvoe82002/zenly-website@main/music/11.joysaaaa%20-%20%E5%8F%AF%E7%AC%91.mp3', cover: 'https://cdn-us.imgs.moe/2026/09/07/505d96f9d8dc1321565f87e8badf5df4.png' },
+            { title: '失去', artist: 'Zkaaai', url: 'https://cdn.jsdelivr.net/gh/lvoe82002/zenly-website@main/music/12.Zkaaai%20-%20%E5%A4%B1%E5%8E%BB.mp3', cover: 'https://cdn-us.imgs.moe/2026/09/07/cb50883cec9d9ed9340d2a4638032e67.png' },
+            { title: '无颜女', artist: '徐良/小凌', url: 'https://cdn.jsdelivr.net/gh/lvoe82002/zenly-website@main/music/13.%E5%BE%90%E8%89%AF_%E5%B0%8F%E5%87%8C%20-%20%E6%97%A0%E9%A2%9C%E5%A5%B3.mp3', cover: 'https://cdn-us.imgs.moe/2026/09/07/bdc80b454293454cee173fd9a4416867.jpg' },
+        ];
+
+        const MusicPlayer = (function () {
+            const audio = new Audio(); audio.preload = 'auto';
+            const state = {
+                isPlaying: false,
+                userPaused: false,
+                progress: 0,
+                index: 0,
+                tracks: [],
+                loaded: false,
+                get current() {
+                    return this.tracks.length === 0
+                        ? { title: '暂无歌曲', artist: '', url: '' }
+                        : this.tracks[this.index] || this.tracks[0];
+                }
+            };
+            const listeners = new Set();
+            const emit = () => listeners.forEach(fn => fn(state));
+            const subscribe = fn => { listeners.add(fn); fn(state); return () => listeners.delete(fn); };
+            audio.addEventListener('timeupdate', () => {
+                if (audio.duration) { state.progress = Math.min(audio.currentTime / audio.duration * 100, 100); emit(); }
+            });
+            // 自然播完时浏览器会先触发 pause 再触发 ended，因此不能用 isPlaying 判断是否连播；
+            // 用 userPaused（仅用户按暂停键才为 true）保证一首结束立刻接下一首、循环不停。
+            audio.addEventListener('ended', () => { if (!state.userPaused) next(); });
+            audio.addEventListener('play', () => { state.isPlaying = true; emit(); });
+            audio.addEventListener('pause', () => { state.isPlaying = false; emit(); });
+            audio.addEventListener('error', e => {
+                console.warn('音频加载失败:', audio.src, e);
+                if (!state.userPaused && state.tracks.length > 1) setTimeout(next, 1500);
+                emit();
+            });
+            // 歌单直接读取上方代码里的 MY_MUSIC_PLAYLIST，不再请求任何外部接口
+            function loadTracks() {
+                if (state.loaded) return;
+                state.tracks = MY_MUSIC_PLAYLIST.map((t, i) => ({
+                    id: i,
+                    title: t.title || '未命名歌曲',
+                    artist: t.artist || '',
+                    url: t.url || '',
+                    cover: t.cover || ''
+                }));
+                if (state.index >= state.tracks.length) state.index = 0;
+                state.loaded = true; emit();
+            }
+            function togglePlay() {
+                const cur = state.current;
+                if (!cur.url) return;
+                if (audio.paused) {
+                    state.userPaused = false;
+                    if (!audio.src || audio.src === window.location.href) audio.src = cur.url;
+                    audio.play().catch(console.warn);
+                } else {
+                    state.userPaused = true; // 只有用户按暂停键才会停
+                    audio.pause();
+                }
+            }
+            function seek(percent) { if (audio.duration) audio.currentTime = percent / 100 * audio.duration; }
+            function applyTrack() {
+                const keepPlaying = !state.userPaused, cur = state.current;
+                if (cur.url) { audio.src = cur.url; audio.load(); if (keepPlaying) audio.play().catch(console.warn); }
+                state.progress = 0; emit();
+            }
+            // 上一首/选歌都是用户主动操作，直接继续播放
+            function prev() { const n = state.tracks.length; if (n) { state.userPaused = false; state.index = (state.index - 1 + n) % n; applyTrack(); } }
+            function next() { const n = state.tracks.length; if (n) { state.index = (state.index + 1) % n; applyTrack(); } }
+            function select(i) { if (state.index !== i) { state.userPaused = false; state.index = i; applyTrack(); } }
+            return { subscribe, loadTracks, togglePlay, seek, prev, next, select };
+        })();
+
+        /* 播放器视图：渲染到左下角网易云圆圈打开的居中弹窗内 */
         const root = document.getElementById('musicPlayer');
         const musicFab = document.getElementById('musicFab');
         const musicModal = document.getElementById('musicModal');
         const musicModalClose = document.getElementById('musicModalClose');
-
-        let ap = null, state = 'idle'; // idle | loading | done | error
-
-        function card(inner) { return '<div class="music-player-card">' + inner + '</div>'; }
-
-        function renderLoading() {
-            root.innerHTML = card('<div class="music-status"><div class="music-spinner"></div><p>歌单加载中…</p></div>');
-        }
-
-        function renderError(msg) {
-            root.innerHTML = card(
-                '<div class="music-status">' +
-                '<i class="fa-solid fa-circle-exclamation music-err-icon"></i>' +
-                '<p class="music-err-msg">' + msg + '</p>' +
-                '<p class="music-err-tip">请确认已按教程部署 Meting-API，并把 MUSIC_CONFIG.api 改成你的地址</p>' +
-                '<button type="button" class="music-retry" data-retry>重新加载</button></div>');
-            root.querySelector('[data-retry]').addEventListener('click', loadPlaylist);
-        }
-
-        function buildPlayer(list) {
-            root.innerHTML =
-                card(
-                '  <div class="card-header"><span class="head-icon">' + neteaseIcon(22) + '</span><span>音乐播放器</span></div>' +
-                '  <div class="aplayer-mount"></div>');
-            const mount = root.querySelector('.aplayer-mount');
-            ap = new APlayer({
-                container: mount,
-                fixed: false,
-                autoplay: MUSIC_CONFIG.autoplay,
-                theme: MUSIC_CONFIG.theme,
-                loop: 'all',
-                order: 'list',
-                preload: 'auto',
-                volume: 0.7,
-                mutex: true,
-                lrcType: 3,
-                listFolded: false,
-                listMaxHeight: 340,
-                audio: list.map(function (x) {
-                    return {
-                        name: x.name || x.title || '未命名歌曲',
-                        artist: x.artist || x.author || '',
-                        url: String(x.url || '').replace(/^http:\/\//i, 'https://'),
-                        cover: String(x.pic || x.cover || '').replace(/^http:\/\//i, 'https://'),
-                        lrc: String(x.lrc || '').replace(/^http:\/\//i, 'https://')
-                    };
-                })
-            });
-            ap.on('play', function () { musicFab && musicFab.classList.add('is-playing'); });
-            ap.on('pause', function () { musicFab && musicFab.classList.remove('is-playing'); });
-            window.__musicPlayer = ap;
-        }
-
-        async function loadPlaylist() {
-            if (state === 'loading' || state === 'done') return;
-            state = 'loading';
-            renderLoading();
-            try {
-                const base = String(MUSIC_CONFIG.api).replace(/\/+$/, '');
-                const url = base + '/api?server=' + encodeURIComponent(MUSIC_CONFIG.server) +
-                    '&type=' + encodeURIComponent(MUSIC_CONFIG.type) +
-                    '&id=' + encodeURIComponent(MUSIC_CONFIG.id) +
-                    '&r=' + Math.random();
-                const res = await fetch(url);
-                if (!res.ok) throw new Error('接口返回异常（HTTP ' + res.status + '）');
-                const data = await res.json();
-                if (!Array.isArray(data) || data.length === 0) throw new Error('没有获取到任何歌曲');
-                buildPlayer(data);
-                state = 'done';
-            } catch (e) {
-                state = 'error';
-                let msg = (e && e.message) ? e.message : String(e);
-                if (msg.indexOf('Failed to fetch') !== -1) msg = '无法连接音乐接口';
-                renderError(msg);
-                console.warn('[music]', e);
-            }
-        }
 
         function openMusicModal() {
             if (!musicModal) return;
@@ -2463,7 +2419,6 @@
             musicModal.setAttribute('aria-hidden', 'false');
             musicFab && musicFab.setAttribute('aria-expanded', 'true');
             document.body.classList.add('music-open');
-            if (state === 'idle' || state === 'error') loadPlaylist();
         }
 
         function closeMusicModal() {
@@ -2475,14 +2430,58 @@
         }
 
         if (root) {
-            if (musicFab) musicFab.addEventListener('click', openMusicModal);
-            if (musicModalClose) musicModalClose.addEventListener('click', closeMusicModal);
-            if (musicModal) musicModal.addEventListener('click', function (e) { if (e.target === musicModal) closeMusicModal(); });
-            document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeMusicModal(); });
+            root.innerHTML =
+                '<div class="music-player-card">' +
+                '  <div class="card-header"><span class="head-icon">' + neteaseIcon(24) + '</span><span>音乐播放器</span></div>' +
+                '  <div class="card-body">' +
+                '    <div class="cd-section"><div class="cd-disc" data-role="disc"><div class="cd-center-hole"></div><div class="wave-ring" data-role="ring"></div></div></div>' +
+                '    <div class="track-info"><span class="title" data-role="title"></span><span class="artist" data-role="artist"></span></div>' +
+                '    <div class="progress-area"><input type="range" min="0" max="100" step="0.1" value="0" data-role="seek" aria-label="播放进度"></div>' +
+                '    <div class="controls-area">' +
+                '      <button data-act="prev" aria-label="上一曲"><<<</button>' +
+                '      <button class="play-btn" data-act="toggle" data-role="toggle" aria-label="播放/暂停">▶</button>' +
+                '      <button data-act="next" aria-label="下一曲">>>></button>' +
+                '    </div>' +
+                '    <div class="playlist-collapse" data-role="list"></div>' +
+                '  </div>' +
+                '</div>';
+            const $ = s => root.querySelector(s);
+            const disc = $('[data-role=disc]'), ring = $('[data-role=ring]'),
+                title = $('[data-role=title]'), artist = $('[data-role=artist]'),
+                seekBar = $('[data-role=seek]'), list = $('[data-role=list]'),
+                toggleBtn = $('[data-role=toggle]');
+            $('[data-act=prev]').onclick = () => MusicPlayer.prev();
+            $('[data-act=next]').onclick = () => MusicPlayer.next();
+            toggleBtn.onclick = () => MusicPlayer.togglePlay();
+            seekBar.oninput = e => MusicPlayer.seek(+e.target.value);
+            MusicPlayer.subscribe(s => {
+                const cur = s.current;
+                title.textContent = cur.title; artist.textContent = cur.artist || '';
+                disc.style.backgroundImage = cur.cover ? 'url(' + cur.cover + ')' : '';
+                disc.classList.toggle('spinning', s.isPlaying);
+                ring.classList.toggle('playing', s.isPlaying);
+                toggleBtn.textContent = s.isPlaying ? '⏸' : '▶';
+                if (musicFab) musicFab.classList.toggle('is-playing', s.isPlaying);
+                if (document.activeElement !== seekBar) seekBar.value = s.progress;
+                const listSig = s.tracks.length + ':' + s.index;
+                if (list.dataset.sig !== listSig) {
+                    list.dataset.sig = listSig;
+                    list.innerHTML = s.tracks.map((t, i) =>
+                        '<div class="playlist-item ' + (i === s.index ? 'active' : '') + '" data-i="' + i + '">' +
+                        '<span class="index">' + String(i + 1).padStart(2, '0') + '</span><span class="t">' + t.title + '</span></div>'
+                    ).join('');
+                    list.querySelectorAll('.playlist-item').forEach(el => el.onclick = () => MusicPlayer.select(+el.dataset.i));
+                }
+            });
+            MusicPlayer.loadTracks();
         }
+
+        if (musicFab) musicFab.addEventListener('click', openMusicModal);
+        if (musicModalClose) musicModalClose.addEventListener('click', closeMusicModal);
+        if (musicModal) musicModal.addEventListener('click', e => { if (e.target === musicModal) closeMusicModal(); });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMusicModal(); });
     })();
     </script>
-
     <script>
     /* ==================================================================
        卡片全屏弹层：本地卡片页在 iframe 内切换，主页文档（与音乐）常驻。
