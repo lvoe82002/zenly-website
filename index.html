@@ -56,9 +56,9 @@
 
         .center-logo-flow.moved-logo { position: absolute; left: 22%; top: -370px; width: auto; max-width: 380px; margin: 0; z-index: 12; pointer-events: none; transform: none; }
         .center-logo-flow.moved-logo .logo { gap: 10px; pointer-events: auto; }
-        .center-logo-flow.moved-logo .logo-img { width: 90px; height: 90px; transform: translateX(3px); }
-        .center-logo-flow.moved-logo .name .bg { font-size: 80px; letter-spacing: 10px; display: inline-block; position: relative; top: -18px; }
-        .center-logo-flow.moved-logo .name .bg .top-small { font-size: 0.5em; letter-spacing: 0; display: inline-block; margin-left: -2px; vertical-align: baseline; }
+        .center-logo-flow.moved-logo .logo-img { width: 90px; height: 90px; transform: translateX(-15px); }
+       .center-logo-flow.moved-logo .name .bg { font-size: 80px; letter-spacing: 2px; display: inline-block; position: relative; top: -18px; }
+        .center-logo-flow.moved-logo .name .bg .top-small { font-size: 0.5em; letter-spacing: 0; display: inline-block; margin-left: 3px; vertical-align: baseline; }
 
         .footer-box { width: 100%; padding: 12px 20px 0; text-align: center; position: relative; z-index: 1; margin-top: 20px; background: transparent !important; }
         .bottom-area-wrapper { position: relative; width: 100%; min-height: 220px; display: flex; flex-direction: column; align-items: center; margin-bottom: 10px; }
@@ -405,7 +405,16 @@
             .center-logo-flow.moved-logo { position: relative !important; top: auto !important; left: auto !important; right: auto !important; width: auto !important; max-width: calc(100vw - 48px) !important; margin: 0 0 18px 0 !important; z-index: 10 !important; transform: none !important; align-self: flex-start !important; order: 1 !important; }
             .center-logo-flow.moved-logo .logo { gap: 14px !important; align-items: center !important; }
             .center-logo-flow.moved-logo .logo-img { width: 78px !important; height: 78px !important; border-radius: 50% !important; border: 2px solid rgba(255,255,255,0.35) !important; object-fit: cover !important; transform: translateY(10px); }
-                        .center-logo-flow.moved-logo .name .bg { font-size: 65px !important; letter-spacing: 2px !important; position: relative !important; top: -10px !important; left: -6px !important; }
+            .center-logo-flow.moved-logo .name .bg {
+            font-size: 15vw !important;
+            letter-spacing: 2px !important;
+            position: relative !important;
+            top: -5px !important;
+            left: -6px !important;
+            transform: skewX(9deg) !important;
+            transform-origin: left center;
+  }
+
             .interactive-badge { position: relative !important; top: auto !important; left: auto !important; transform: none !important; width: 100% !important; max-width: 440px !important; min-width: 0 !important; margin: 0 auto !important; padding: 26px 30px !important; background: rgba(0,0,0,0.35) !important; backdrop-filter: blur(10px) !important; -webkit-backdrop-filter: blur(10px) !important; order: 2 !important; }
             .interactive-badge .badge-title { font-size: 26px !important; margin-left: 20px !important; }
             .interactive-badge .badge-text { font-size: 15px !important; margin-left: 20px !important; line-height: 1.6 !important; }
@@ -422,7 +431,7 @@
             body.settings-open .mobile-menu-toggle { display: none !important; }
             /* 手机端：切到 Oops / 时光胶囊画面（capsule-open）时隐藏底部三横菜单按钮；点 Oops 框关闭胶囊后自动恢复显示。仅在手机端媒体查询内，电脑端无此按钮、不受影响 */
             body.capsule-open .mobile-menu-toggle { display: none !important; }
-           body.mobile-menu-open .center-logo-flow.moved-logo { position: fixed !important; top: calc(10px + env(safe-area-inset-top, 0px)) !important; left: 5px !important; right: auto !important; bottom: auto !important; margin: 0 !important; order: 0 !important; z-index: 200 !important; }
+            body.mobile-menu-open .center-logo-flow.moved-logo { position: fixed !important; top: calc(10px + env(safe-area-inset-top, 0px)) !important; left: 5px !important; right: auto !important; bottom: auto !important; margin: 0 !important; order: 0 !important; z-index: 200 !important; }
             body.mobile-menu-open .center-logo-flow.moved-logo .logo-img { display: none !important; }
             body.mobile-menu-open .center-logo-flow.moved-logo .name .bg { font-size: 40px !important; letter-spacing: 1px !important; left: 0 !important; top: 10px !important; }
             body.mobile-menu-open .interactive-badge, body.mobile-menu-open .social { display: none !important; }
@@ -591,7 +600,9 @@
      }
 
         .center-logo-flow.moved-logo .name .bg {
-                 left: -13px;
+                 left: -30px;
+                 transform: skewX(-5deg) scaleX(1.17);
+                 transform-origin: left center;
       }
 }
 
@@ -838,7 +849,7 @@
 
 /* 播放列表撑满弹窗剩余空间，手机/电脑分别计算，永不超屏 */
         @media (max-width: 768px) {
-            #musicPlayer .aplayer .aplayer-list:not(.aplayer-list-folded) {
+            #musicPlayer .aplayer .aplayer-list:not(.aplayer-list-hide) {
                 margin-top: 16px;
                 max-height: calc(96vh - 224px) !important;
                 max-height: calc(96dvh - 224px) !important;
@@ -846,7 +857,7 @@
             }
         }
         @media (min-width: 769px) {
-            #musicPlayer .aplayer .aplayer-list:not(.aplayer-list-folded) {
+            #musicPlayer .aplayer .aplayer-list:not(.aplayer-list-hide) {
                 margin-top: 12px;
                 max-height: calc(100vh - 300px) !important;
                 max-height: calc(98dvh - 300px) !important;
@@ -856,6 +867,16 @@
 
         /* 封面加大 */
         #musicPlayer .aplayer .aplayer-pic { width: 108px; height: 108px; }
+        #musicPlayer .aplayer .aplayer-info {
+           margin-left: 108px;
+           height: 108px;
+           display: flex;
+           flex-direction: column;
+           box-sizing: border-box;
+           padding-bottom: 10px;
+        }
+        #musicPlayer .aplayer .aplayer-lrc { margin-top: auto; }
+        #musicPlayer .aplayer .aplayer-controller { margin-top: 0; }
         #musicPlayer .aplayer .aplayer-info { margin-left: 108px; height: 108px; }
         .music-status { padding: 44px 26px; text-align: center; color: rgba(255,255,255,.85); }
         .music-spinner { width: 38px; height: 38px; margin: 0 auto 16px; border: 3px solid rgba(255,255,255,.18); border-top-color: #49b1f5; border-radius: 50%; animation: music-spin .9s linear infinite; }
