@@ -51,7 +51,7 @@
         .logo { display: flex; align-items: center; gap: 20px; }
         .logo-img { width: 85px; height: 85px; object-fit: contain; border-radius: 6px; flex: 0 0 auto; max-width: none; align-self: center; }
 .logo img { width: 85px; height: 85px; object-fit: contain; flex: 0 0 auto; max-width: none; }
-        .name .bg { font-family: 'Pacifico-Regular', cursive; font-size: 70px; font-weight: 400; letter-spacing: 14px; color: #fff; white-space: nowrap; display: inline-block; transform: skewX(-5deg); }
+        .name .bg { font-family: 'Pacifico-Regular', cursive; font-size: 70px; font-weight: 400; letter-spacing: 14px; color: #fff; white-space: nowrap; display: inline-block; transform: skewX(9deg); }
         .top-empty-space { height: 400px; }
 
         .center-logo-flow.moved-logo { position: absolute; left: 22%; top: -370px; width: auto; max-width: 380px; margin: 0; z-index: 12; pointer-events: none; transform: none; }
@@ -68,7 +68,7 @@
         .interactive-badge .q-left, .interactive-badge .q-right { position: absolute; font-size: 40px; opacity: 0.8; font-family: Georgia, serif; line-height: 0.8; color: #fff; }
         .interactive-badge .q-left { top: 6px; left: 8px; }
         .interactive-badge .q-right { bottom: 6px; right: 8px; }
-        .interactive-badge .badge-title { font-family: 'Pacifico-Regular', cursive; font-size: 28px; font-weight: 700; line-height: 1.3; margin-left: 24px; margin-bottom: 2px; text-shadow: 0 0 12px rgba(255, 255, 255, 0.2); }
+        .interactive-badge .badge-title { font-family: 'Pacifico-Regular', cursive; font-size: 28px; font-weight: 700; line-height: 1.3; margin-left: 24px; margin-bottom: 2px; text-shadow: none; }
         .interactive-badge .badge-text { font-size: 16px; letter-spacing: 1px; margin-left: 24px; color: #fff; line-height: 1.4; padding-top: 4px; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -125,20 +125,32 @@
         /* 设置面板（保持不变） */
         #settingsModal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.55); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); z-index: 999999; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; }
         #settingsModal.open { display: flex; opacity: 1; }
-        .settings-modal-box { width: 85%; max-width: 1000px; max-height: 85vh; background: rgba(255, 255, 255, 0.14); backdrop-filter: blur(28px) saturate(180%); -webkit-backdrop-filter: blur(28px) saturate(180%); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.32); padding: 35px 40px; display: flex; flex-direction: column; position: relative; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35); overflow: hidden; }
+        .settings-modal-box { width: 92%; max-width: 1400px; height: 80vh; background: rgba(255, 255, 255, 0.14); backdrop-filter: blur(28px) saturate(180%); -webkit-backdrop-filter: blur(28px) saturate(180%); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.32); padding: 48px 56px; display: flex; flex-direction: column; position: relative; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35); overflow: hidden; }
         .settings-modal-close { position: absolute; top: 20px; right: 25px; cursor: pointer; color: rgba(255, 255, 255, 0.75); font-size: 24px; transition: 0.3s; z-index: 20; }
         .settings-modal-close:hover { color: #fff; transform: scale(1.1); }
         .settings-modal-header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; flex-shrink: 0; }
-        .settings-modal-header .logo { font-family: 'Pacifico-Regular', cursive; font-size: 38px; font-weight: 700; color: #fff; text-shadow: 0 0 12px rgba(255,255,255,0.4); transform: translateY(-10px); }
+        .settings-modal-header .logo { font-family: 'Pacifico-Regular', cursive; font-size: 38px; font-weight: 700; color: #fff; text-shadow: none; transform: translateY(-10px); }
         .settings-modal-header .logo .bg { font-family: 'Pacifico-Regular', cursive; font-size: 38px; font-weight: 700; letter-spacing: 6px; color: #fff; white-space: nowrap; }
         .settings-modal-header .logo .bg .top-small { font-size: 0.5em; letter-spacing: 0; display: inline-block; margin-left: -2px; vertical-align: baseline; }
         @media (min-width: 769px) {
+/* 头部改竖排：logo 在上，4.0.3 + Github 在下，左对齐 */
+            .settings-modal-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+            /* zenlydsp.top 字体变大、字间距拉长 */
+            .settings-modal-header .logo { transform: none; }
             .settings-modal-header .logo,
-            .settings-modal-header .logo .bg { font-size: 45px; }
-            .settings-modal-header .logo .bg { letter-spacing: 20px; }
-            .settings-modal-header .settings-modal-version { margin-left: 15px; }
+            .settings-modal-header .logo .bg { font-size: 90px; }
+            .settings-modal-header .logo .bg { letter-spacing: 12px; }
+            /* 4.0.3 + Github 移到 logo 下一行 */
+            .settings-modal-header .settings-modal-version { margin-left: 4px; font-size: 19px; gap: 16px; }
+            /* 更新日志：左栏与卡片纵向撑满，7 条均匀铺开 */
+            .settings-col-left { display: flex; flex-direction: column; }
+            .settings-update-log { flex: 1; display: flex; flex-direction: column; }
+            .settings-update-log ul { flex: 1; display: flex; flex-direction: column; justify-content: flex-start; padding: 18px 20px; font-size: 16px; }
+            .settings-update-log li { margin-bottom: 12px; }
+            .settings-update-log ul { font-size: 25px; }
+            .settings-update-log li i { font-size: 25px; }
         }
-        .settings-modal-version { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 700; color: #fff; margin-left: -5px; text-shadow: 0 0 12px rgba(255,255,255,0.3); }
+        .settings-modal-version { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 700; color: #fff; margin-left: -5px; text-shadow: none; }
         .github-icon { position: relative; display: inline-flex; align-items: center; color: #fff; text-decoration: none; margin-left: 4px; font-size: 24px; cursor: pointer; }
         .github-icon .github-label { position: absolute; left: calc(100% + 12px); top: 50%; transform: translateY(-50%); background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; padding: 6px 12px; font-size: 13px; font-weight: 400; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.3); white-space: nowrap; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.2s ease, visibility 0.2s ease; z-index: 30; }
         .github-icon:hover .github-label { opacity: 1; visibility: visible; }
@@ -149,8 +161,13 @@
         .settings-col-right { flex: 1.8; min-width: 280px; display: flex; flex-direction: column; }
         .settings-update-log h4 { color: #fff; font-size: 16px; margin-bottom: 15px; font-weight: normal; text-shadow: 0 1px 4px rgba(0,0,0,0.3); }
         .settings-update-log ul { background: rgba(255, 255, 255, 0.12); border-radius: 10px; padding: 18px 20px; list-style: none; font-size: 14px; line-height: 1.6; color: #fff; }
-        .settings-update-log li { margin-bottom: 12px; display: flex; align-items: center; gap: 12px; }
+        .settings-update-log li { margin-bottom: 12px; display: flex; align-items: center; justify-content: flex-start; gap: 0; }
         .settings-update-log li:last-child { margin-bottom: 0; }
+        /* 电脑端：更新日志文字去掉多余空格，不被拉伸、不加字间距（手机端不生效） */
+        @media (min-width: 769px) {
+                 .settings-update-log li { text-align: left; justify-content: flex-start; }
+                 .settings-update-log li .log-text { letter-spacing: 0; word-spacing: 0; white-space: nowrap; flex: 0 0 auto; margin-left: 8px; }
+}
         .settings-update-log li i.fa-plus-circle { color: #aaffaa; }
         .settings-update-log li i.fa-wrench { color: #ffccaa; }
         .settings-update-log li i.fa-cube { color: #99ddff; }
@@ -173,6 +190,7 @@
         .settings-content-box { max-height: 600px; overflow: hidden; transition: max-height 0.35s ease, opacity 0.3s ease, padding 0.35s ease, margin-bottom 0.35s ease, border-color 0.35s ease; }
         .settings-item.collapsed .settings-toggle-icon { transform: rotate(-90deg); }
         .settings-item.collapsed .settings-content-box { max-height: 0 !important; opacity: 0; padding-top: 0 !important; padding-bottom: 0 !important; margin-bottom: 0 !important; border-color: transparent; }
+
         /* 版权中的 zenlydsp 跳转链接（PC + 手机端通用） */
         .copyright-link { color: #fff; text-decoration: none; text-underline-offset: 2px; transition: opacity 0.2s ease; }
 
@@ -368,6 +386,7 @@
         @media (hover: none), (max-width: 768px) {
             #cursor { display: none !important; }
             body, a, button, * { cursor: auto !important; }
+            .github-icon .github-label { display: none !important; }
         }
 
         /* 一言卡片：无动画 */
@@ -392,6 +411,16 @@
         .mobile-menu-toggle { display: none; }
         @media (max-width: 768px) {
             html, body { overflow: hidden !important; height: 100vh !important; width: 100vw !important; }
+            /* 手机端：全局禁止文字选中/复制/长按弹出系统菜单（拖选、双击选词、长按取词均不出现选中高亮） */
+            html, body, body * {
+                -webkit-user-select: none !important;
+                -moz-user-select: none !important;
+                -ms-user-select: none !important;
+                user-select: none !important;
+                -webkit-touch-callout: none !important;
+            }
+            /* 禁止图片、链接被长按拖拽出去 */
+            img, a { -webkit-user-drag: none; }
             .top-empty-space, .float-tip-top { display: none !important; }
             /* F12提醒气泡手机端照常弹出，带同款 i 图标 */
             .float-tip-top.site-tip.show { display: flex !important; }
@@ -455,7 +484,7 @@
             body.capsule-open .interactive-badge { position: fixed !important; top: 70px !important; left: 50% !important; transform: translateX(-50%) !important; width: 90% !important; max-width: 380px !important; margin: 0 !important; z-index: 100000 !important; pointer-events: auto !important; order: unset !important; background: rgba(0,0,0,0.45) !important; }
             body.capsule-open .interactive-badge .badge-title { font-size: 24px !important; }
             body.capsule-open .interactive-badge .badge-text { font-size: 14px !important; }
-            .settings-modal-box { width: 95% !important; padding: 24px 20px !important; max-height: 90vh !important; }
+            .settings-modal-box { width: 95% !important; padding: 24px 20px !important; height: 96vh !important; max-height: 96vh !important; }
             .settings-modal-body { flex-direction: column !important; gap: 20px !important; }
             .settings-col-left, .settings-col-right { flex: none !important; min-width: 0 !important; }
         }
@@ -601,7 +630,7 @@
 
         .center-logo-flow.moved-logo .name .bg {
                  left: -30px;
-                 transform: skewX(-5deg) scaleX(1.17);
+                 transform: skewX(9deg);
                  transform-origin: left center;
       }
 }
@@ -1081,13 +1110,13 @@
                             <div class="settings-update-log">
                                 <h4>更新日志</h4>
                                 <ul>
-                                    <li><i class="fa-solid fa-plus-circle"></i> 采用 Vue 进行重构</li>
-                                    <li><i class="fa-solid fa-plus-circle"></i> 壁纸支持个性化设置</li>
-                                    <li><i class="fa-solid fa-plus-circle"></i> 音乐歌单支持快速自定义</li>
-                                    <li><i class="fa-solid fa-wrench"></i> 修复天气 API</li>
-                                    <li><i class="fa-solid fa-wrench"></i> 时光胶囊显示错误</li>
-                                    <li><i class="fa-solid fa-wrench"></i> 移动端动画及细节</li>
-                                    <li><i class="fa-solid fa-cube"></i> 图标更换为 IconPark</li>
+                                    <li><i class="fa-solid fa-plus-circle"></i><span class="log-text">采用 Vue 进行重构</span></li>
+                                    <li><i class="fa-solid fa-plus-circle"></i><span class="log-text">壁纸支持个性化设置</span></li>
+                                    <li><i class="fa-solid fa-plus-circle"></i><span class="log-text">音乐歌单支持快速自定义</span></li>
+                                    <li><i class="fa-solid fa-wrench"></i><span class="log-text">修复天气 API</span></li>
+                                    <li><i class="fa-solid fa-wrench"></i><span class="log-text">时光胶囊显示错误</span></li>
+                                    <li><i class="fa-solid fa-wrench"></i><span class="log-text">移动端动画及细节</span></li>
+                                    <li><i class="fa-solid fa-cube"></i><span class="log-text">图标更换为 IconPark</span></li>
                                 </ul>
                             </div>
                         </div>
@@ -1521,7 +1550,7 @@
     <script>
     (function() {
         // 仅 PC 端（可悬停的鼠标设备）启用；触屏/手机端直接返回，不改变手机端任何行为
-        if (!window.matchMedia || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+        var isPC = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
         // 1) 阻止鼠标拖选、双击选词、三击选段：selectstart 阶段直接掐断，不出现选中高亮
         document.addEventListener('selectstart', function(e) {
