@@ -396,75 +396,74 @@
     <a href="index.html" class="back-btn">← 返回主页</a>
     <div class="article-wrap">
         <h1 class="article-title">播放器架构</h1>
-        <div class="article-meta">歌曲以 mp3 直链入库 · 全局 Audio 单例同时驱动两处播放器 UI</div>
+        <div class="article-meta">不存 mp3、不建歌单库 · 自建 Meting-API 实时解析网易云/QQ歌单 · APlayer 单例播放 · iframe 常驻不中断</div>
         <div style="background-color:transparent;box-sizing:border-box;font-family:'PingFang SC','Segoe UI',Arial,sans-serif;color:#1A1B1C;padding:8px;">
-          <div style="font-size:12px;color:#6B7280;margin-bottom:14px;">歌曲以 mp3 直链存数据库；前端一个全局 Audio 单例同时驱动两处播放器 UI</div>
+          <div style="font-size:12px;color:#6B7280;margin-bottom:14px;">前端不再维护任何 mp3 直链；点开播放器时才请求自建 Meting-API，由它实时把网易云/QQ歌单解析成可播放直链，交给 APlayer 单例播放</div>
         
           <!-- 数据层 -->
           <div style="display:flex;gap:12px;flex-wrap:wrap;">
             <div style="flex:1 1 260px;min-width:240px;border:1px solid #E4E3DD;border-radius:12px;padding:12px 14px;background:#fff;box-sizing:border-box;">
-              <div style="font-size:13px;font-weight:600;margin-bottom:8px;">① 数据层 · music 表（只存直链，不存音频文件）</div>
+              <div style="font-size:13px;font-weight:600;margin-bottom:8px;">① 音源层 · 第三方音乐平台（零维护，不存音频）</div>
               <div style="display:flex;flex-wrap:wrap;gap:6px;">
-                <span style="font-size:11px;background:#F4F3EE;border-radius:6px;padding:3px 8px;">id</span>
-                <span style="font-size:11px;background:#F4F3EE;border-radius:6px;padding:3px 8px;">title 歌名</span>
-                <span style="font-size:11px;background:#F4F3EE;border-radius:6px;padding:3px 8px;">artist 歌手</span>
-                <span style="font-size:11px;background:rgba(139,200,234,.35);border-radius:6px;padding:3px 8px;font-weight:600;">url · mp3直链</span>
+                <span style="font-size:11px;background:#F4F3EE;border-radius:6px;padding:3px 8px;">网易云 netease</span>
+                <span style="font-size:11px;background:#F4F3EE;border-radius:6px;padding:3px 8px;">QQ音乐 tencent</span>
+                <span style="font-size:11px;background:rgba(139,200,234,.35);border-radius:6px;padding:3px 8px;font-weight:600;">type=playlist 歌单</span>
                 <span style="font-size:11px;background:rgba(139,200,234,.35);border-radius:6px;padding:3px 8px;font-weight:600;">cover 封面</span>
-                <span style="font-size:11px;background:#F4F3EE;border-radius:6px;padding:3px 8px;">sort 排序</span>
+                <span style="font-size:11px;background:#F4F3EE;border-radius:6px;padding:3px 8px;">id=歌单ID</span>
               </div>
             </div>
             <div style="flex:1 1 200px;min-width:200px;border:1px solid #E4E3DD;border-radius:12px;padding:12px 14px;background:#fff;box-sizing:border-box;">
-              <div style="font-size:13px;font-weight:600;margin-bottom:8px;">后台管理（需 Token）</div>
+              <div style="font-size:13px;font-weight:600;margin-bottom:8px;">MUSIC_CONFIG（换歌单只改这里）</div>
               <div style="font-size:12px;line-height:1.9;color:#374151;">
-                POST /music 新增 · PUT /music/:id 改<br>DELETE /music/:id 删 · GET /music 分页
+                API · 你的Deno地址<br>server / type / id · 平台与歌单
               </div>
             </div>
           </div>
         
-          <div style="text-align:center;font-size:18px;color:#8BC8EA;line-height:1;margin:6px 0;">↓ 写入 / 维护</div>
+          <div style="text-align:center;font-size:18px;color:#8BC8EA;line-height:1;margin:6px 0;">↓ 只传 server / type / id，不碰直链</div>
         
-          <!-- 接口层 -->
+          <!-- 解析层 -->
           <div style="border:1px solid rgba(139,200,234,.6);background:linear-gradient(135deg,rgba(139,200,234,.12),rgba(139,200,234,.28));border-radius:12px;padding:12px 14px;">
-            <div style="font-size:13px;font-weight:600;">② 接口层 · GET /api/music/playlist（公开，免登录）</div>
-            <div style="font-size:11px;color:#374151;margin-top:4px;">返回 {code:200, data:[{title,artist,url,cover,sort}...]}，按 sort 升序</div>
+            <div style="font-size:13px;font-weight:600;">② 解析层 · 自建 Meting-API（Deno Deploy，免服务器）</div>
+            <div style="font-size:11px;color:#374151;margin-top:4px;">GET /api?server=netease&amp;type=playlist&amp;id=3778678 → 实时抓取平台数据，返回 [{name,artist,url,pic,lrc}...]，直链/封面/歌词全部现解析</div>
           </div>
         
-          <div style="text-align:center;font-size:18px;color:#8BC8EA;line-height:1;margin:6px 0;">↓ 页面加载时请求一次（结果缓存）</div>
+          <div style="text-align:center;font-size:18px;color:#8BC8EA;line-height:1;margin:6px 0;">↓ 首次点开播放器才请求（懒加载），结果随实例缓存，失败可重试</div>
         
-          <!-- 核心层 -->
+          <!-- 前端核心层 -->
           <div style="border:1.5px solid #8BC8EA;border-radius:12px;padding:14px;background:rgba(139,200,234,.10);">
-            <div style="font-size:13px;font-weight:600;margin-bottom:10px;">③ 前端核心 · useMusicPlayer（模块级单例，全应用共享一份）</div>
+            <div style="font-size:13px;font-weight:600;margin-bottom:10px;">③ 前端核心 · 音乐 IIFE 单例（主页常驻，全应用一个播放器）</div>
             <div style="display:flex;gap:12px;flex-wrap:wrap;">
               <div style="flex:1 1 180px;min-width:170px;background:#fff;border-radius:10px;padding:10px;">
-                <div style="font-size:12px;font-weight:600;margin-bottom:6px;">唯一音频对象</div>
-                <div style="font-size:11px;color:#6B7280;line-height:1.6;">const audio = new Audio()<br>声明在组件外 → 切路由不中断</div>
+                <div style="font-size:12px;font-weight:600;margin-bottom:6px;">加载状态机</div>
+                <div style="font-size:11px;color:#6B7280;line-height:1.6;">idle → loading → done<br>异常进 error，一键重试</div>
               </div>
               <div style="flex:1 1 180px;min-width:170px;background:#fff;border-radius:10px;padding:10px;">
-                <div style="font-size:12px;font-weight:600;margin-bottom:6px;">响应式状态</div>
-                <div style="font-size:11px;color:#6B7280;line-height:1.6;">isPlaying / progress<br>index / tracks / currentTrack</div>
+                <div style="font-size:12px;font-weight:600;margin-bottom:6px;">APlayer 实例</div>
+                <div style="font-size:11px;color:#6B7280;line-height:1.6;">new APlayer({audio:list})</div>
               </div>
               <div style="flex:1 1 180px;min-width:170px;background:#fff;border-radius:10px;padding:10px;">
                 <div style="font-size:12px;font-weight:600;margin-bottom:6px;">控制方法</div>
-                <div style="font-size:11px;color:#6B7280;line-height:1.6;">togglePlay · seek 进度<br>prev / next 循环 · select 选曲</div>
+                <div style="font-size:11px;color:#6B7280;line-height:1.6;">togglePlay · seek 进度<br>loop:all · lrcType:3 · mutex</div>
               </div>
               <div style="flex:1 1 180px;min-width:170px;background:#fff;border-radius:10px;padding:10px;">
-                <div style="font-size:12px;font-weight:600;margin-bottom:6px;">原生事件驱动 UI</div>
-                <div style="font-size:11px;color:#6B7280;line-height:1.6;">timeupdate 进度 · ended 下一首<br>play/pause 图标 · error 自动跳过</div>
+                <div style="font-size:12px;font-weight:600;margin-bottom:6px;">数据映射</div>
+                <div style="font-size:11px;color:#6B7280;line-height:1.6;">name/artist/url<br>pic 封面 / lrc 歌词，强制 https</div>
               </div>
             </div>
           </div>
         
-          <div style="text-align:center;font-size:18px;color:#8BC8EA;line-height:1;margin:6px 0;">↓ 同一份状态 / 同一个 audio，双向同步</div>
+          <div style="text-align:center;font-size:18px;color:#8BC8EA;line-height:1;margin:6px 0;">↓ 同一份状态 / 同一个 APlayer，双向同步</div>
         
           <!-- UI 层 -->
           <div style="display:flex;gap:12px;flex-wrap:wrap;">
             <div style="flex:1 1 240px;min-width:230px;border:1px solid #E4E3DD;border-radius:12px;padding:12px 14px;background:#fff;">
-              <div style="font-size:13px;font-weight:600;">④-A 侧边栏 CD 播放器</div>
-              <div style="font-size:11px;color:#6B7280;margin-top:4px;line-height:1.6;">旋转唱片封面 · 进度条拖动 · 上/播/下 · 可点选歌单</div>
+              <div style="font-size:13px;font-weight:600;">④-A 居中音乐弹窗 #musicModal</div>
+              <div style="font-size:11px;color:#6B7280;margin-top:4px;line-height:1.6;">网易云标题 + APlayer 主体：封面旋转、歌词、进度拖动、歌单、上/播/下</div>
             </div>
             <div style="flex:1 1 240px;min-width:230px;border:1px solid #E4E3DD;border-radius:12px;padding:12px 14px;background:#fff;">
-              <div style="font-size:13px;font-weight:600;">④-B 右下角悬浮播放器</div>
-              <div style="font-size:11px;color:#6B7280;margin-top:4px;line-height:1.6;">耳机按钮 + 播放时音符飘动 · 迷你控制 · 附阅读进度/回到顶部</div>
+              <div style="font-size:13px;font-weight:600;">④-B 左下角悬浮入口 #musicFab</div>
+              <div style="font-size:11px;color:#6B7280;margin-top:4px;line-height:1.6;">点开弹窗、懒加载；播放时 is-playing 高亮，Esc/点遮罩关闭</div>
             </div>
           </div>
         </div>
