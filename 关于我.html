@@ -413,7 +413,8 @@
     .ab-stat .k { font-size:13px; opacity:.92; }
     .ab-map { padding:0; min-height:232px; background:rgba(234,244,248,.45); }
     #abMap { position:absolute; inset:0; z-index:1; }
-    .ab-map .leaflet-container { background:rgba(234,244,248,.3); font:inherit; }
+    #abMap { cursor:pointer; }
+    #abMap.is-hover { box-shadow: inset 0 0 0 2px rgba(73,177,245,.7); }
     .ab-map .leaflet-tile { opacity:.88; }
     .ab-map .loc { position:absolute; left:50%; bottom:12px; transform:translateX(-50%); z-index:500;
         background:rgba(255,255,255,.82); backdrop-filter:blur(6px); border-radius:999px; padding:7px 16px;
@@ -495,7 +496,7 @@
         </div>
 
         <div class="ab-grid">
-          <div class="ab-card ab-span2 ab-bg" style="--bg:url('https://ts1.tc.mm.bing.net/th/id/OIP-C.o_q_gb2RRM4LOHNlPPjeyQHaEJ?r=0&rs=1&pid=ImgDetMain&o=7&rm=3');">
+          <div class="ab-card ab-span2 ab-bg" style="--bg:url('https://cdn-us.imgs.moe/2026/07/07/f1e1d7524f0ca114ffbdd3e1915b970f.png');">
             <div class="ab-label">这里~这里~ 介绍不了我...</div>
             <h3>网名 执笔写修 zenlydsp</h3>
             <p>改不了熬夜的习惯 也忘不了那段回忆.</p>
@@ -603,15 +604,35 @@
       document.getElementById('abFeedBtn').addEventListener('click', function(){ mask.classList.add('show'); });
       document.getElementById('abQrClose').addEventListener('click', close);
       mask.addEventListener('click', function(e){ if(e.target === mask) close(); });
-      // 可拖动/缩放的交互地图（高德栅格瓦片，无需 key）
+      // 展示型地图（高德栅格瓦片，无需 key）：
+      // 关闭拖动手势；手机上“点一下放大、再点一下还原”，电脑上“鼠标悬停放大、移出还原”
       function initMap(){
         if(!window.L) return;
         var el=document.getElementById('abMap'); if(!el || el._done) return; el._done=1;
-        var map=L.map(el,{center:[21.1925,110.3977],zoom:13,zoomControl:true,attributionControl:false});
-        L.tileLayer('https://webrd{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',
-          {subdomains:['01','02','03','04'],maxZoom:18}).addTo(map);
-        L.marker([21.1925,110.3977]).addTo(map).bindPopup('中国 · 广东省 · 湛江市 · 霞山区').openPopup();
+        var HOME=[21.1925,110.3977], HOME_ZOOM=13, zoomed=false;
+        var map=L.map(el,{
+          center:HOME, zoom:HOME_ZOOM,
+          zoomControl:false,        // 不显示 +/− 按钮（想保留可改成 true）
+          dragging:false,           // 关闭单指拖动
+          scrollWheelZoom:false,    // 关闭滚轮缩放
+          doubleClickZoom:false,    // 关闭双击缩放
+          touchZoom:false,          // 关闭双指捏合缩放（关键：不再需要两根手指）
+          attributionControl:false
+        });
+        L.tileLayer('https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}',
+          {subdomains:['1','2','3','4'],maxZoom:18}).addTo(map);
+        L.marker(HOME).addTo(map).bindPopup('中国 · 广东省 · 湛江市 · 霞山区');
         setTimeout(function(){ map.invalidateSize(); }, 200);
+        // 用 flyTo 飞行动画主动放大 / 还原（这就是“点一下就变大”的原理）
+        function zoomIn(){ if(zoomed) return; zoomed=true; el.classList.add('is-hover'); map.flyTo(HOME,HOME_ZOOM+2,{duration:4}); }
+        function zoomOut(){ if(!zoomed) return; zoomed=false; el.classList.remove('is-hover'); map.flyTo(HOME,HOME_ZOOM,{duration:3}); }
+        var isTouch = window.matchMedia && window.matchMedia('(hover: none),(pointer: coarse)').matches;
+        if(isTouch){
+          el.addEventListener('click', function(){ zoomed ? zoomOut() : zoomIn(); }); // 手机：点击切换
+        }else{
+          el.addEventListener('mouseenter', zoomIn);  // 电脑：移入放大
+          el.addEventListener('mouseleave', zoomOut); // 电脑：移出还原
+        }
       }
       if(document.readyState!=='loading') initMap(); else document.addEventListener('DOMContentLoaded',initMap);
       window.addEventListener('load',function(){ if(window.L){var el=document.getElementById('abMap');} });
