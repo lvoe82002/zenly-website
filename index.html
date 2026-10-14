@@ -122,74 +122,245 @@
         .progress-fill { background: #efefef; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; color: #564d59; border-radius: 6px; transition: width 0.4s cubic-bezier(0.22, 0.61, 0.36, 1); }
         .capsule-footer { display: block; width: 100%; text-align: left; margin: 1rem 0 0.5rem; font-size: 0.95rem; color: #fff; }
 
-        /* 设置面板（保持不变） */
-        #settingsModal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.55); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); z-index: 999999; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; }
-        #settingsModal.open { display: flex; opacity: 1; }
-        .settings-modal-box { width: 92%; max-width: 1400px; height: 80vh; background: rgba(255, 255, 255, 0.14); backdrop-filter: blur(28px) saturate(180%); -webkit-backdrop-filter: blur(28px) saturate(180%); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.32); padding: 48px 56px; display: flex; flex-direction: column; position: relative; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35); overflow: hidden; }
-        .settings-modal-close { position: absolute; top: 20px; right: 25px; cursor: pointer; color: rgba(255, 255, 255, 0.75); font-size: 24px; transition: 0.3s; z-index: 20; }
-        .settings-modal-close:hover { color: #fff; transform: scale(1.1); }
-        .settings-modal-header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; flex-shrink: 0; }
-        .settings-modal-header .logo { font-family: 'Pacifico-Regular', cursive; font-size: 38px; font-weight: 700; color: #fff; text-shadow: none; transform: translateY(-10px); }
-        .settings-modal-header .logo .bg { font-family: 'Pacifico-Regular', cursive; font-size: 38px; font-weight: 700; letter-spacing: 6px; color: #fff; white-space: nowrap; }
-        .settings-modal-header .logo .bg .top-small { font-size: 0.5em; letter-spacing: 0; display: inline-block; margin-left: -2px; vertical-align: baseline; }
-        @media (min-width: 769px) {
-/* 头部改竖排：logo 在上，4.0.3 + Github 在下，左对齐 */
-            .settings-modal-header { flex-direction: column; align-items: flex-start; gap: 8px; }
-            /* zenlydsp.top 字体变大、字间距拉长 */
-            .settings-modal-header .logo { transform: none; }
-            .settings-modal-header .logo,
-            .settings-modal-header .logo .bg { font-size: 90px; }
-            .settings-modal-header .logo .bg { letter-spacing: 12px; }
-            /* 4.0.3 + Github 移到 logo 下一行 */
-            .settings-modal-header .settings-modal-version { margin-left: 4px; font-size: 19px; gap: 16px; }
-            /* 更新日志：左栏与卡片纵向撑满，7 条均匀铺开 */
-            .settings-col-left { display: flex; flex-direction: column; }
-            .settings-update-log { flex: 1; display: flex; flex-direction: column; }
-            .settings-update-log ul { flex: 1; display: flex; flex-direction: column; justify-content: flex-start; padding: 18px 20px; font-size: 16px; }
-            .settings-update-log li { margin-bottom: 12px; }
-            .settings-update-log ul { font-size: 25px; }
-            .settings-update-log li i { font-size: 25px; }
-        }
-        .settings-modal-version { display: flex; align-items: center; gap: 12px; font-size: 22px; font-weight: 700; color: #fff; margin-left: -5px; text-shadow: none; }
-        .github-icon { position: relative; display: inline-flex; align-items: center; color: #fff; text-decoration: none; margin-left: 4px; font-size: 24px; cursor: pointer; }
-        .github-icon .github-label { position: absolute; left: calc(100% + 12px); top: 50%; transform: translateY(-50%); background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; padding: 6px 12px; font-size: 13px; font-weight: 400; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.3); white-space: nowrap; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.2s ease, visibility 0.2s ease; z-index: 30; }
-        .github-icon:hover .github-label { opacity: 1; visibility: visible; }
-        .settings-modal-body { display: flex; gap: 30px; flex: 1; overflow-y: auto; padding-right: 5px; color: #fff; }
-        .settings-modal-body::-webkit-scrollbar { width: 4px; }
-        .settings-modal-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.25); border-radius: 4px; }
-        .settings-col-left { flex: 1.2; min-width: 240px; }
-        .settings-col-right { flex: 1.8; min-width: 280px; display: flex; flex-direction: column; }
-        .settings-update-log h4 { color: #fff; font-size: 16px; margin-bottom: 15px; font-weight: normal; text-shadow: 0 1px 4px rgba(0,0,0,0.3); }
-        .settings-update-log ul { background: rgba(255, 255, 255, 0.12); border-radius: 10px; padding: 18px 20px; list-style: none; font-size: 14px; line-height: 1.6; color: #fff; }
-        .settings-update-log li { margin-bottom: 12px; display: flex; align-items: center; justify-content: flex-start; gap: 0; }
-        .settings-update-log li:last-child { margin-bottom: 0; }
-        /* 电脑端：更新日志文字去掉多余空格，不被拉伸、不加字间距（手机端不生效） */
-        @media (min-width: 769px) {
-                 .settings-update-log li { text-align: left; justify-content: flex-start; }
-                 .settings-update-log li .log-text { letter-spacing: 0; word-spacing: 0; white-space: nowrap; flex: 0 0 auto; margin-left: 8px; }
+/* ============================================================
+   全局设置面板（新版，替换原 #settingsModal）
+   ============================================================ */
+#settingsOverlay{
+  --white-60:rgba(255,255,255,.6);
+  --white-40:rgba(255,255,255,.4);
+  --white-30:rgba(255,255,255,.30);
+  --white-19:rgba(255,255,255,.19);
+  --white-15:rgba(255,255,255,.15);
+  --white-10:rgba(255,255,255,.10);
+  --white-02:rgba(255,255,255,.024);
+  position:fixed;inset:0;
+  background:rgba(0,0,0,.5);
+  -webkit-backdrop-filter:blur(20px);
+  backdrop-filter:blur(20px);
+  z-index:1000000;
+  animation:setFade .5s;
+  display:flex;align-items:center;justify-content:center;
 }
-        .settings-update-log li i.fa-plus-circle { color: #aaffaa; }
-        .settings-update-log li i.fa-wrench { color: #ffccaa; }
-        .settings-update-log li i.fa-cube { color: #99ddff; }
-        .settings-item-title { color: #fff; font-size: 16px; font-weight: 600; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; text-shadow: 0 1px 4px rgba(0,0,0,0.3); }
-        .settings-content-box { background: rgba(255, 255, 255, 0.1); border-radius: 10px; padding: 18px 20px; margin-bottom: 20px; }
-        .settings-sub-title { color: #fff; font-size: 14px; margin-bottom: 15px; }
-        .settings-options { display: flex; flex-wrap: wrap; gap: 12px; }
-        .settings-option { border: 1px solid rgba(255, 255, 255, 0.25); padding: 6px 16px 6px 12px; border-radius: 30px; display: flex; align-items: center; gap: 8px; font-size: 13px; color: #fff; cursor: pointer; transition: 0.2s; }
-        .settings-option.active { border-color: #fff; color: #fff; background: rgba(255, 255, 255, 0.18); }
-        .settings-option .radio-btn { width: 14px; height: 14px; border-radius: 50%; border: 1px solid #ccc; box-sizing: border-box; display: flex; align-items: center; justify-content: center; }
-        .settings-option.active .radio-btn { border-color: #fff; }
-        .settings-option.active .radio-btn.selected { background: #fff; }
-        .settings-list-item { color: #fff; font-size: 14px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; cursor: pointer; transition: 0.2s; }
-        .settings-list-item:last-child { border-bottom: none; }
-        .settings-list-item:hover { color: #fff; padding-left: 5px; }
-        /* ========== 设置分区可折叠箭头（PC + 手机端通用）：点标题行收起/展开，箭头朝下↔朝右旋转 ========== */
-        .settings-item-title { width: 100%; cursor: pointer; user-select: none; -webkit-user-select: none; }
-        .settings-toggle-icon { margin-left: auto; font-size: 12px; opacity: 0.65; transition: transform 0.3s ease, opacity 0.2s ease; }
-        .settings-item-title:hover .settings-toggle-icon { opacity: 1; }
-        .settings-content-box { max-height: 600px; overflow: hidden; transition: max-height 0.35s ease, opacity 0.3s ease, padding 0.35s ease, margin-bottom 0.35s ease, border-color 0.35s ease; }
-        .settings-item.collapsed .settings-toggle-icon { transform: rotate(-90deg); }
-        .settings-item.collapsed .settings-content-box { max-height: 0 !important; opacity: 0; padding-top: 0 !important; padding-bottom: 0 !important; margin-bottom: 0 !important; border-color: transparent; }
+#settingsOverlay.hidden{display:none;}
+@keyframes setFade{from{opacity:0;}to{opacity:1;}}
+
+#settingsOverlay .set{
+  position:relative;
+  width:80%;height:80%;
+  background:var(--white-40);
+  border-radius:6px;
+  padding:40px;
+  overflow:hidden;
+  color:#fff;
+  font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
+}
+#settingsOverlay .set .close{
+  position:absolute;top:14px;right:14px;width:28px;height:28px;
+  cursor:pointer;color:#fff;transition:transform .2s;display:flex;
+}
+#settingsOverlay .set .close svg{width:28px;height:28px;}
+#settingsOverlay .set .close:hover{transform:scale(1.2);}
+#settingsOverlay .set .close:active{transform:scale(1);}
+
+/* 两栏布局 */
+#settingsOverlay .panel-row{display:flex;flex-wrap:nowrap;height:100%;gap:40px;}
+#settingsOverlay .col-left{
+  flex:1;min-width:0;height:100%;
+  padding-left:40px;padding-bottom:20px;
+  display:flex;flex-direction:column;justify-content:flex-start;
+}
+#settingsOverlay .col-right{
+  flex:1;min-width:0;height:100%;
+  padding-right:40px;
+  display:flex;flex-direction:column;justify-content:center;
+}
+
+/* —— 左列：Logo / 版本 / 更新日志 —— */
+#settingsOverlay .logo,
+#settingsOverlay .logo *,
+#settingsOverlay .version .num{font-family:'Pacifico-Regular',cursive;}
+#settingsOverlay .logo{
+  transform:translateY(-8%);
+  width:100%;height:260px;
+  display:flex;align-items:baseline;line-height:1;
+}
+#settingsOverlay .logo .big{font-size:5rem;}
+#settingsOverlay .logo .sm{margin-left:-20px;font-size:2rem;}
+#settingsOverlay .version{display:flex;flex-direction:row;align-items:center;}
+#settingsOverlay .version .num{font-size:2rem;}
+#settingsOverlay .version .github{
+  margin-left:12px;margin-top:6px;
+  cursor:pointer;color:#fff;display:flex;align-items:center;
+}
+#settingsOverlay .version .github svg{width:24px;height:24px;flex:none;transition:transform .2s;}
+#settingsOverlay .version .github:hover svg{transform:scale(1.2);}
+#settingsOverlay .version .github .github-label{
+  white-space:nowrap;font-size:13px;color:#fff;
+  background:var(--white-19);border:1px solid rgba(255,255,255,.25);
+  border-radius:6px;
+  /* 点击前隐藏：宽度/内边距/外边距全部收起，透明且不可点 */
+  max-width:0;margin-left:0;padding:0;border-width:0;
+  opacity:0;overflow:hidden;pointer-events:none;
+  transform:translateX(-6px);
+  transition:max-width .3s ease,opacity .25s ease,transform .25s ease,
+             margin-left .3s ease,padding .3s ease,border-width .3s ease;
+}
+/* is-hover：仅鼠标移入时由 JS 添加、移出时移除（电脑端悬停显示）；
+   show-label：仅手指触摸点击时由 JS 添加，添加后一直保持，点别处不消失（手机端） */
+#settingsOverlay .version .github.is-hover .github-label,
+#settingsOverlay .version .github.show-label .github-label{
+  max-width:220px;margin-left:8px;padding:4px 10px;border-width:1px;
+  opacity:1;transform:translateX(0);
+}
+
+#settingsOverlay .update{
+  margin-top:30px;height:100%;min-height:0;
+  border-radius:8px;overflow:hidden;
+  display:flex;flex-direction:column;background:transparent;
+}
+#settingsOverlay .update .card-header{
+  font-weight:700;padding:16px 20px;
+  background:var(--white-30);font-size:15px;
+}
+#settingsOverlay .update .card-body{flex:1;min-height:0;background:var(--white-10);}
+#settingsOverlay .upnote{padding:20px;height:100%;overflow-y:auto;}
+#settingsOverlay .upnote .uptext{display:flex;flex-direction:row;align-items:center;padding-bottom:16px;font-size:14px;}
+#settingsOverlay .upnote .uptext:last-of-type{padding:0;}
+#settingsOverlay .upnote .uptext .i-icon{width:22px;height:22px;margin-right:8px;flex:none;display:flex;}
+#settingsOverlay .upnote .uptext .i-icon svg{width:22px;height:22px;}
+
+/* —— 右列：全局设置 —— */
+#settingsOverlay .right-title{display:flex;align-items:center;flex-direction:row;font-size:18px;margin-bottom:16px;}
+#settingsOverlay .right-title .i-icon{width:28px;height:28px;margin-right:6px;display:flex;}
+#settingsOverlay .right-title .i-icon svg{width:28px;height:28px;}
+
+/* 折叠面板 */
+#settingsOverlay .collapse{border-radius:8px;overflow:hidden;border:1px solid transparent;}
+#settingsOverlay .collapse-item__header{
+  position:relative;height:48px;line-height:48px;
+  background:var(--white-19);
+  color:#fff;font-size:15px;
+  padding-left:18px;padding-right:40px;
+  cursor:pointer;user-select:none;
+  border:none;width:100%;text-align:left;
+}
+#settingsOverlay .collapse-item__header .arrow{
+  position:absolute;right:18px;top:50%;width:15px;height:15px;
+  transform:translateY(-50%);transition:transform .3s;
+  display:flex;align-items:center;justify-content:center;
+}
+#settingsOverlay .collapse-item__header .arrow svg{width:15px;height:15px;}
+#settingsOverlay .collapse-item.active .collapse-item__header .arrow{transform:translateY(-50%) rotate(180deg);}
+#settingsOverlay .collapse-item__wrap{
+  max-height:0;overflow:hidden;
+  background:var(--white-10);
+  transition:max-height .3s ease;
+}
+#settingsOverlay .collapse-item.active .collapse-item__wrap{max-height:400px;}
+#settingsOverlay .collapse-item__content{padding:20px;}
+
+/* 壁纸 / 特效单选组 */
+#settingsOverlay .bg-set .radio-group{display:flex;justify-content:space-between;}
+#settingsOverlay .radio{
+  display:flex;align-items:center;
+  height:40px;margin:10px 16px;padding:0 19px 0 11px;
+  background:var(--white-15);
+  border:2px solid transparent;border-radius:8px;
+  cursor:pointer;white-space:nowrap;
+}
+#settingsOverlay .radio .dot{
+  width:14px;height:14px;border-radius:100%;
+  border:2px solid #eee;background:transparent;
+  position:relative;flex:none;
+}
+#settingsOverlay .radio .dot::after{
+  content:'';position:absolute;inset:0;margin:auto;
+  width:0;height:0;border-radius:100%;background:#fff;
+  transition:all .2s;
+}
+#settingsOverlay .radio .label{font-size:14px;color:#fff;padding-left:8px;}
+#settingsOverlay .radio.is-checked{background:var(--white-02);border:2px solid #eee;}
+#settingsOverlay .radio.is-checked .dot{background:var(--white-30);border-color:#fff;}
+#settingsOverlay .radio.is-checked .dot::after{width:4px;height:4px;}
+
+/* 电脑端：特效设置选项自动换行，第一行排满 5 个，"无"换到第二行、与"雪花"左对齐（手机端样式不受影响） */
+@media(min-width:769px){
+  #settingsOverlay #effectRadioGroup{
+    flex-wrap:wrap;
+    justify-content:space-between;
+  }
+}
+
+/* 其他设置条目 */
+#settingsOverlay .item{display:flex;align-items:center;justify-content:space-between;font-size:14px;min-height:32px;}
+#settingsOverlay .item .text{font-size:14px;color:#fff;}
+#settingsOverlay .placeholder{font-size:14px;color:rgba(255,255,255,.7);}
+
+/* 开关 */
+#settingsOverlay .switch{
+  width:40px;height:20px;border-radius:10px;
+  background:var(--white-19);
+  border:none;position:relative;cursor:pointer;flex:none;
+  transition:background .3s;
+}
+#settingsOverlay .switch .action{
+  position:absolute;top:2px;left:2px;
+  width:16px;height:16px;border-radius:100%;background:#fff;
+  transition:left .3s;
+  display:flex;align-items:center;justify-content:center;
+}
+#settingsOverlay .switch .action svg{width:10px;height:10px;display:none;}
+#settingsOverlay .switch.is-on .action{left:22px;}
+#settingsOverlay .switch.is-on .icon-check{display:block;}
+#settingsOverlay .switch:not(.is-on) .icon-close{display:block;}
+#settingsOverlay .switch .action svg{color:#333;}
+
+/* 折叠箭头颜色 */
+#settingsOverlay .arrow svg path{stroke:#fff;}
+
+/* ============ 面板专属 Toast（主页已有 .toast/#toast，这里刻意改名） ============ */
+.set-toast{
+  position:fixed;top:30px;left:50%;transform:translateX(-50%);
+  background:rgba(255,255,255,.3);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  color:#fff;padding:10px 18px;border-radius:8px;font-size:14px;
+  display:flex;align-items:center;gap:8px;
+  z-index:1000002;opacity:0;transition:opacity .3s,top .3s;
+  pointer-events:none;
+}
+.set-toast.show{opacity:1;top:42px;}
+.set-toast svg{width:18px;height:18px;}
+
+/* 建站日期开关：关闭时隐藏时光胶囊里的“本站已经苟活了…” */
+body.date-off #statAge{display:none!important;}
+
+/* 滚动条 */
+#settingsOverlay .upnote::-webkit-scrollbar{width:6px;}
+#settingsOverlay .upnote::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:3px;}
+
+/* 电脑端：版本号 / Github / 更新日志整体上移（仅 >768px 生效） */
+@media(min-width:769px){
+  #settingsOverlay .logo{height:auto;margin-bottom:30px;}
+}
+
+/* ============ 响应式 ============ */
+@media(max-width:1500px){
+  #settingsOverlay .bg-set .radio-group{flex-wrap:wrap;justify-content:center;}
+  #settingsOverlay .radio{margin:8px;}
+}
+@media(max-width:768px){
+  #settingsOverlay{overflow-y:auto;align-items:flex-start;padding:20px 0;}
+  #settingsOverlay .set{width:94%;height:auto;min-height:90vh;padding:24px;}
+  #settingsOverlay .panel-row{flex-direction:column;flex-wrap:wrap;height:auto;gap:24px;}
+  #settingsOverlay .col-left,#settingsOverlay .col-right{padding:0;height:auto;}
+  #settingsOverlay .col-left{justify-content:flex-start;gap:20px;}
+  #settingsOverlay .logo{height:auto;transform:none;}
+  #settingsOverlay .logo .big{font-size:3.4rem;}
+  #settingsOverlay .logo .sm{margin-left:-20px;font-size:1.5rem;}
+  #settingsOverlay .update{margin-top:0;}
+  #settingsOverlay .bg-set .radio-group{flex-wrap:wrap;justify-content:center;}
+  #settingsOverlay .radio{margin:6px;}
+}
 
         /* 版权中的 zenlydsp 跳转链接（PC + 手机端通用） */
         .copyright-link { color: #fff; text-decoration: none; text-underline-offset: 2px; transition: opacity 0.2s ease; }
@@ -386,7 +557,7 @@
         @media (hover: none), (max-width: 768px) {
             #cursor { display: none !important; }
             body, a, button, * { cursor: auto !important; }
-            .github-icon .github-label { display: none !important; }
+
         }
 
         /* 一言卡片：无动画 */
@@ -484,9 +655,7 @@
             body.capsule-open .interactive-badge { position: fixed !important; top: 70px !important; left: 50% !important; transform: translateX(-50%) !important; width: 90% !important; max-width: 380px !important; margin: 0 !important; z-index: 100000 !important; pointer-events: auto !important; order: unset !important; background: rgba(0,0,0,0.45) !important; }
             body.capsule-open .interactive-badge .badge-title { font-size: 24px !important; }
             body.capsule-open .interactive-badge .badge-text { font-size: 14px !important; }
-            .settings-modal-box { width: 95% !important; padding: 24px 20px !important; height: 96vh !important; max-height: 96vh !important; }
-            .settings-modal-body { flex-direction: column !important; gap: 20px !important; }
-            .settings-col-left, .settings-col-right { flex: none !important; min-width: 0 !important; }
+
         }
         /* ========== 左下角网易云入口 + 居中音乐播放器弹窗 ========== */
         .music-fab {
@@ -1089,67 +1258,119 @@
                 </div>
             </div>
 
-            <div id="settingsModal">
-                <div class="settings-modal-box">
-                    <div class="settings-modal-close"><i class="fa-solid fa-xmark"></i></div>
+<!-- ================= 全局设置面板（新版） ================= -->
+<div class="hidden" id="settingsOverlay">
+  <div class="set" id="setPanel">
+    <!-- 关闭 -->
+    <span class="close" id="settingsCloseBtn" title="关闭">
+      <svg viewBox="0 0 48 48" fill="none"><path d="M24 44C35.0457 44 44 35.0457 44 24C44 12.9543 35.0457 4 24 4C12.9543 4 4 12.9543 4 24C4 35.0457 12.9543 44 24 44Z" fill="rgba(255,255,255,.376)" stroke="rgba(255,255,255,.376)" stroke-width="4" stroke-linejoin="round"/><path d="M29.6567 18.3432L18.343 29.6569" stroke="#FFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.3433 18.3432L29.657 29.6569" stroke="#FFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </span>
 
-                    <div class="settings-modal-header">
-                        <div class="logo">
-                            <span class="bg">zenlydsp<span class="top-small">.top</span></span>
-                        </div>
-                        <div class="settings-modal-version"></i> 4.0.3
-                            <a class="github-icon" href="https://github.com/lvoe82002/zenly-website" target="_blank" rel="noopener noreferrer">
-                                <i class="fa-brands fa-github"></i>
-                                <span class="github-label">Github源代码仓库</span>
-                            </a>
-                        </div>
-                    </div>
+    <div class="panel-row">
+      <!-- ===== 左列 ===== -->
+      <div class="col-left">
+        <div class="logo">
+          <span class="big">zenlydsp</span><span class="sm">.top</span>
+        </div>
 
-                    <div class="settings-modal-body">
-                        <div class="settings-col-left">
-                            <div class="settings-update-log">
-                                <h4>更新日志</h4>
-                                <ul>
-                                    <li><i class="fa-solid fa-plus-circle"></i><span class="log-text">采用 Vue 进行重构</span></li>
-                                    <li><i class="fa-solid fa-plus-circle"></i><span class="log-text">壁纸支持个性化设置</span></li>
-                                    <li><i class="fa-solid fa-plus-circle"></i><span class="log-text">音乐歌单支持快速自定义</span></li>
-                                    <li><i class="fa-solid fa-wrench"></i><span class="log-text">修复天气 API</span></li>
-                                    <li><i class="fa-solid fa-wrench"></i><span class="log-text">时光胶囊显示错误</span></li>
-                                    <li><i class="fa-solid fa-wrench"></i><span class="log-text">移动端动画及细节</span></li>
-                                    <li><i class="fa-solid fa-cube"></i><span class="log-text">图标更换为 IconPark</span></li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="settings-col-right">
-                            <div class="settings-item">
-                                <div class="settings-item-title"><i class="fa-regular fa-sun"></i> 全局设置</div>
-                                <div class="settings-content-box">
-                                    <div class="settings-sub-title">壁纸设置</div>
-                                    <div class="settings-options" id="wallpaperOptions">
-                                        <div class="settings-option" data-wallpaper="default"><div class="radio-btn"></div> 默认壁纸</div>
-                                        <div class="settings-option" data-wallpaper="daily"><div class="radio-btn"></div> 每日一图</div>
-                                        <div class="settings-option" data-wallpaper="scenery"><div class="radio-btn"></div> 随机风景</div>
-                                        <div class="settings-option active" data-wallpaper="anime"><div class="radio-btn selected"></div> 随机动漫</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="settings-item">
-                                <div class="settings-content-box">
-                                    <div class="settings-sub-title">特效设置</div>
-                                    <div class="settings-options" id="effectOptions">
-                                        <div class="settings-option" data-effect="snow"><div class="radio-btn"></div> 雪花</div>
-                                        <div class="settings-option" data-effect="rain"><div class="radio-btn"></div> 下雨</div>
-                                        <div class="settings-option" data-effect="thunder"><div class="radio-btn"></div> 打雷</div>
-                                        <div class="settings-option" data-effect="rainThunder"><div class="radio-btn selected"></div> 下雨+打雷</div>
-                                        <div class="settings-option" data-effect="all"><div class="radio-btn"></div> 全部</div>
-                                        <div class="settings-option" data-effect="none"><div class="radio-btn"></div> 无</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <div>
+          <div class="version">
+            <span class="num">z 4.0.3</span>
+            <span class="github" id="settingsGithubBtn">
+              <svg viewBox="0 0 48 48" fill="none"><path d="M29.3444 30.4765C31.7481 29.977 33.9292 29.1108 35.6247 27.8391C38.5202 25.6676 40 22.3136 40 18.9999C40 16.6752 39.1187 14.505 37.5929 12.6668C36.7427 11.6425 39.2295 3.99989 37.02 5.02919C34.8105 6.05848 31.5708 8.33679 29.8726 7.83398C28.0545 7.29565 26.0733 6.99989 24 6.99989C22.1992 6.99989 20.4679 7.22301 18.8526 7.6344C16.5046 8.23237 14.2591 5.99989 12 5.02919C9.74086 4.05848 10.9736 11.9632 10.3026 12.7944C8.84119 14.6051 8 16.7288 8 18.9999C8 22.3136 9.79086 25.6676 12.6863 27.8391C14.6151 29.2857 17.034 30.2076 19.7401 30.6619" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><path d="M19.7397 30.6619C18.5812 31.937 18.002 33.1478 18.002 34.2944C18.002 35.441 18.002 38.3464 18.002 43.0106" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><path d="M29.3446 30.4766C30.4423 31.9174 30.9912 33.211 30.9912 34.3576C30.9912 35.5042 30.9912 38.3885 30.9912 43.0107" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><path d="M6 31.2155C6.89887 31.3254 7.56554 31.7387 8 32.4554C8.65169 33.5303 11.0742 37.518 13.8251 37.518C15.6591 37.518 17.0515 37.518 18.0024 37.518" stroke="currentColor" stroke-width="4" stroke-linecap="round"/></svg>
+                <span class="github-label">Github 源代码仓库</span>
+            </span>
+          </div>
+
+          <div class="update">
+            <div class="card-header">更新日志</div>
+            <div class="card-body">
+              <div class="upnote" id="setUpnote"></div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== 右列 ===== -->
+      <div class="col-right">
+        <div class="right-title">
+          <span class="i-icon">
+            <svg viewBox="0 0 48 48" fill="none"><path d="M18.2838 43.1713C14.9327 42.1736 11.9498 40.3213 9.58787 37.867C10.469 36.8227 11 35.4734 11 34.0001C11 30.6864 8.31371 28.0001 5 28.0001C4.79955 28.0001 4.60139 28.01 4.40599 28.0292C4.13979 26.7277 4 25.3803 4 24.0001C4 21.9095 4.32077 19.8938 4.91579 17.9995C4.94381 17.9999 4.97188 18.0001 5 18.0001C8.31371 18.0001 11 15.3138 11 12.0001C11 11.0488 10.7786 10.1493 10.3846 9.35011C12.6975 7.1995 15.5205 5.59002 18.6521 4.72314C19.6444 6.66819 21.6667 8.00013 24 8.00013C26.3333 8.00013 28.3556 6.66819 29.3479 4.72314C32.4795 5.59002 35.3025 7.1995 37.6154 9.35011C37.2214 10.1493 37 11.0488 37 12.0001C37 15.3138 39.6863 18.0001 43 18.0001C43.0281 18.0001 43.0562 17.9999 43.0842 17.9995C43.6792 19.8938 44 21.9095 44 24.0001C44 25.3803 43.8602 26.7277 43.594 28.0292C43.3986 28.01 43.2005 28.0001 43 28.0001C39.6863 28.0001 37 30.6864 37 34.0001C37 35.4734 37.531 36.8227 38.4121 37.867C36.0502 40.3213 33.0673 42.1736 29.7162 43.1713C28.9428 40.752 26.676 39.0001 24 39.0001C21.324 39.0001 19.0572 40.752 18.2838 43.1713Z" fill="rgba(255,255,255,.376)" stroke="rgba(255,255,255,.376)" stroke-width="4" stroke-linejoin="round"/><path d="M24 31C27.866 31 31 27.866 31 24C31 20.134 27.866 17 24 17C20.134 17 17 20.134 17 24C17 27.866 20.134 31 24 31Z" fill="#FFF" stroke="#FFF" stroke-width="4" stroke-linejoin="round"/></svg>
+          </span>
+          <span>全局设置</span>
+        </div>
+
+        <div class="collapse" id="setCollapse">
+          <!-- 壁纸设置 -->
+          <div class="collapse-item active" data-name="1">
+            <div class="collapse-item__header">
+              壁纸设置
+              <span class="arrow"><svg viewBox="0 0 48 48" fill="none"><path d="M14 20L24 30L34 20" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+            <div class="collapse-item__wrap">
+              <div class="collapse-item__content">
+                <div class="bg-set">
+                  <div class="radio-group" id="wallpaperRadioGroup"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- 特效设置 -->
+          <div class="collapse-item" data-name="2">
+            <div class="collapse-item__header">
+              特效设置
+              <span class="arrow"><svg viewBox="0 0 48 48" fill="none"><path d="M14 20L24 30L34 20" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+            <div class="collapse-item__wrap">
+              <div class="collapse-item__content">
+                <div class="bg-set">
+                  <div class="radio-group" id="effectRadioGroup"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- 小破站诞生记 -->
+          <div class="collapse-item" data-name="3">
+            <div class="collapse-item__header">
+              小破站诞生记
+              <span class="arrow"><svg viewBox="0 0 48 48" fill="none"><path d="M14 20L24 30L34 20" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+            <div class="collapse-item__wrap">
+              <div class="collapse-item__content">
+                <div class="item">
+                  <span class="text">建站日期显示</span>
+                  <button class="switch is-on" id="siteSwitch" type="button">
+                    <span class="action">
+                      <svg class="icon-check" viewBox="0 0 48 48" fill="none"><path d="M10 24L20 34L40 14" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                      <svg class="icon-close" viewBox="0 0 48 48" fill="none"><path d="M14 14L34 34M14 34L34 14" stroke="currentColor" stroke-width="6" stroke-linecap="round"/></svg>
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 其他设置 -->
+          <div class="collapse-item" data-name="4">
+            <div class="collapse-item__header">
+              其他设置
+              <span class="arrow"><svg viewBox="0 0 48 48" fill="none"><path d="M14 20L24 30L34 20" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+            <div class="collapse-item__wrap">
+              <div class="collapse-item__content"><div class="placeholder">设置内容待增加</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 面板专属 Toast -->
+<div class="set-toast" id="setToast">
+  <svg viewBox="0 0 48 48" fill="none"><path d="M24 44C35.0457 44 44 35.0457 44 24C44 12.9543 35.0457 4 24 4C12.9543 4 4 12.9543 4 24C4 35.0457 12.9543 44 24 44Z" fill="#fff" stroke="#fff" stroke-width="4" stroke-linejoin="round"/><path d="M24 16V26" stroke="#333" stroke-width="4" stroke-linecap="round"/><path d="M24 32L24 34" stroke="#333" stroke-width="4" stroke-linecap="round"/></svg>
+  <span id="setToastText">壁纸设置成功</span>
+</div>
 
             <div class="nav-group-cards">
                 <div class="nav-title">
@@ -1738,121 +1959,219 @@
                 capsuleCloseBtn.addEventListener('click', toggleCapsule);
             }
 
-            const settingsModal = document.getElementById('settingsModal');
-            const settingBtn = document.querySelector('.setting-btn');
-            const modalCloseBtn = document.querySelector('.settings-modal-close');
+/* ================= 全局设置面板（新版） ================= */
+var settingsOverlay = document.getElementById('settingsOverlay');
 
-            function openSettings() {
-                settingsModal.classList.add('open');
-                document.body.classList.add('settings-open');
-            }
+function openSettings() {
+  settingsOverlay.classList.remove('hidden');
+  document.body.classList.add('settings-open');
+}
+function closeSettings() {
+  settingsOverlay.classList.add('hidden');
+  document.body.classList.remove('settings-open');
+}
 
-            function closeSettings() {
-                settingsModal.classList.remove('open');
-                document.body.classList.remove('settings-open');
-            }
+/* 入口：时光胶囊里的齿轮按钮 + 右下角重开齿轮 + 关闭按钮 + 点遮罩空白关闭 */
+var settingBtn = document.querySelector('.setting-btn');
+if (settingBtn) {
+  settingBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    openSettings();
+  });
+}
+document.getElementById('settingsCloseBtn').addEventListener('click', closeSettings);
+settingsOverlay.addEventListener('click', function(e) {
+  if (e.target === settingsOverlay) closeSettings();
+});
+(function () {
+  var githubBtn = document.getElementById('settingsGithubBtn');
+  if (!githubBtn) return;
+  var lastPointerType = 'mouse';
+  /* 记录最后一次操作的指针类型：mouse 鼠标 / touch 手指 / pen 手写笔 */
+  githubBtn.addEventListener('pointerdown', function (e) {
+    lastPointerType = e.pointerType;
+  });
+  /* 鼠标（含支持悬停的手写笔）移入：显示；移出：隐藏 */
+  githubBtn.addEventListener('pointerenter', function (e) {
+    if (e.pointerType === 'mouse' || e.pointerType === 'pen') {
+      this.classList.add('is-hover');
+    }
+  });
+  githubBtn.addEventListener('pointerleave', function (e) {
+    if (e.pointerType === 'mouse' || e.pointerType === 'pen') {
+      this.classList.remove('is-hover');
+    }
+  });
+  /* 点击图标：手机触摸显示文字并打开仓库；stopPropagation 防止刚点开就被下面的收起逻辑关掉 */
+  githubBtn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    if (lastPointerType === 'touch') {
+      this.classList.add('show-label');
+    }
+    window.open('https://github.com/lvoe82002/zenly-website', '_blank');
+  });
+  /* 手机端：点击图标以外的任意位置，文字收起；电脑端不受影响 */
+  document.addEventListener('click', function (e) {
+    if (!githubBtn.contains(e.target)) {
+      githubBtn.classList.remove('show-label');
+    }
+  });
+})();
 
-            if (settingBtn) {
-                settingBtn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    openSettings();
-                });
-            }
-            if (modalCloseBtn) {
-                modalCloseBtn.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    closeSettings();
-                });
-            }
+/* ================= 更新日志 ================= */
+var SET_ICON = {
+  add: '<svg viewBox="0 0 48 48" fill="none"><path d="M24 44C35.0457 44 44 35.0457 44 24C44 12.9543 35.0457 4 24 4C12.9543 4 4 12.9543 4 24C4 35.0457 12.9543 44 24 44Z" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/><path d="M24 16V32" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 24L32 24" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  bug: '<svg viewBox="0 0 48 48" fill="none"><path d="M24 42C36 42 38 31.5324 38 28C38 24.8379 38 20.1712 38 14H10C10 17.4423 10 22.109 10 28C10 31.4506 12 42 24 42Z" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/><path d="M4 8L10 14" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M44 8L38 14" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 27H10" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M44 27H38" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 44L13 38" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M41 44L35 38" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M24 42V14" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M14.9204 39.0407C17.0024 40.783 19.9244 41.9998 23.9999 41.9998C28.1112 41.9998 31.0487 40.7712 33.1341 39.0137" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M32 12.3333C32 7.73096 28.4183 4 24 4C19.5817 4 16 7.73096 16 12.3333V14H32V12.3333Z" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/></svg>'
+};
+var SET_LOG = {
+  new: ['采用 Vue 进行重构', '音乐歌单支持快速自定义', '壁纸支持个性化设置', '音乐播放器支持音量控制'],
+  fix: ['修复天气 API', '时光胶囊显示错误', '移动端动画及细节', '图标更换为 IconPark']
+};
+(function renderSetLog() {
+  var html = '';
+  SET_LOG.new.forEach(function(t) { html += '<div class="uptext"><span class="i-icon">' + SET_ICON.add + '</span><span>' + t + '</span></div>'; });
+  SET_LOG.fix.forEach(function(t) { html += '<div class="uptext"><span class="i-icon">' + SET_ICON.bug + '</span><span>' + t + '</span></div>'; });
+  document.getElementById('setUpnote').innerHTML = html;
+})();
 
-            const snowCanvas = document.getElementById('snowFullScreen');
-            const rainCanvas = document.getElementById('rainCanvas');
-            const lightningCanvas = document.getElementById('lightningCanvas');
-            const effectOptions = document.getElementById('effectOptions');
-            let currentEffect = localStorage.getItem('siteEffect') || 'rainThunder';
+/* ================= 折叠手风琴 ================= */
+(function() {
+  var items = settingsOverlay.querySelectorAll('.collapse-item');
+  items.forEach(function(item) {
+    item.querySelector('.collapse-item__header').addEventListener('click', function() {
+      var willOpen = !item.classList.contains('active');
+      items.forEach(function(i) { i.classList.remove('active'); });
+      if (willOpen) item.classList.add('active');
+    });
+  });
+})();
 
-            window.__snowActive = false;
-            window.__rainActive = false;
-            window.__thunderMode = false;
+/* ================= 单选组通用渲染 ================= */
+function renderSetRadio(groupId, list, checked, attr, onPick) {
+  var g = document.getElementById(groupId);
+  g.innerHTML = list.map(function(c) {
+    return '<div class="radio' + (c.v === checked ? ' is-checked' : '') + '" ' + attr + '="' + c.v + '" role="radio" aria-checked="' + (c.v === checked) + '">'
+      + '<span class="dot"></span><span class="label">' + c.label + '</span></div>';
+  }).join('');
+  Array.prototype.forEach.call(g.querySelectorAll('.radio'), function(el) {
+    el.addEventListener('click', function() {
+      if (el.classList.contains('is-checked')) return;
+      onPick(el.getAttribute(attr));
+    });
+  });
+}
+function syncSetRadio(groupId, attr, val) {
+  var g = document.getElementById(groupId);
+  if (!g) return;
+  Array.prototype.forEach.call(g.querySelectorAll('.radio'), function(r) {
+    var on = r.getAttribute(attr) === val;
+    r.classList.toggle('is-checked', on);
+    r.setAttribute('aria-checked', on ? 'true' : 'false');
+  });
+}
 
-            function setCanvasVisibility(el, show) {
-                if (!el) return;
-                el.style.opacity = show ? '1' : '0';
-                el.style.visibility = show ? 'visible' : 'hidden';
-            }
+/* ================= 特效：雪花 / 下雨 / 打雷 ================= */
+var snowCanvas = document.getElementById('snowFullScreen');
+var rainCanvas = document.getElementById('rainCanvas');
+var lightningCanvas = document.getElementById('lightningCanvas');
+var currentEffect = localStorage.getItem('siteEffect') || 'rainThunder';
+window.__snowActive = false;
+window.__rainActive = false;
+window.__thunderMode = false;
 
-            function applyEffect(effect) {
-                const all = effect === 'all';
-                const snow = effect === 'snow' || all;
-                const rain = effect === 'rain' || effect === 'rainThunder' || all;
-                const thunder = effect === 'thunder' || effect === 'rainThunder' || all;
-                const rainVisible = rain || thunder;
+function setCanvasVisibility(el, show) {
+  if (!el) return;
+  el.style.opacity = show ? '1' : '0';
+  el.style.visibility = show ? 'visible' : 'hidden';
+}
+function applyEffect(effect) {
+  var all = effect === 'all';
+  var snow = effect === 'snow' || all;
+  var rain = effect === 'rain' || effect === 'rainThunder' || all;
+  var thunder = effect === 'thunder' || effect === 'rainThunder' || all;
+  var rainVisible = rain || thunder;
 
-                setCanvasVisibility(snowCanvas, snow);
-                setCanvasVisibility(rainCanvas, rainVisible);
-                setCanvasVisibility(lightningCanvas, thunder);
+  setCanvasVisibility(snowCanvas, snow);
+  setCanvasVisibility(rainCanvas, rainVisible);
+  setCanvasVisibility(lightningCanvas, thunder);
 
-                window.__snowActive = snow;
-                window.__rainActive = rain;
-                window.__thunderMode = thunder;
+  window.__snowActive = snow;
+  window.__rainActive = rain;
+  window.__thunderMode = thunder;
 
-                if (effectOptions) {
-                    effectOptions.querySelectorAll('.settings-option').forEach(opt => {
-                        const isActive = opt.dataset.effect === effect;
-                        opt.classList.toggle('active', isActive);
-                        const rb = opt.querySelector('.radio-btn');
-                        if (rb) rb.classList.toggle('selected', isActive);
-                    });
-                }
-                localStorage.setItem('siteEffect', effect);
-            }
+  syncSetRadio('effectRadioGroup', 'data-effect', effect);
+  localStorage.setItem('siteEffect', effect);
+}
+var EFFECTS = [
+  { v: 'snow', label: '雪花' },
+  { v: 'rain', label: '下雨' },
+  { v: 'thunder', label: '打雷' },
+  { v: 'rainThunder', label: '下雨+打雷' },
+  { v: 'all', label: '全部' },
+  { v: 'none', label: '无' }
+];
+renderSetRadio('effectRadioGroup', EFFECTS, currentEffect, 'data-effect', function(v) {
+  applyEffect(v);
+  showSetToast('特效设置成功');
+});
+applyEffect(currentEffect);
 
-            if (effectOptions) {
-                effectOptions.querySelectorAll('.settings-option').forEach(opt => {
-                    opt.addEventListener('click', () => {
-                        applyEffect(opt.dataset.effect);
-                    });
-                });
-                applyEffect(currentEffect);
-            }
+/* ================= 壁纸 ================= */
+var currentWallpaper = localStorage.getItem('siteWallpaper') || 'anime';
+var wallpapers = {
+  default: 'https://t.mwm.moe/ycy/',
+  daily: 'https://picsum.photos/1920/1080?random=1',
+  scenery: 'https://picsum.photos/1920/1080?random=2',
+  anime: 'https://t.mwm.moe/ycy/'
+};
+function applyWallpaper(type) {
+  var url = wallpapers[type] || wallpapers.default;
+  var wallpaperLayer = document.getElementById('wallpaper-layer');
+  if (wallpaperLayer) {
+    wallpaperLayer.style.background = 'linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(' + url + ') no-repeat center top';
+    wallpaperLayer.style.backgroundSize = 'cover';
+  }
+  syncSetRadio('wallpaperRadioGroup', 'data-v', type);
+  localStorage.setItem('siteWallpaper', type);
+}
+var COVERS = [
+  { v: 'default', label: '默认壁纸' },
+  { v: 'daily', label: '每日一图' },
+  { v: 'scenery', label: '随机风景' },
+  { v: 'anime', label: '随机动漫' }
+];
+renderSetRadio('wallpaperRadioGroup', COVERS, currentWallpaper, 'data-v', function(v) {
+  applyWallpaper(v);
+  showSetToast('壁纸设置成功');
+});
+applyWallpaper(currentWallpaper);
 
-            const wallpaperOptions = document.getElementById('wallpaperOptions');
-            let currentWallpaper = localStorage.getItem('siteWallpaper') || 'anime';
+/* ================= 建站日期开关 ================= */
+(function() {
+  var sw = document.getElementById('siteSwitch');
+  function applyDateSwitch(show) {
+    sw.classList.toggle('is-on', show);
+    sw.setAttribute('aria-checked', show ? 'true' : 'false');
+    document.body.classList.toggle('date-off', !show);
+  }
+  var saved = localStorage.getItem('siteDateShow');
+  applyDateSwitch(saved === null ? true : saved === '1');
+  sw.addEventListener('click', function() {
+    var show = !sw.classList.contains('is-on');
+    applyDateSwitch(show);
+    localStorage.setItem('siteDateShow', show ? '1' : '0');
+  });
+})();
 
-            const wallpapers = {
-                default: 'https://t.mwm.moe/ycy/',
-                daily: 'https://picsum.photos/1920/1080?random=1',
-                scenery: 'https://picsum.photos/1920/1080?random=2',
-                anime: 'https://t.mwm.moe/ycy/'
-            };
-
-            function applyWallpaper(type) {
-                const url = wallpapers[type] || wallpapers.default;
-                const wallpaperLayer = document.getElementById('wallpaper-layer');
-                if (wallpaperLayer) {
-                    wallpaperLayer.style.background = `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${url}) no-repeat center top`;
-                    wallpaperLayer.style.backgroundSize = 'cover';
-                }
-
-                if (wallpaperOptions) {
-                    wallpaperOptions.querySelectorAll('.settings-option').forEach(opt => {
-                        const isActive = opt.dataset.wallpaper === type;
-                        opt.classList.toggle('active', isActive);
-                        const rb = opt.querySelector('.radio-btn');
-                        if (rb) rb.classList.toggle('selected', isActive);
-                    });
-                }
-                localStorage.setItem('siteWallpaper', type);
-            }
-
-            if (wallpaperOptions) {
-                wallpaperOptions.querySelectorAll('.settings-option').forEach(opt => {
-                    opt.addEventListener('click', () => {
-                        applyWallpaper(opt.dataset.wallpaper);
-                    });
-                });
-                applyWallpaper(currentWallpaper);
-            }
+/* ================= 面板专属 Toast ================= */
+var setToastTimer;
+function showSetToast(msg) {
+  var t = document.getElementById('setToast');
+  document.getElementById('setToastText').textContent = msg;
+  t.classList.add('show');
+  clearTimeout(setToastTimer);
+  setToastTimer = setTimeout(function() { t.classList.remove('show'); }, 1800);
+}
 
             updateCapsuleStats();
         })();
