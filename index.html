@@ -660,7 +660,7 @@ body.date-off #statAge{display:none!important;}
         }
         #musicModal.show { display: flex; }
         .music-modal-box {
-            position: relative; width: min(360px, calc(100vw - 32px)); max-height: 86vh;
+            position: relative; width: min(1040px, calc(100vw - 24px)); max-height: 94vh; height: min(94vh, 900px);
             animation: musicModalIn .2s ease;
         }
         .music-modal-close {
@@ -797,6 +797,27 @@ body.date-off #statAge{display:none!important;}
            iframe 内子页面有自己的光标跟随；鼠标在 iframe 上时父文档收不到 mousemove，
            若不隐藏，父光标会在顶部窗口边界 mouseenter 时被重新唤出并冻结在屏幕顶端，形成“残留鼠标”。 */
         body.card-open #cursor { display: none !important; }
+
+        /* 音乐播放器全屏弹层打开期间：同样强制隐藏主页自定义圆圈光标 */
+        body.music-open #cursor { display: none !important; }
+
+        /* === 恢复系统默认鼠标箭头，避免鼠标彻底“隐身”消失 === */
+        body.card-open,
+        body.card-open *,
+        body.music-open,
+        body.music-open * {
+            cursor: auto !important;
+        }
+
+        /* === 对可点击的元素（关闭按钮 X、链接等）恢复系统默认的“小手”指针 === */
+        body.card-open a,
+        body.card-open button,
+        body.music-open a,
+        body.music-open button,
+        #musicModal .music-modal-close {
+            cursor: pointer !important;
+        }
+
         #cardFrame { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; margin: 0; padding: 0; background: #0b0b0d; display: block; }
 
         /* =====================================================================
@@ -995,70 +1016,11 @@ body.date-off #statAge{display:none!important;}
          .toast { bottom: 7.8rem; }
   }
 
-        /* ========== APlayer 深色玻璃风（音乐弹窗内） ========== */
-        .music-fab.is-playing { border-color: rgba(73,177,245,.85); background: rgba(73,177,245,.32); box-shadow: 0 0 18px rgba(73,177,245,.35); }
-
+        /* ========== 音乐弹窗容器 ========== */
         #musicPlayer .music-player-card { padding-bottom: 4px; }
-        #musicPlayer .aplayer-mount.aplayer { background: transparent; color: #fff; box-shadow: none; border-radius: 0; width: 100%; padding: 0 16px 12px; }
-        #musicPlayer .aplayer .aplayer-pic { box-shadow: 0 0 14px rgba(0,0,0,.4); }
-        #musicPlayer .aplayer .aplayer-info { background: transparent; border-bottom: none; }
-        #musicPlayer .aplayer .aplayer-music .aplayer-title { color: #fff; font-weight: 600; }
-        #musicPlayer .aplayer .aplayer-music .aplayer-author { color: rgba(255,255,255,.58); }
-        #musicPlayer .aplayer .aplayer-controller .aplayer-time { color: rgba(255,255,255,.72); text-shadow: none; }
-        #musicPlayer .aplayer .aplayer-controller .aplayer-time .aplayer-icon path { fill: currentColor; }
-        #musicPlayer .aplayer .aplayer-controller .aplayer-bar-wrap .aplayer-bar .aplayer-loaded { background: rgba(255,255,255,.22); }
-        #musicPlayer .aplayer .aplayer-controller .aplayer-bar-wrap .aplayer-bar .aplayer-played { background: #49b1f5; }
-        #musicPlayer .aplayer .aplayer-controller .aplayer-bar-wrap .aplayer-bar .aplayer-played .aplayer-thumb { background: #49b1f5; box-shadow: 0 0 6px rgba(73,177,245,.7); }
-        #musicPlayer .aplayer .aplayer-controller .aplayer-volume-wrap .aplayer-volume-bar-wrap .aplayer-volume-bar { background: rgba(255,255,255,.2); }
-        #musicPlayer .aplayer .aplayer-controller .aplayer-volume-wrap .aplayer-volume-bar-wrap .aplayer-volume-bar .aplayer-volume { background: #49b1f5; }
-        #musicPlayer .aplayer .aplayer-miniswitcher { background: rgba(255,255,255,.14); }
-        #musicPlayer .aplayer .aplayer-miniswitcher .aplayer-icon path { fill: #fff; }
-        #musicPlayer .aplayer .aplayer-lrc { height: 18px; }
-        #musicPlayer .aplayer .aplayer-lrc::before,
-        #musicPlayer .aplayer .aplayer-lrc::after { display: none; }
-        #musicPlayer .aplayer .aplayer-lrc p { color: rgba(255,255,255,.55); }
-        #musicPlayer .aplayer .aplayer-lrc p.aplayer-lrc-current { color: #fff; }
-        #musicPlayer .aplayer .aplayer-list { background: transparent; }
-        #musicPlayer .aplayer .aplayer-list ol { margin: 0 10px; }
-        #musicPlayer .aplayer .aplayer-list ol li { background: transparent; border-top: 1px solid rgba(255,255,255,.08); color: #fff; }
-        #musicPlayer .aplayer .aplayer-list ol li:hover { background: rgba(73,177,245,.14); }
-        #musicPlayer .aplayer .aplayer-list ol li.aplayer-list-light { background: rgba(73,177,245,.2); }
-        #musicPlayer .aplayer .aplayer-list ol li .aplayer-list-index { color: rgba(255,255,255,.5); }
-        #musicPlayer .aplayer .aplayer-list ol li .aplayer-list-author { color: rgba(255,255,255,.5); }
-        #musicPlayer .aplayer .aplayer-list ol li.aplayer-list-light .aplayer-list-index,
-        #musicPlayer .aplayer .aplayer-list ol li.aplayer-list-light .aplayer-list-author { color: #49b1f5; }
 
-/* 播放列表撑满弹窗剩余空间，手机/电脑分别计算，永不超屏 */
-        @media (max-width: 768px) {
-            #musicPlayer .aplayer .aplayer-list:not(.aplayer-list-hide) {
-                margin-top: 16px;
-                max-height: calc(96vh - 224px) !important;
-                max-height: calc(96dvh - 224px) !important;
-                overflow-y: auto;
-            }
-        }
-        @media (min-width: 769px) {
-            #musicPlayer .aplayer .aplayer-list:not(.aplayer-list-hide) {
-                margin-top: 12px;
-                max-height: calc(100vh - 300px) !important;
-                max-height: calc(98dvh - 300px) !important;
-                overflow-y: auto;
-            }
         }
 
-        /* 封面加大 */
-        #musicPlayer .aplayer .aplayer-pic { width: 108px; height: 108px; }
-        #musicPlayer .aplayer .aplayer-info {
-           margin-left: 108px;
-           height: 108px;
-           display: flex;
-           flex-direction: column;
-           box-sizing: border-box;
-           padding-bottom: 10px;
-        }
-        #musicPlayer .aplayer .aplayer-lrc { margin-top: auto; }
-        #musicPlayer .aplayer .aplayer-controller { margin-top: 0; }
-        #musicPlayer .aplayer .aplayer-info { margin-left: 108px; height: 108px; }
         .music-status { padding: 44px 26px; text-align: center; color: rgba(255,255,255,.85); }
         .music-spinner { width: 38px; height: 38px; margin: 0 auto 16px; border: 3px solid rgba(255,255,255,.18); border-top-color: #49b1f5; border-radius: 50%; animation: music-spin .9s linear infinite; }
         .music-err-icon { font-size: 34px; color: #f56c6c; margin-bottom: 14px; }
@@ -1067,12 +1029,85 @@ body.date-off #statAge{display:none!important;}
         .music-retry { background: #49b1f5; color: #fff; border: none; border-radius: 18px; padding: 8px 30px; font-size: 13px; cursor: pointer; transition: background .2s; }
         .music-retry:hover { background: #3a9bd9; }
 
-        /* 电脑端：旧版双栏网格已弃用，弹窗收窄为单栏 APlayer（覆盖上方同媒体查询规则） */
+/* 电脑端：弹窗尺寸适配 */
         @media (min-width: 769px) {
             .music-modal-box { width: min(1100px, calc(100vw - 40px)); max-height: 100vh; }
             .music-modal .music-player-card { border-radius: 18px; }
             .music-modal .card-header { padding: 18px 58px 15px 24px; font-size: 17px; gap: 9px; }
             .music-modal .card-header .head-icon svg { width: 24px; height: 24px; }
+        }
+
+        /* ===== 音乐播放器：全屏铺满（PC + 手机端通用） ===== */
+        @keyframes musicFullscreenIn {
+                   from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+        /* 去掉弹层外边距，让子容器真正贴边 */
+        #musicModal {
+            padding: 0 !important;
+        }
+
+        /* 播放器外壳铺满整个视口 */
+        #musicModal .music-modal-box {
+            position: relative;
+            width: 100vw !important;
+            height: 100vh !important;
+            height: 100dvh !important;   /* 手机端地址栏收缩时不露黑边 */
+            max-width: none !important;
+            max-height: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border-radius: 0 !important;
+            animation: musicFullscreenIn .18s ease !important;
+ }
+
+        /* 中间容器拉满 */
+        #musicModal #musicPlayer {
+            width: 100% !important;
+            height: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        /* 卡片壳拉满，去掉圆角/边框/阴影 */
+        #musicModal #musicPlayer .music-player-card {
+            width: 100% !important;
+            height: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: none !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            background: #09090b !important;
+            overflow: hidden !important;
+        }
+
+        /* iframe 铺满（覆盖 JS 里的内联高度） */
+        #musicModal #musicPlayer iframe {
+            display: block !important;
+            width: 100% !important;
+            height: 100% !important;
+            border: 0 !important;
+        }
+
+        /* 关闭按钮：浮在 iframe 之上，给个深色圆底才看得清；兼容刘海屏安全区 */
+        #musicModal .music-modal-close {
+            top: calc(10px + env(safe-area-inset-top, 0px)) !important;
+            right: calc(1840px + env(safe-area-inset-right, 0px)) !important;
+            width: 46px !important;
+            height: 46px !important;
+            font-size: 28px !important;
+            line-height: 1 !important;
+            color: #fff !important;
+            background: rgba(0, 0, 0, .35) !important;
+            -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(8px);
+            border-radius: 50% !important;
+            z-index: 10 !important;
+        }
+        #musicModal .music-modal-close:hover {
+            background: rgba(0, 0, 0, .55) !important;
         }
     </style>
 </head>
@@ -2422,7 +2457,7 @@ function showSetToast(msg) {
 
             document.addEventListener('mousemove', e => {
                 // iframe 弹层打开期间主页光标一律隐藏，避免与子页面光标重叠 / 残留
-                if (document.body.classList.contains('card-open')) return;
+                if (document.body.classList.contains('card-open') || document.body.classList.contains('music-open')) return;
                 if (!visible) {
                     showAt(e.clientX, e.clientY);
                 } else {
@@ -2440,12 +2475,12 @@ function showSetToast(msg) {
             document.addEventListener('mouseenter', e => {
                 // 从窗口顶部边界（浏览器 UI 方向）重新移入时鼠标往往落在 iframe 上：
                 // 父文档不会再收到 mousemove，若唤出父光标它将冻结在顶端形成残留，弹层期间直接忽略。
-                if (!visible && !document.body.classList.contains('card-open')) showAt(e.clientX, e.clientY);
+                if (!visible && !(document.body.classList.contains('card-open') || document.body.classList.contains('music-open'))) showAt(e.clientX, e.clientY);
             });
             // 窗口重新获得焦点 / bfcache 后退恢复：仅当本页之前已经拿到过鼠标位置时，
             // 才在上次的位置恢复；从未移动过鼠标就继续保持隐藏（绝不在中央出现）
             function restoreCursor() {
-                if (hasPointer && !visible && !document.body.classList.contains('card-open')) showAt(mouseX, mouseY);
+                if (hasPointer && !visible && !(document.body.classList.contains('card-open') || document.body.classList.contains('music-open'))) showAt(mouseX, mouseY);
             }
             window.addEventListener('focus', restoreCursor);
             window.addEventListener('pageshow', restoreCursor);
@@ -2467,7 +2502,7 @@ function showSetToast(msg) {
                 const dt = Math.min((now - lastTime) / 1000, 0.1);
                 lastTime = now;
                 // 弹层打开期间：持续保证父光标处于隐藏状态（关闭后由下一次真实 mousemove 再唤出）
-                if (document.body.classList.contains('card-open')) {
+                if (document.body.classList.contains('card-open') || document.body.classList.contains('music-open')) {
                     if (visible) { cursor.classList.add('hidden'); visible = false; }
                     requestAnimationFrame(animate);
                     return;
@@ -2639,115 +2674,19 @@ function showSetToast(msg) {
     })();
     </script>
     <link rel="stylesheet" href="https://s1.hdslb.com/bfs/static/jinkela/long/font/regular.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js"></script>
+
     <script>
     /* ==================================================================
-       全局音乐播放器（APlayer + Meting-API，主页常驻单例）
-       - 歌单由自建 Meting-API 实时解析网易云 / QQ音乐，无需手动维护 mp3 直链；
-       - 音频对象只存在于主页文档；卡片页通过全屏 iframe 打开，音乐不中断；
-       - 首次点左下角按钮才请求接口（懒加载），失败可一键重试。
+       全局音乐播放器（Folia 版）
+       - 点击左下角按钮弹出 Folia 播放器（https://folia-web.zenlydsp.top）；
+       - 网易云扫码登录 / 听歌全部由 Folia 承担，无需自建 Meting-API；
+       - 首次打开时注入 iframe（懒加载），关闭只隐藏、不销毁。
        ================================================================== */
     (function () {
-        /* ★★★ 音乐配置：换歌单只改下面这一段 ★★★
-           1) 按教程部署：https://github.com/xizeyoupan/Meting-API#deno-deploy
-           2) 把 api 改成你的 Deno Deploy 地址（形如 https://meting-xxx.deno.dev，结尾不要带斜杠）；
-           3) 在网易云打开你喜欢的歌单，浏览器链接里 id= 后面的数字填到 id。
-           server：netease 网易云 / tencent QQ音乐
-           type  ：playlist 歌单 / song 单曲 / artist 歌手 / search 搜索 */
-        const MUSIC_CONFIG = {
-            api: 'https://meting-api-bzrbwyaddvw9.lvoe82002.deno.net',          // ← 你的API根地址
-            server: 'netease',          // 网易云
-            type: 'playlist',              // 歌单
-            id: '3778678',               // 歌单ID（当前是网易云热歌榜）
-            autoplay: false,
-            theme: '#49b1f5'
-        };
-
-        const NETEASE_PATH = 'M13.046 9.388a3.919 3.919 0 0 0-.66.19c-.809.312-1.447.991-1.666 1.775a2.269 2.269 0 0 0-.074.81c.048.546.333 1.05.764 1.35a1.483 1.483 0 0 0 2.01-.286c.406-.531.355-1.183.24-1.636-.098-.387-.22-.816-.345-1.249a64.76 64.76 0 0 1-.269-.954zm-.82 10.07c-3.984 0-7.224-3.24-7.224-7.223 0-.98.226-3.02 1.884-4.822A7.188 7.188 0 0 1 9.502 5.6a.792.792 0 1 1 .587 1.472 5.619 5.619 0 0 0-2.795 2.462 5.538 5.538 0 0 0-.707 2.7 5.645 5.645 0 0 0 5.638 5.638c1.844 0 3.627-.953 4.542-2.428 1.042-1.68.772-3.931-.627-5.238a3.299 3.299 0 0 0-1.437-.777c.172.589.334 1.18.494 1.772.284 1.12.1 2.181-.519 2.989-.39.51-.956.888-1.592 1.064a3.038 3.038 0 0 1-2.58-.44 3.45 3.45 0 0 1-1.44-2.514c-.04-.467.002-.93.128-1.376.35-1.256 1.356-2.339 2.622-2.826a5.5 5.5 0 0 1 .823-.246l-.134-.505c-.37-1.371.25-2.579 1.547-3.007.329-.109.68-.145 1.025-.105.792.09 1.476.592 1.709 1.023.258.507-.096 1.153-.706 1.153a.788.788 0 0 1-.54-.213c-.088-.08-.163-.174-.259-.247a.825.825 0 0 0-.632-.166.807.807 0 0 0-.634.551c-.056.191-.031.406.02.595.07.256.159.597.217.82 1.11.098 2.162.54 2.97 1.296 1.974 1.844 2.35 4.886.892 7.233-1.197 1.93-3.509 3.177-5.889 3.177z';
-        function neteaseIcon(size) { return '<svg class="netease-svg" viewBox="0 0 24 24" width="' + size + '" height="' + size + '" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="' + NETEASE_PATH + '"/></svg>'; }
-
         const root = document.getElementById('musicPlayer');
         const musicFab = document.getElementById('musicFab');
         const musicModal = document.getElementById('musicModal');
         const musicModalClose = document.getElementById('musicModalClose');
-
-        let ap = null, state = 'idle'; // idle | loading | done | error
-
-        function card(inner) { return '<div class="music-player-card">' + inner + '</div>'; }
-
-        function renderLoading() {
-            root.innerHTML = card('<div class="music-status"><div class="music-spinner"></div><p>歌单加载中…</p></div>');
-        }
-
-        function renderError(msg) {
-            root.innerHTML = card(
-                '<div class="music-status">' +
-                '<i class="fa-solid fa-circle-exclamation music-err-icon"></i>' +
-                '<p class="music-err-msg">' + msg + '</p>' +
-                '<p class="music-err-tip">请确认已按教程部署 Meting-API，并把 MUSIC_CONFIG.api 改成你的地址</p>' +
-                '<button type="button" class="music-retry" data-retry>重新加载</button></div>');
-            root.querySelector('[data-retry]').addEventListener('click', loadPlaylist);
-        }
-
-        function buildPlayer(list) {
-            root.innerHTML =
-                card(
-                '  <div class="card-header"><span class="head-icon">' + neteaseIcon(22) + '</span><span>音乐播放器</span></div>' +
-                '  <div class="aplayer-mount"></div>');
-            const mount = root.querySelector('.aplayer-mount');
-            ap = new APlayer({
-                container: mount,
-                fixed: false,
-                autoplay: MUSIC_CONFIG.autoplay,
-                theme: MUSIC_CONFIG.theme,
-                loop: 'all',
-                order: 'list',
-                preload: 'auto',
-                volume: 0.7,
-                mutex: true,
-                lrcType: 3,
-                listFolded: false,
-                listMaxHeight: 340,
-                audio: list.map(function (x) {
-                    return {
-                        name: x.name || x.title || '未命名歌曲',
-                        artist: x.artist || x.author || '',
-                        url: (x.url || '').replace(/^http:\/\//i, 'https://'),
-                        cover: (x.pic || x.cover || '').replace(/^http:\/\//i, 'https://'),
-                        lrc: (x.lrc || '').replace(/^http:\/\//i, 'https://')
-                    };
-                })
-            });
-            ap.on('play', function () { musicFab && musicFab.classList.add('is-playing'); });
-            ap.on('pause', function () { musicFab && musicFab.classList.remove('is-playing'); });
-            window.__musicPlayer = ap;
-        }
-
-        async function loadPlaylist() {
-            if (state === 'loading' || state === 'done') return;
-            state = 'loading';
-            renderLoading();
-            try {
-                const base = String(MUSIC_CONFIG.api).replace(/\/+$/, '');
-                const url = base + '/api?server=' + encodeURIComponent(MUSIC_CONFIG.server) +
-                    '&type=' + encodeURIComponent(MUSIC_CONFIG.type) +
-                    '&id=' + encodeURIComponent(MUSIC_CONFIG.id) +
-                    '&r=' + Math.random();
-                const res = await fetch(url);
-                if (!res.ok) throw new Error('接口返回异常（HTTP ' + res.status + '）');
-                const data = await res.json();
-                if (!Array.isArray(data) || data.length === 0) throw new Error('没有获取到任何歌曲');
-                buildPlayer(data);
-                state = 'done';
-            } catch (e) {
-                state = 'error';
-                let msg = (e && e.message) ? e.message : String(e);
-                if (msg.indexOf('Failed to fetch') !== -1) msg = '无法连接音乐接口';
-                renderError(msg);
-                console.warn('[music]', e);
-            }
-        }
 
         function openMusicModal() {
             if (!musicModal) return;
@@ -2755,15 +2694,25 @@ function showSetToast(msg) {
             musicModal.setAttribute('aria-hidden', 'false');
             musicFab && musicFab.setAttribute('aria-expanded', 'true');
             document.body.classList.add('music-open');
-            if (state === 'idle' || state === 'error') loadPlaylist();
+            if (root && !root.querySelector('iframe')) {
+                root.innerHTML =
+                    '<div class="music-player-card" style="width:100%;height:100%;margin:0;padding:0;overflow:hidden;border-radius:0;">' +
+                    '<iframe src="https://folia-web.zenlydsp.top" title="Folia 音乐播放器" loading="lazy" allow="autoplay; fullscreen" ' +
+                    'style="display:block;width:100%;height:100%;border:0;background:#09090b;"></iframe>' +
+                    '</div>';
+            }
         }
 
-        function closeMusicModal() {
+function closeMusicModal() {
             if (!musicModal) return;
             musicModal.classList.remove('show');
             musicModal.setAttribute('aria-hidden', 'true');
             musicFab && musicFab.setAttribute('aria-expanded', 'false');
             document.body.classList.remove('music-open');
+            
+            // 关闭弹窗后，先将圆圈光标隐藏，等用户下一次真实移动鼠标时再重新唤醒
+            const __pc = document.getElementById('cursor');
+            if (__pc) __pc.classList.add('hidden');
         }
 
         if (root) {
