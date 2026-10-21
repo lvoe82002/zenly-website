@@ -115,7 +115,7 @@
         .capsule-header { display: flex; justify-content: space-between; align-items: center; font-size: 1.1rem; margin: 0.2rem 0 1.5rem; position: relative; }
         .capsule-header .capsule-title { display: flex; align-items: center; gap: 10px; }
         .capsule-header .capsule-title i { font-size: 24px; margin-right: 6px; }
-        .capsule-actions { display: flex; gap: 14px; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; position: absolute; right: 14px; top: 14px; }
+        .capsule-actions { display: flex; gap: 14px; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; position: absolute; right: 14px; top: 1px; }
         .capsule-inner:hover .capsule-actions { opacity: 1; pointer-events: auto; }
         .capsule-btn { background: transparent; border: none; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; color: rgba(255, 255, 255, 0.4); cursor: pointer; font-size: 20px; transition: background 0.2s, transform 0.2s; font-size: 16px; }
         .capsule-btn:hover { color: rgba(255, 255, 255, 0.8); transform: scale(1.2); }
@@ -461,8 +461,8 @@ body.date-off #statAge{display:none!important;}
             .name .bg { font-size: 56px; letter-spacing: 10px; }
             .digital-clock-card { position: relative !important; top: auto !important; right: auto !important; width: auto; min-height: 0; max-width: 80%; padding: 20px 24px; margin-top: 20px; }
             .clock-time { font-size: 3rem; }
-            .clock-date { font-size: 18px; }
-            .clock-weather { font-size: 16px; }
+            .clock-date { font-size: 18px; font-family: 'HarmonyOS_Regular', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; }
+            .clock-weather { font-size: 16px; font-family: 'HarmonyOS_Regular', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; }
             .bar-text { font-size: 12px; }
             .float-tip-top { font-size: 13px !important; padding: 5px 18px 5px 16px !important; gap: 8px !important; }
             .float-tip-top .tip-icon { width: 18px !important; height: 18px !important; font-size: 13px !important; }
@@ -484,8 +484,8 @@ body.date-off #statAge{display:none!important;}
             .logo-img { width: 40px; height: 40px; }
             .name .bg { font-size: 32px; letter-spacing: 6px; }
             .clock-time { font-size: 3.25rem; }
-            .clock-date { font-size: 16px; }
-            .clock-weather { font-size: 14px; }
+            .clock-date { font-size: 16px; font-family: 'HarmonyOS_Regular', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; }
+            .clock-weather { font-size: 14px; font-family: 'HarmonyOS_Regular', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; }
             .bar-text { font-size: 11px; }
             .float-tip-top { font-size: 12px !important; padding: 4px 14px 4px 12px !important; top: 12px !important; gap: 6px !important; }
             .float-tip-top .tip-icon { width: 16px !important; height: 16px !important; font-size: 12px !important; }
@@ -615,8 +615,8 @@ body.date-off #statAge{display:none!important;}
             body.mobile-menu-open .interactive-badge, body.mobile-menu-open .social { display: none !important; }
             body.mobile-menu-open .digital-clock-card { display: block !important; position: relative !important; top: auto !important; right: auto !important; left: auto !important; width: 100% !important; max-width: 440px !important; margin: 90px auto 24px !important; padding: 22px 28px !important; order: 1 !important; }
             body.mobile-menu-open .digital-clock-card.is-pressed { transform: scale(0.98) !important; transition: transform .08s ease-out !important; }
-            body.mobile-menu-open .clock-date { font-size: 17px !important; margin-bottom: 14px !important; }
-            body.mobile-menu-open .clock-weather { font-size: 15px !important; margin-top: 16px !important; }
+            body.mobile-menu-open .clock-date { font-size: 17px !important; margin-bottom: 14px !important; font-family: 'HarmonyOS_Regular', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif !important; }
+            body.mobile-menu-open .clock-weather { font-size: 15px !important; margin-top: 16px !important; font-family: 'HarmonyOS_Regular', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif !important; }
             body.mobile-menu-open .nav-group-cards { display: flex !important; position: relative !important; top: auto !important; right: auto !important; left: auto !important; transform: none !important; width: 100% !important; max-width: 440px !important; margin: 0 auto !important; gap: 10px !important; order: 2 !important; }
             body.mobile-menu-open .nav-title { font-size: 16px !important; margin-bottom: 14px !important; align-self: center !important; transform: translateX(-20px) !important; }
             body.mobile-menu-open .nav-buttons { display: grid !important; grid-template-columns: repeat(4, 1fr) !important; gap: 6px !important; width: 100% !important; }
@@ -631,6 +631,7 @@ body.date-off #statAge{display:none!important;}
             body.mobile-menu-open .mobile-menu-toggle .icon-close { display: block !important; }
             #capsuleOverlay { justify-content: center !important; align-items: stretch !important; padding: 236px 14px calc(50px + env(safe-area-inset-bottom)) !important; }
             .capsule-inner { width: calc(100vw - 28px) !important; max-width: 380px !important; height: 100% !important; max-height: none !important; margin: 0 auto !important; }
+            .capsule-actions { opacity: 1 !important; pointer-events: auto !important; top: 1px !important; }
             body.capsule-open .interactive-badge { position: fixed !important; top: 70px !important; left: 50% !important; transform: translateX(-50%) !important; width: 90% !important; max-width: 380px !important; margin: 0 !important; z-index: 100000 !important; pointer-events: auto !important; order: unset !important; background: rgba(0,0,0,0.45) !important; }
             body.capsule-open .interactive-badge .badge-title { font-size: 24px !important; }
             body.capsule-open .interactive-badge .badge-text { font-size: 14px !important; }
@@ -1251,9 +1252,9 @@ body.date-off #statAge{display:none!important;}
                             <i class="fa-solid fa-hourglass-half"></i> 时光胶囊
                         </div>
                         <div class="capsule-actions">
-                            <div class="capsule-btn setting-btn" title="设置"><i class="fa-solid fa-gear"></i></div>
-                            <div class="capsule-btn close-btn" title="关闭"><i class="fa-solid fa-xmark"></i></div>
-                        </div>
+    <div class="capsule-btn setting-btn" title="设置"><svg width="28" height="28" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18.2838 43.1713C14.9327 42.1736 11.9498 40.3213 9.58787 37.867C10.469 36.8227 11 35.4734 11 34.0001C11 30.6864 8.31371 28.0001 5 28.0001C4.79955 28.0001 4.60139 28.01 4.40599 28.0292C4.13979 26.7277 4 25.3803 4 24.0001C4 21.9095 4.32077 19.8938 4.91579 17.9995C4.94381 17.9999 4.97188 18.0001 5 18.0001C8.31371 18.0001 11 15.3138 11 12.0001C11 11.0488 10.7786 10.1493 10.3846 9.35011C12.6975 7.1995 15.5205 5.59002 18.6521 4.72314C19.6444 6.66819 21.6667 8.00013 24 8.00013C26.3333 8.00013 28.3556 6.66819 29.3479 4.72314C32.4795 5.59002 35.3025 7.1995 37.6154 9.35011C37.2214 10.1493 37 11.0488 37 12.0001C37 15.3138 39.6863 18.0001 43 18.0001C43.0281 18.0001 43.0562 17.9999 43.0842 17.9995C43.6792 19.8938 44 21.9095 44 24.0001C44 25.3803 43.8602 26.7277 43.594 28.0292C43.3986 28.01 43.2005 28.0001 43 28.0001C39.6863 28.0001 37 30.6864 37 34.0001C37 35.4734 37.531 36.8227 38.4121 37.867C36.0502 40.3213 33.0673 42.1736 29.7162 43.1713C28.9428 40.752 26.676 39.0001 24 39.0001C21.324 39.0001 19.0572 40.752 18.2838 43.1713Z" fill="#ffffff60" stroke="#ffffff60" stroke-width="4" stroke-linejoin="round"/><path d="M24 31C27.866 31 31 27.866 31 24C31 20.134 27.866 17 24 17C20.134 17 17 20.134 17 24C17 27.866 20.134 31 24 31Z" fill="#FFF" stroke="#FFF" stroke-width="4" stroke-linejoin="round"/></svg></div>
+    <div class="capsule-btn close-btn" title="关闭"><svg width="28" height="28" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24 44C35.0457 44 44 35.0457 44 24C44 12.9543 35.0457 4 24 4C12.9543 4 4 12.9543 4 24C4 35.0457 12.9543 44 24 44Z" fill="#ffffff60" stroke="#ffffff60" stroke-width="4" stroke-linejoin="round"/><path d="M29.6567 18.3432L18.343 29.6569" stroke="#FFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.3433 18.3432L29.657 29.6569" stroke="#FFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+</div>
                     </div>
 
                     <div class="capsule-body">
