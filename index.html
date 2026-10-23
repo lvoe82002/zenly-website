@@ -752,10 +752,7 @@ body.date-off #statAge{display:none!important;}
             .music-modal .playlist-item { gap: 10px; padding: 10px 12px; border-radius: 8px; font-size: 15px; }
             .music-modal .playlist-item .index { min-width: 30px; font-size: 13px; }
         }
-        /* 时光胶囊最下方：爱发电计时 */
-        .capsule-afd { margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,.12); font-size: .85rem; color: rgba(255,255,255,.72); line-height: 1.95; text-align: center; white-space: nowrap; }
-        .capsule-afd span { display: inline; }
-        @media (max-width: 768px) { .capsule-afd { font-size: .72rem; } }
+
         /* ===== 仅电脑端：隐藏时光胶囊滚动长条（仍可滚轮/触摸滑动）；面板高度随内容收缩，
            去掉“本博客已靠爱发电”文字下方的多余空白（内容超过 80% 视口时才滚动）；手机端保持原样 ===== */
         @media (min-width: 1025px) {
@@ -773,10 +770,6 @@ body.date-off #statAge{display:none!important;}
                  display: none;
      }
 
-         .capsule-afd {
-                 line-height: 1.55;
-     }
-
         .center-logo-flow.moved-logo .name .bg {
                  left: -30px;
                  transform: skewX(9deg);
@@ -789,7 +782,6 @@ body.date-off #statAge{display:none!important;}
         @media (max-width: 768px) {
             .capsule-inner { scrollbar-width: none; -ms-overflow-style: none; padding-bottom: 10px; height: 100%; max-height: none; min-height: 0; }
             .capsule-inner::-webkit-scrollbar { width: 0; height: 0; display: none; }
-            .capsule-afd { line-height: 1.55; }
         }
         /* ========== 卡片全屏弹层：iframe 100% 视口、不缩放不变形，卡片与独立打开时尺寸完全一致；主页不卸载 → 音乐不中断 ========== */
         #cardFrameMask { position: fixed; inset: 0; width: 100vw; height: 100vh; height: 100dvh; z-index: 999990; background: #0b0b0d; display: none; overflow: hidden; }
@@ -1424,11 +1416,11 @@ body.date-off #statAge{display:none!important;}
                         <span>博客</span>
                     </a>
                     <a href="https://breeyt.zenlydsp.top/" target="_blank" rel="noopener noreferrer" class="nav-btn"><svg style="width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 18 C7.5 18 7.5 6 12 6 S16.5 15 21 4.5"/><circle cx="12" cy="6" r="1.5" fill="currentColor" stroke="none"/></svg><span>你的一生</span></a>
-                    <a href="https://localhost.xn--io0a7i/" target="_blank" rel="noopener noreferrer" class="nav-btn"><i class="fa-solid fa-terminal"></i><span>localhost</span></a>
+                    <a href="https://home.zenlydsp.top/" target="_blank" rel="noopener noreferrer" class="nav-btn"><svg viewBox="0 0 16 16" style="width:22px;height:22px;" aria-hidden="true"><g fill="none"><path fill="currentColor" d="M11.5286 1.87149C11.5769 1.73005 11.5356 1.5733 11.4233 1.47452C11.0472 1.14247 10.0965 0.443125 8.66911 0.339708C7.07054 0.223769 6.08089 0.652279 5.58096 0.969951C5.36531 1.10676 5.35326 1.41748 5.55499 1.57422L9.62723 4.73936C9.98617 5.01807 10.5125 4.8604 10.6591 4.43003L11.5286 1.87149Z"/><path fill="currentColor" d="M1.49017 11.2664C1.32368 11.3781 1.24855 11.584 1.30235 11.7774C1.45724 12.3339 1.91868 13.4919 3.22833 14.5456C4.53797 15.5992 6.08738 15.7128 6.74962 15.6966C6.94764 15.692 7.12016 15.5617 7.17998 15.3724L9.79046 7.11064C9.97875 6.51425 9.31048 6.01386 8.79154 6.3626L1.49017 11.2664Z"/><path fill="currentColor" d="M3.39813 2.54827C3.27013 2.49773 3.12683 2.50607 3.00579 2.57193C2.52256 2.83488 1.28526 3.64506 0.647135 5.30947C0.154627 6.59222 0.328071 8.01085 0.463488 8.70463C0.508009 8.9314 0.747306 9.06218 0.962489 8.97824L8.79485 5.92024C9.35414 5.70181 9.35646 4.91111 8.7981 4.6899L3.39813 2.54827Z"/><path fill="currentColor" d="M15.0167 8.46843C15.243 8.62194 15.5528 8.48652 15.5922 8.21569C15.6961 7.49872 15.7861 6.25076 15.371 5.30933C14.8177 4.05487 13.8786 3.28133 13.433 2.9669C13.292 2.86766 13.1019 2.87786 12.9725 2.99241L10.9959 4.74541C10.6732 5.03154 10.7066 5.54492 11.0636 5.78746L15.0167 8.46936V8.46843Z"/><path fill="currentColor" d="M9.49413 15.1604C9.47372 15.3937 9.67128 15.5866 9.90409 15.5616C10.6531 15.4813 12.1918 15.1841 13.3447 14.0827C14.467 13.0109 14.832 11.7384 14.9382 11.2319C14.9669 11.0951 14.9326 10.9528 14.8445 10.8442L11.3886 6.57909C11.0143 6.11719 10.2681 6.34535 10.2162 6.93757L9.49366 15.1604H9.49413Z"/></g></svg><span>随机图片API</span></a>
                     <a href="javascript:void(0)" class="nav-btn" onclick="window.__go && window.__go('关于我.html');"><i class="fa-solid fa-user"></i><span>关于我</span></a>
                     <div class="nav-row2">
                     <a href="https://www.terseai.org/" target="_blank" rel="noopener noreferrer" class="nav-btn"><svg style="width:22px;height:22px;fill:currentColor;" viewBox="0 0 24 24"><path d="M20.5 11H19V7c0-1.1-.9-2-2-2h-4V3.5C13 2.12 11.88 1 10.5 1S8 2.12 8 3.5V5H4c-1.1 0-1.99.9-1.99 2v3.8H3.5c1.49 0 2.7 1.21 2.7 2.7s-1.21 2.7-2.7 2.7H2V20c0 1.1.9 2 2 2h3.8v-1.5c0-1.49 1.21-2.7 2.7-2.7 1.49 0 2.7 1.21 2.7 2.7V22H17c1.1 0 2-.9 2-2v-4h1.5c1.38 0 2.5-1.12 2.5-2.5S21.88 11 20.5 11z"></path></svg><span>Terse插件</span></a>
-                    <a href="javascript:void(0)" class="nav-btn" onclick="window.__go && window.__go('播放器架构.html');"><svg style="width:22px;height:22px;fill:currentColor;" viewBox="0 0 24 24"><path d="M13.046 9.388a3.919 3.919 0 0 0-.66.19c-.809.312-1.447.991-1.666 1.775a2.269 2.269 0 0 0-.074.81c.048.546.333 1.05.764 1.35a1.483 1.483 0 0 0 2.01-.286c.406-.531.355-1.183.24-1.636-.098-.387-.22-.816-.345-1.249a64.76 64.76 0 0 1-.269-.954zm-.82 10.07c-3.984 0-7.224-3.24-7.224-7.223 0-.98.226-3.02 1.884-4.822A7.188 7.188 0 0 1 9.502 5.6a.792.792 0 1 1 .587 1.472 5.619 5.619 0 0 0-2.795 2.462 5.538 5.538 0 0 0-.707 2.7 5.645 5.645 0 0 0 5.638 5.638c1.844 0 3.627-.953 4.542-2.428 1.042-1.68.772-3.931-.627-5.238a3.299 3.299 0 0 0-1.437-.777c.172.589.334 1.18.494 1.772.284 1.12.1 2.181-.519 2.989-.39.51-.956.888-1.592 1.064a3.038 3.038 0 0 1-2.58-.44 3.45 3.45 0 0 1-1.44-2.514c-.04-.467.002-.93.128-1.376.35-1.256 1.356-2.339 2.622-2.826a5.5 5.5 0 0 1 .823-.246l-.134-.505c-.37-1.371.25-2.579 1.547-3.007.329-.109.68-.145 1.025-.105.792.09 1.476.592 1.709 1.023.258.507-.096 1.153-.706 1.153a.788.788 0 0 1-.54-.213c-.088-.08-.163-.174-.259-.247a.825.825 0 0 0-.632-.166.807.807 0 0 0-.634.551c-.056.191-.031.406.02.595.07.256.159.597.217.82 1.11.098 2.162.54 2.97 1.296 1.974 1.844 2.35 4.886.892 7.233-1.197 1.93-3.509 3.177-5.889 3.177z"></path></svg><span>播放器架构</span></a>
+                    <a href="https://localhost.xn--io0a7i/" target="_blank" rel="noopener noreferrer" class="nav-btn"><i class="fa-solid fa-terminal"></i><span>localhost</span></a>
                     <a href="https://raw.githubusercontent.com/lvoe82002/zenly-website/main/index.html" target="_blank" rel="noopener noreferrer" class="nav-btn"><i class="fa-solid fa-code"></i><span>主页源码</span></a>
                     <a href="javascript:void(0)" class="nav-btn" onclick="window.__goHome && window.__goHome();"><i class="fa-regular fa-compass"></i><span>起始页</span></a>
                 </div>
@@ -1438,6 +1430,7 @@ body.date-off #statAge{display:none!important;}
                 <div class="nav-page">
                     <div class="nav-buttons">
                     <a href="https://gitee.com/write-and-repair/termux-rc" target="_blank" rel="noopener noreferrer" class="nav-btn"><svg style="width:22px;height:22px;fill:currentColor;" viewBox="0 0 24 24"><path d="M11.984 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.016 0zm6.09 5.333c.328 0 .593.266.592.593v1.482a.594.594 0 0 1-.593.592H9.777c-.982 0-1.778.796-1.778 1.778v5.63c0 .327.266.592.593.592h5.63c.982 0 1.778-.796 1.778-1.778v-.296a.593.593 0 0 0-.592-.593h-4.15a.592.592 0 0 1-.592-.592v-1.482a.593.593 0 0 1 .593-.592h6.815c.327 0 .593.265.593.592v3.408a4 4 0 0 1-4 4H5.926a.593.593 0 0 1-.593-.593V9.778a4.444 4.444 0 0 1 4.445-4.444h8.296Z"></path></svg><span>Termux</span></a>
+                    <a href="javascript:void(0)" class="nav-btn" onclick="window.__go && window.__go('播放器架构.html');"><svg style="width:22px;height:22px;fill:currentColor;" viewBox="0 0 24 24"><path d="M13.046 9.388a3.919 3.919 0 0 0-.66.19c-.809.312-1.447.991-1.666 1.775a2.269 2.269 0 0 0-.074.81c.048.546.333 1.05.764 1.35a1.483 1.483 0 0 0 2.01-.286c.406-.531.355-1.183.24-1.636-.098-.387-.22-.816-.345-1.249a64.76 64.76 0 0 1-.269-.954zm-.82 10.07c-3.984 0-7.224-3.24-7.224-7.223 0-.98.226-3.02 1.884-4.822A7.188 7.188 0 0 1 9.502 5.6a.792.792 0 1 1 .587 1.472 5.619 5.619 0 0 0-2.795 2.462 5.538 5.538 0 0 0-.707 2.7 5.645 5.645 0 0 0 5.638 5.638c1.844 0 3.627-.953 4.542-2.428 1.042-1.68.772-3.931-.627-5.238a3.299 3.299 0 0 0-1.437-.777c.172.589.334 1.18.494 1.772.284 1.12.1 2.181-.519 2.989-.39.51-.956.888-1.592 1.064a3.038 3.038 0 0 1-2.58-.44 3.45 3.45 0 0 1-1.44-2.514c-.04-.467.002-.93.128-1.376.35-1.256 1.356-2.339 2.622-2.826a5.5 5.5 0 0 1 .823-.246l-.134-.505c-.37-1.371.25-2.579 1.547-3.007.329-.109.68-.145 1.025-.105.792.09 1.476.592 1.709 1.023.258.507-.096 1.153-.706 1.153a.788.788 0 0 1-.54-.213c-.088-.08-.163-.174-.259-.247a.825.825 0 0 0-.632-.166.807.807 0 0 0-.634.551c-.056.191-.031.406.02.595.07.256.159.597.217.82 1.11.098 2.162.54 2.97 1.296 1.974 1.844 2.35 4.886.892 7.233-1.197 1.93-3.509 3.177-5.889 3.177z"></path></svg><span>播放器架构</span></a>
                         <a href="https://status.zenlydsp.top/" target="_blank" rel="noopener noreferrer" class="nav-btn"><i class="fa-solid fa-laptop-code"></i><span>站点监测</span></a>
                     </div>
                 </div>
@@ -2051,7 +2044,7 @@ var SET_ICON = {
   bug: '<svg viewBox="0 0 48 48" fill="none"><path d="M24 42C36 42 38 31.5324 38 28C38 24.8379 38 20.1712 38 14H10C10 17.4423 10 22.109 10 28C10 31.4506 12 42 24 42Z" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/><path d="M4 8L10 14" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M44 8L38 14" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 27H10" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M44 27H38" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 44L13 38" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M41 44L35 38" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M24 42V14" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M14.9204 39.0407C17.0024 40.783 19.9244 41.9998 23.9999 41.9998C28.1112 41.9998 31.0487 40.7712 33.1341 39.0137" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M32 12.3333C32 7.73096 28.4183 4 24 4C19.5817 4 16 7.73096 16 12.3333V14H32V12.3333Z" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/></svg>'
 };
 var SET_LOG = {
-  new: ['采用 Vue 进行重构', '接入 Folia 音乐播放器支持扫码登录', '音乐歌单支持快速自定义', '壁纸支持个性化设置'],
+  new: ['采用 Vue 进行重构', '接入 Folia 音乐播放器 支持扫码登录', '音乐歌单支持快速自定义', '壁纸支持个性化设置'],
   fix: ['修复天气 API', '时光胶囊显示错误', '移动端动画及细节', '图标更换为 IconPark']
 };
 (function renderSetLog() {
