@@ -2530,28 +2530,99 @@ function showSetToast(msg) {
         (function () {
             var AMAP_KEY = 'a9d68f746db62b73a21db9416da2db97';
             var weatherEl = document.getElementById('clockWeather');
-            function fail(msg) {
+            var TIMEOUT = 8000;   // 单次请求最长等待 8 秒，超时直接判失败，避免一直卡在“正在定位…”
+
+            function fail(msg, detail) {
                 weatherEl.textContent = msg || '天气数据获取失败';
-                console.error(msg);
+                if (detail) console.warn('[天气] ' + msg + '：', detail);
+                else console.warn('[天气] ' + msg);
+                // 关键：先等问候语（早上好/下午好…）完整显示并退场后，再弹天气失败气泡；
+                // 若本次会话不显示问候语，__greetingDone 会被直接置 true，天气失败也会立刻弹。
+                waitGreetingThenTip(msg || '天气数据获取失败', 3000);
             }
-            function getJSON(url) { return fetch(url).then(function (r) { return r.json(); }); }
-            getJSON('https://restapi.amap.com/v3/ip?key=' + AMAP_KEY).then(function (res) {
-                if (!res.status) { fail('地理位置获取失败'); return; }
-                // 个别网络（如直辖市）city 字段为空数组，退而使用 province
-                var city = Array.isArray(res.city) ? '' : res.city;
-                if (!city) city = res.province || '';
-                getJSON('https://restapi.amap.com/v3/weather/weatherInfo?key=' + AMAP_KEY + '&city=' + res.adcode)
-                    .then(function (w) {
-                        if (!w.status) { fail('天气信息获取失败'); return; }
-                        var live = w.lives[0];
-                        weatherEl.innerHTML = '<span>' + city + ' </span>'
-                            + '<span>' + live.weather + ' </span>'
-                            + '<span>' + live.temperature + '℃</span>'
-                            + '<span class="sm-hidden"> ' + live.winddirection + '风 </span>'
-                            + '<span class="sm-hidden">' + live.windpower + ' 级</span>';
+
+            /* 等问候语退场后再弹顶部失败气泡；__greetingDone 是页面顶部脚本里维护的问候语生命周期标记 */
+            function waitGreetingThenTip(text, duration) {
+                var tipShown = false;
+                function show() {
+                    if (tipShown) return;
+                    tipShown = true;
+                    if (window.enqueueTopTip) window.enqueueTopTip(text, duration, 'close');
+                    else if (window.showSiteTip) window.showSiteTip(text, duration, 'close');
+                }
+                if (window.__greetingDone) { show(); return; }
+                var waited = 0;
+                var timer = setInterval(function () {
+                    waited += 200;
+                    if (window.__greetingDone) {
+                        clearInterval(timer);
+                        show();
+                    } else if (waited >= 15000) {
+                        // 兜底：最多等 15 秒，避免问候语异常导致提示永远不出现
+                        clearInterval(timer);
+                        show();
+                    }
+                }, 200);
+            }
+
+            function getJSON(url) {
+                var ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+                var timer = null;
+                if (ctrl) timer = setTimeout(function () { ctrl.abort(); }, TIMEOUT);
+                return fetch(url, ctrl ? { signal: ctrl.signal } : undefined)
+                    .then(function (r) {
+                        if (!r.ok) throw new Error('HTTP ' + r.status);
+                        return r.json();
                     })
-                    .catch(function () { fail('天气信息获取失败'); });
-            }).catch(function () { fail('地理位置获取失败'); });
+                    .then(function (data) {
+                        if (timer) clearTimeout(timer);
+                        return data;
+                    }, function (err) {
+                        if (timer) clearTimeout(timer);
+                        throw err;
+                    });
+            }
+
+            getJSON('https://restapi.amap.com/v3/ip?key=' + AMAP_KEY)
+                .then(function (res) {
+                    // 高德的 status 是字符串："1" 成功，"0" 失败；不能用 !res.status 判断（"0" 也是真值）
+                    if (String(res.status) !== '1') {
+                        fail('天气信息获取失败', res.info || res);
+                        return;
+                    }
+                    // 个别网络（如直辖市）city 字段为空数组，退而使用 province
+                    var city = Array.isArray(res.city) ? '' : (res.city || '');
+                    if (!city) city = Array.isArray(res.province) ? '' : (res.province || '');
+                    var adcode = Array.isArray(res.adcode) ? '' : (res.adcode || '');
+                    if (!adcode) {
+                        fail('天气信息获取失败', 'adcode 为空（当前网络出口 IP 无法被高德识别）');
+                        return;
+                    }
+                    return getJSON('https://restapi.amap.com/v3/weather/weatherInfo?key=' + AMAP_KEY + '&city=' + adcode)
+                        .then(function (w) {
+                            if (String(w.status) !== '1') {
+                                fail('天气信息获取失败', w.info || w);
+                                return;
+                            }
+                            var live = w.lives && w.lives[0];
+                            if (!live) {
+                                fail('天气信息获取失败', 'lives 为空');
+                                return;
+                            }
+                            weatherEl.innerHTML = '<span>' + city + ' </span>'
+                                + '<span>' + live.weather + ' </span>'
+                                + '<span>' + live.temperature + '℃</span>'
+                                + '<span class="sm-hidden"> ' + live.winddirection + '风 </span>'
+                                + '<span class="sm-hidden">' + live.windpower + ' 级</span>';
+                        });
+                })
+                .catch(function (err) {
+                    // 超时（AbortError）、网络错误、JSON 解析错误都会走到这里
+                    var reason = (err && err.name === 'AbortError')
+                        ? '请求超时'
+                        : ((err && err.message) || '网络错误');
+                    fail('天气信息获取失败', reason);
+                });
         })();
     </script>    <script>
     (function() {
