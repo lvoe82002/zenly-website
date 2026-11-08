@@ -540,7 +540,7 @@ body.date-off #statAge{display:none!important;}
 
         }
 
-/* 一言卡片：尺寸与时钟卡片一致（255×141，毛玻璃） */
+        /* 一言卡片：尺寸与时钟卡片一致（255×141，毛玻璃） */
         .hitokoto-side { position: absolute; right: calc(14% + 318px); top: -361px; transform: none; z-index: 99; pointer-events: auto; }
         .hitokoto-card { position: relative; width: 255px; min-height: 141px; padding: 20px; border-radius: 6px; background: rgba(0,0,0,.2509803922); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); color: #fff; cursor: pointer; transition: all .3s; display: flex; flex-direction: column; }
         .hitokoto-card:hover { transform: scale(1.01); }
@@ -802,7 +802,7 @@ body.date-off #statAge{display:none!important;}
             cursor: auto !important;
         }
 
-        /* === 对可点击的元素（关闭按钮 X、链接等）恢复系统默认的“小手”指针 === */
+        /* === 对可点击的元素（关闭按钮 X、链接等）恢复系统默认 === */
         body.card-open a,
         body.card-open button,
         body.music-open a,
@@ -1517,7 +1517,7 @@ body.date-off #statAge{display:none!important;}
     </div>
     <div class="toast" id="toast"></div>
     <!-- 静态占位：供内嵌脚本扫描到公告图片，实际内容由 JS 引用其 src -->
-    <img hidden id="tplNoticeImg" src="https://iili.io/nNO01ne.webp" alt="壁纸bg.jpg">
+    <img hidden id="tplNoticeImg" src="https://iili.io/nbTMk22.jpg" alt="nbTMk22.jpg">
 
     <div class="particles" id="particles"></div>
     <div class="mobile-menu-toggle" id="mobileMenuToggle">
@@ -2975,7 +2975,7 @@ function closeMusicModal() {
                    '<p class="notice-bullet">本次新增了站点监测、Folia音乐播放器、公告通知等功能，欢迎多多体验；测试阶段功能可能随时调整，若遇到显示异常，可尝试强制刷新（电脑端 Ctrl + F5）清除缓存。</p>'+
                    '<p class="notice-bullet">站点监测功能现已全面开放使用，会定时探测主页、壁纸API、天气API的连通情况，实时展示各项服务可用状态。当服务连续探测失败，系统自动推送邮件告警，以便及时处理故障。</p>'+
                    '<p class="notice-bullet">天气API接口基于高德 IP 定位，需要在 WiFi / 宽带网络下使用；每月5000API配额天气流量包，手机流量或部分公共 WiFi（如校园网）的出口 IP 无法被高德识别时，会提示“天气信息获取失败”，这属于网络环境限制、并非代码问题，切换其它WiFi网络后即可恢复。</p>'+
-                   '<p><img src="'+NOTICE_IMG+'" alt="壁纸bg.jpg" style="width:375px;max-width:100%;height:auto;margin-top:.9rem;"></p>',
+                   '<p><img src="'+NOTICE_IMG+'" alt="nbTMk22.jpg" style="width:375px;max-width:100%;height:auto;margin-top:.9rem;"></p>',
           type:2, level:'L', isRead:'0', targetType:'1', targetName:'',
           publisherName:'阿修', publishTime:'2026-09-10 15:28:40'
         }]
