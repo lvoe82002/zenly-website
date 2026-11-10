@@ -442,12 +442,12 @@ body.date-off #statAge{display:none!important;}
         .copyright-bar { width: 100vw; position: relative; left: 50%; transform: translateX(-50%); background: rgba(255, 255, 255, 0.22); backdrop-filter: blur(16px); border-radius: 0; padding: 14px 24px; box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.2); margin-top: 10px; margin-bottom: 0; }
         .copyright-text { color: #ffffff; opacity: 1; font-size: 16px; font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; letter-spacing: 0.5px; font-weight: 400; white-space: nowrap; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15); }
 
-        .float-tip-top { position: fixed; top: 26px; left: 50%; transform: translateX(-50%); background: rgba(30, 30, 30, 0.75) !important; backdrop-filter: blur(6px) !important; -webkit-backdrop-filter: blur(6px) !important; border-radius: 50px !important; padding: 6px 22px 6px 20px !important; display: none !important; align-items: center !important; gap: 10px !important; color: #ffffff !important; font-size: 14px !important; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important; z-index: 99999 !important; white-space: nowrap !important; pointer-events: none !important; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important; border: none !important; animation: floatTipIn 0.35s cubic-bezier(0.22, 0.61, 0.36, 1) forwards; }
+        .float-tip-top { position: fixed; top: 26px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.25) !important; backdrop-filter: blur(10px) !important; -webkit-backdrop-filter: blur(10px) !important; border-radius: 50px !important; padding: 10px 30px 10px 26px !important; display: none !important; align-items: center !important; gap: 10px !important; color: #efefef !important; font-size: 16px !important; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important; z-index: 99999 !important; white-space: nowrap !important; pointer-events: none !important; box-shadow: none !important; border: none !important; animation: floatTipIn 0.35s cubic-bezier(0.22, 0.61, 0.36, 1) forwards; }
         .float-tip-top.show { display: flex !important; }
         .float-tip-top.float-tip-out { animation: floatTipOut 0.3s ease-in forwards; }
         @keyframes floatTipIn { 0% { opacity: 0; transform: translateX(-50%) translateY(-14px) scale(0.92); } 100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); } }
         @keyframes floatTipOut { 0% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); } 100% { opacity: 0; transform: translateX(-50%) translateY(-10px) scale(0.94); } }
-        .float-tip-top .tip-icon { display: inline-flex !important; align-items: center !important; justify-content: center !important; width: 20px !important; height: 20px !important; border-radius: 50% !important; background: #ffffff !important; color: #1f1f1f !important; font-family: 'Times New Roman', Times, serif !important; font-style: italic !important; font-weight: 700 !important; font-size: 15px !important; line-height: 1 !important; flex-shrink: 0 !important; padding-bottom: 2px !important; box-sizing: border-box !important; }
+        .float-tip-top .tip-icon { display: inline-flex !important; align-items: center !important; justify-content: center !important; width: 24px !important; height: 24px !important; border-radius: 50% !important; background: #ffffff !important; color: #1f1f1f !important; font-family: 'Times New Roman', Times, serif !important; font-style: italic !important; font-weight: 700 !important; font-size: 18px !important; line-height: 1 !important; flex-shrink: 0 !important; padding-bottom: 2px !important; box-sizing: border-box !important; }
         .float-tip-top .tip-icon.is-svg { padding-bottom: 0 !important; position: relative !important; font-style: normal !important; }
         .float-tip-top .tip-icon.is-svg svg { position: absolute !important; top: 50% !important; left: 50% !important; transform: translate(-50%, -50%) !important; display: block !important; }
         .particles { position: fixed; top: 0; left: 0; width: 100%; pointer-events: none; z-index: 9998; }
@@ -464,8 +464,8 @@ body.date-off #statAge{display:none!important;}
             .clock-date { font-size: 18px; font-family: 'HarmonyOS_Regular', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; }
             .clock-weather { font-size: 16px; font-family: 'HarmonyOS_Regular', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; }
             .bar-text { font-size: 12px; }
-            .float-tip-top { font-size: 13px !important; padding: 5px 18px 5px 16px !important; gap: 8px !important; }
-            .float-tip-top .tip-icon { width: 18px !important; height: 18px !important; font-size: 13px !important; }
+            .float-tip-top { font-size: 15px !important; padding: 8px 24px 8px 20px !important; gap: 9px !important; }
+            .float-tip-top .tip-icon { width: 22px !important; height: 22px !important; font-size: 16px !important; }
             .nav-group-cards { right: auto; top: auto; transform: translateX(calc(50% + 260px)); }
             .nav-btn { height: 65px; min-width: 80px; }
             .nav-btn i { font-size: 18px; }
@@ -487,8 +487,8 @@ body.date-off #statAge{display:none!important;}
             .clock-date { font-size: 16px; font-family: 'HarmonyOS_Regular', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; }
             .clock-weather { font-size: 14px; font-family: 'HarmonyOS_Regular', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; }
             .bar-text { font-size: 11px; }
-            .float-tip-top { font-size: 12px !important; padding: 4px 14px 4px 12px !important; top: 12px !important; gap: 6px !important; }
-            .float-tip-top .tip-icon { width: 16px !important; height: 16px !important; font-size: 12px !important; }
+            .float-tip-top { font-size: 14px !important; padding: 7px 20px 7px 17px !important; top: 12px !important; gap: 8px !important; }
+            .float-tip-top .tip-icon { width: 20px !important; height: 20px !important; font-size: 15px !important; }
             .bottom-area-wrapper { position: relative; min-height: auto; flex-direction: column; gap: 20px; padding: 10px 0; align-items: center; }
             .digital-clock-card { position: relative !important; top: auto !important; right: auto !important; left: auto !important; transform: none !important; width: 100%; max-width: 100%; margin: 0 auto !important; }
             .nav-group-cards { position: relative; top: auto; right: auto; left: auto; transform: none; width: 100%; justify-content: center; align-items: center; }
@@ -813,12 +813,7 @@ body.date-off #statAge{display:none!important;}
 
         #cardFrame { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; margin: 0; padding: 0; background: #0b0b0d; display: block; }
 
-        /* =====================================================================
-           公告组件（整合自独立版「公告组件.html」）
-           · 电脑端（>768px）：入口在「网站列表」播放器架构按钮正上方，左右边缘与该按钮对齐
-             （入口与播放器架构同占第 2 列网格，再整体上移）；通知列表面板屏幕居中弹出。
-           · 手机端（≤768px）：入口在社交信息栏正下方居中；详情为底部弹层。
-           ===================================================================== */
+        /* ================== 公告组件 =================== */
         /* 手机挂载点不产生盒子（入口节点由脚本在电脑/手机两个挂载点之间迁移） */
         #noticeMountMobile { display: contents; }
         .nav-notice-item { list-style: none; display: flex; width: 100%; pointer-events: auto; }
@@ -851,8 +846,7 @@ body.date-off #statAge{display:none!important;}
         }
         @media (prefers-reduced-motion: reduce) { .nav-notice-trigger__icon.is-shaking { animation: none; } }
 
-        /* —— 电脑端（>768px）：把第一排 4 个按钮显式锁定到 4 列，公告入口与「播放器架构」同占第 2 列、
-              第 1 行（普通网格项可被拉伸到与按钮等宽，全断点左右边缘精确对齐），再整体上移到按钮正上方 —— */
+        /* —— 电脑端（>768px） —— */
         @media (min-width: 769px) {
             .nav-buttons > a.nav-btn:nth-of-type(1) { grid-column: 1; grid-row: 1; }
             .nav-buttons > a.nav-btn:nth-of-type(2) { grid-column: 2; grid-row: 1; }
@@ -1395,7 +1389,7 @@ body.date-off #statAge{display:none!important;}
                 <div class="nav-pages at-first">
                 <div class="nav-page is-active">
                 <div class="nav-buttons">
-                    <!-- 电脑端公告入口挂载点：与「播放器架构」同占第 2 列、悬于其正上方（手机端入口由脚本迁移到社交栏下方） -->
+                    <!-- 电脑端公告入口 -->
                     <div id="noticeMountDesktop">
                         <div class="nav-notice-item" id="noticeEntry">
                             <button class="nav-notice-trigger" id="noticeTrigger" type="button" aria-label="公告">
@@ -2944,9 +2938,7 @@ function closeMusicModal() {
 
     <!-- ===== 公告组件：入口挂载点迁移脚本 ===== -->
     <script>
-    /* 公告入口在两个挂载点之间迁移：
-       · 电脑端（>768px）：网站列表「播放器架构」按钮正上方，与该按钮左右对齐；
-       · 手机端（≤768px）：社交信息栏正下方居中。 */
+    /* 公告入口在两个挂载点之间迁移： */
     (function () {
         var entry = document.getElementById('noticeEntry');
         var mountDesktop = document.getElementById('noticeMountDesktop');
