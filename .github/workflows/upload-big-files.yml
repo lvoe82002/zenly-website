@@ -20,6 +20,7 @@ jobs:
       - name: Extract global.css and package-lock.json
         run: |
           unzip -o /tmp/zenly.zip -d /tmp/zenly
+          mkdir -p zenly-home-vue/src/assets/styles
           cp /tmp/zenly/zenly-home-vue/src/assets/styles/global.css zenly-home-vue/src/assets/styles/global.css
           cp /tmp/zenly/zenly-home-vue/package-lock.json zenly-home-vue/package-lock.json
 
