@@ -638,21 +638,22 @@ body.date-off #statAge{display:none!important;}
 
         }
         /* ========== 左下角网易云入口 + 居中音乐播放器弹窗 ========== */
-        .music-fab {
-            position: fixed; left: 28px; bottom: 72px; width: 44px; height: 44px; border-radius: 50%;
-            border: 1px solid rgba(255,255,255,.38); background: rgba(255,255,255,.18);
-            backdrop-filter: blur(14px) saturate(1.4); -webkit-backdrop-filter: blur(14px) saturate(1.4);
-            color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer;
-            box-shadow: 0 4px 20px rgba(0,0,0,.28); z-index: 900;
-            transition: transform .2s ease, background .2s ease, border-color .2s ease;
-        }
-        .music-fab:hover { transform: translateY(-2px) scale(1.05); background: rgba(73,177,245,.32); border-color: rgba(73,177,245,.75); }
-        .music-fab:active { transform: scale(.96); }
-        .music-fab:focus-visible { outline: 2px solid #49b1f5; outline-offset: 3px; }
-        .music-fab svg { width: 24px; height: 24px; display: block; fill: currentColor; }
-        body.mobile-menu-open .music-fab,
-        body.settings-open .music-fab,
-        body.capsule-open .music-fab { display: none !important; }
+            .music-fab {
+                position: fixed; left: 28px; bottom: 72px; width: 56px; height: 56px; border-radius: 50%;
+                border: 1px solid rgba(255,255,255,.38); background: rgba(255,255,255,.18);
+                backdrop-filter: blur(14px) saturate(1.4); -webkit-backdrop-filter: blur(14px) saturate(1.4);
+                color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer;
+                box-shadow: 0 4px 20px rgba(0,0,0,.28); z-index: 900;
+                transition: transform .2s ease, background .2s ease, border-color .2s ease;
+           }
+            .music-fab:hover { transform: translateY(-2px) scale(1.05); background: rgba(73,177,245,.32); border-color: rgba(73,177,245,.75); }
+            .music-fab:active { transform: scale(.96); }
+            .music-fab:focus-visible { outline: 2px solid #49b1f5; outline-offset: 3px; }
+            .music-fab svg { width: 30px; height: 30px; display: block; fill: currentColor; }
+
+             body.mobile-menu-open .music-fab,
+             body.settings-open .music-fab,
+             body.capsule-open .music-fab { display: none !important; }
 
         #musicModal {
             position: fixed; inset: 0; z-index: 1000000; display: none;
@@ -712,8 +713,8 @@ body.date-off #statAge{display:none!important;}
         body.music-open { overflow: hidden; }
 
         @media (max-width: 768px) {
-            .music-fab { left: 16px; bottom: calc(56px + env(safe-area-inset-bottom)); width: 44px; height: 44px; }
-            .music-fab svg { width: 22px; height: 22px; }
+            .music-fab { left: 16px; bottom: calc(56px + env(safe-area-inset-bottom)); width: 56px; height: 56px; }
+            .music-fab svg { width: 28px; height: 28px; }
             #musicModal { padding: 14px; }
             .music-modal-box { width: min(430px, calc(100vw - 24px)); max-height: 96vh; }
             .music-modal-close { width: 44px; height: 44px; top: 6px; right: 8px; }
@@ -823,12 +824,12 @@ body.date-off #statAge{display:none!important;}
             width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 2px;
             cursor: pointer; font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
             color: #fff; white-space: nowrap;
-            background: rgba(50, 50, 50, 0.4);
-            -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.10); border-radius: 12px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+            background: rgba(50, 50, 50, 0.15);
+            -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+            border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px;
+            box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.2);
             transition: background .3s ease, border-color .3s ease, transform .15s ease;
-        }
+      }
         @media (hover: hover) and (pointer: fine) {
             .nav-notice-trigger:hover { background: rgba(255, 255, 255, 0.15); border-color: rgba(255,255,255,.18); transform: translateY(-2px); }
         }
