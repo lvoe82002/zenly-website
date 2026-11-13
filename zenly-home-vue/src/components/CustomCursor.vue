@@ -90,7 +90,7 @@ onMounted(() => {
       rafId = requestAnimationFrame(animate)
       return
     }
-    const smoothing = 4
+    const smoothing = 1000000000000000
     const t = 1 - Math.exp(-smoothing * dt)
     curX += (mouseX - curX) * t
     curY += (mouseY - curY) * t
