@@ -1,0 +1,27 @@
+name: delete-vue-project
+
+on:
+  push:
+    paths:
+      - '.github/workflows/delete-vue-project.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  delete:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Remove zenly-home-vue
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm -r --ignore-unmatch zenly-home-vue
+          if git diff --cached --quiet; then
+            echo "no changes"
+          else
+            git commit -m "移除 Vue 工程，恢复单文件主页 [skip ci]"
+            git push
+          fi
