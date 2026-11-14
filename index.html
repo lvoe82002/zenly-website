@@ -1551,10 +1551,12 @@ body.date-off #statAge{display:none!important;}
     <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
         /* ===== 模糊渐清：等页面 load + 壁纸图片真正下载完成后，再拉开帷幕，壁纸和全部内容一起由模糊渐变清晰（6 秒兜底，防止卡死） ===== */
         function getInitialWallpaperUrl() {
+            /* 这里的地址只用来算“模糊渐清”的揭幕时机，不参与最终成图，
+               换成任何一张能打开的风景图即可 */
             const map = {
                 default: 'https://t.mwm.moe/ycy/',
-                daily: 'https://picsum.photos/1920/1080?random=1',
-                scenery: 'https://picsum.photos/1920/1080?random=2',
+                daily: 'https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg?auto=compress&cs=tinysrgb&w=1600',
+                scenery: 'https://images.pexels.com/photos/346529/pexels-photo-346529.jpeg?auto=compress&cs=tinysrgb&w=1600',
                 anime: 'https://t.mwm.moe/ycy/'
             };
             let type = 'anime';
@@ -2140,21 +2142,79 @@ applyEffect(currentEffect);
 
 /* ================= 壁纸 ================= */
 var currentWallpaper = localStorage.getItem('siteWallpaper') || 'anime';
-var wallpapers = {
+
+/* 风景图池：全部是可直连的横版风景照（Pexels 免费图库）。
+   想换风格直接改这个数组里的地址就行，多退少补都不影响逻辑 */
+var SCENERY_POOL = [
+  'https://images.pexels.com/photos/417074/pexels-photo-417074.jpeg?auto=compress&cs=tinysrgb&w=1600',
+  'https://images.pexels.com/photos/346529/pexels-photo-346529.jpeg?auto=compress&cs=tinysrgb&w=1600',
+  'https://images.pexels.com/photos/358482/pexels-photo-358482.jpeg?auto=compress&cs=tinysrgb&w=1600',
+  'https://images.pexels.com/photos/462162/pexels-photo-462162.jpeg?auto=compress&cs=tinysrgb&w=1600',
+  'https://images.pexels.com/photos/358457/pexels-photo-358457.jpeg?auto=compress&cs=tinysrgb&w=1600',
+  'https://images.pexels.com/photos/210186/pexels-photo-210186.jpeg?auto=compress&cs=tinysrgb&w=1600',
+  'https://images.pexels.com/photos/1287145/pexels-photo-1287145.jpeg?auto=compress&cs=tinysrgb&w=1600',
+  'https://images.pexels.com/photos/1450353/pexels-photo-1450353.jpeg?auto=compress&cs=tinysrgb&w=1600',
+  'https://images.pexels.com/photos/248797/pexels-photo-248797.jpeg?auto=compress&cs=tinysrgb&w=1600',
+  'https://images.pexels.com/photos/1173777/pexels-photo-1173777.jpeg?auto=compress&cs=tinysrgb&w=1600',
+  'https://images.pexels.com/photos/1687845/pexels-photo-1687845.jpeg?auto=compress&cs=tinysrgb&w=1600',
+  'https://images.pexels.com/photos/355465/pexels-photo-355465.jpeg?auto=compress&cs=tinysrgb&w=1600'
+];
+
+/* 每日一图：用“年+月+日”当种子，当天永远同一张，第二天自动换下一张 */
+function todaySceneryIndex() {
+  var d = new Date();
+  var seed = d.getFullYear() * 1000 + (d.getMonth() + 1) * 40 + d.getDate();
+  return seed % SCENERY_POOL.length;
+}
+/* 从池子里挑一张当第一选择，剩下的按顺序补在后面当兜底 */
+function sceneryCandidates(startIndex) {
+  var out = [];
+  for (var i = 0; i < SCENERY_POOL.length; i++) {
+    out.push(SCENERY_POOL[(startIndex + i) % SCENERY_POOL.length]);
+  }
+  return out;
+}
+
+var FIXED_WP = {
   default: 'https://t.mwm.moe/ycy/',
-  daily: 'https://picsum.photos/1920/1080?random=1',
-  scenery: 'https://picsum.photos/1920/1080?random=2',
   anime: 'https://t.mwm.moe/ycy/'
 };
-function applyWallpaper(type) {
-  var url = wallpapers[type] || wallpapers.default;
+
+function wallpaperCandidates(type) {
+  if (type === 'daily') return sceneryCandidates(todaySceneryIndex());
+  if (type === 'scenery') return sceneryCandidates(Math.floor(Math.random() * SCENERY_POOL.length));
+  return [FIXED_WP[type] || FIXED_WP.default];
+}
+
+var wallpaperSeq = 0;
+function paintWallpaper(url) {
   var wallpaperLayer = document.getElementById('wallpaper-layer');
-  if (wallpaperLayer) {
-    wallpaperLayer.style.background = 'linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(' + url + ') no-repeat center top';
-    wallpaperLayer.style.backgroundSize = 'cover';
+  if (!wallpaperLayer) return;
+  wallpaperLayer.style.background = 'linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("' + url + '") no-repeat center top';
+  wallpaperLayer.style.backgroundSize = 'cover';
+  /* 关键兜底：图片真挂了，底下是深蓝灰，不再是 #0b0b0d 的死黑 */
+  wallpaperLayer.style.backgroundColor = '#22303c';
+}
+
+function applyWallpaper(type) {
+  var list = wallpaperCandidates(type);
+  var seq = ++wallpaperSeq;
+  var i = 0;
+  function tryNext() {
+    if (seq !== wallpaperSeq) return;   /* 用户已经切到别的壁纸，放弃这次 */
+    if (i >= list.length) return;       /* 全部候选都失败：保留当前画面，绝不刷成黑 */
+    var url = list[i++];
+    var probe = new Image();
+    probe.onload = function () {
+      if (seq !== wallpaperSeq) return;
+      paintWallpaper(url);              /* 确认加载成功，才真正换上去 */
+      localStorage.setItem('siteWallpaper', type);
+    };
+    probe.onerror = tryNext;            /* 这张挂了就试下一张 */
+    probe.src = url;
   }
+  tryNext();
   syncSetRadio('wallpaperRadioGroup', 'data-v', type);
-  localStorage.setItem('siteWallpaper', type);
 }
 var COVERS = [
   { v: 'default', label: '默认壁纸' },
