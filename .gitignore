@@ -1,3 +1,5 @@
+# zenly-website
+# 单文件主页，无构建
 node_modules/
 dist/
 .DS_Store
