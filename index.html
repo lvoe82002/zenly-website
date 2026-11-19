@@ -51,14 +51,18 @@
         .center-logo-flow .logo { pointer-events: auto; }
         .logo { display: flex; align-items: center; gap: 20px; }
         .logo-img { width: 85px; height: 85px; object-fit: contain; border-radius: 6px; flex: 0 0 auto; max-width: none; align-self: center; }
-.logo img { width: 85px; height: 85px; object-fit: contain; flex: 0 0 auto; max-width: none; }
+        .logo img { width: 85px; height: 85px; object-fit: contain; flex: 0 0 auto; max-width: none; }
         .name .bg { font-family: 'Pacifico-Regular', cursive; font-size: 70px; font-weight: 400; letter-spacing: 14px; color: #fff; white-space: nowrap; display: inline-block; transform: skewX(9deg); }
         .top-empty-space { height: 400px; }
 
         .center-logo-flow.moved-logo { position: absolute; left: 22%; top: -370px; width: auto; max-width: 380px; margin: 0; z-index: 12; pointer-events: none; transform: none; }
         .center-logo-flow.moved-logo .logo { gap: 10px; pointer-events: auto; }
         .center-logo-flow.moved-logo .logo-img { width: 90px; height: 90px; transform: translateX(-15px); }
-       .center-logo-flow.moved-logo .name .bg { font-size: 80px; letter-spacing: 2px; display: inline-block; position: relative; top: -18px; }
+        @media (min-width: 1025px) {
+        .center-logo-flow.moved-logo .logo-img { width: 120px; height: 120px; margin-left: -30px; transform: translateX(10px); }
+        .center-logo-flow.moved-logo .name { transform: translateX(18px); }
+}
+        .center-logo-flow.moved-logo .name .bg { font-size: 80px; letter-spacing: 2px; display: inline-block; position: relative; top: -18px; }
         .center-logo-flow.moved-logo .name .bg .top-small { font-size: 0.5em; letter-spacing: 0; display: inline-block; margin-left: 3px; vertical-align: baseline; }
 
         .footer-box { width: 100%; padding: 12px 20px 0; text-align: center; position: relative; z-index: 1; margin-top: 20px; background: transparent !important; }
@@ -402,7 +406,7 @@ body.date-off #statAge{display:none!important;}
         .nav-buttons { display: grid; grid-template-columns: repeat(4, auto); align-items: center; gap: 15px; justify-content: center; }
         .nav-buttons { position: relative; }
         .nav-row2 { position: absolute; top: calc(100% + 15px); left: 0; width: 100%;
-            display: grid; grid-template-columns: repeat(4, max-content); gap: 15px; }
+        display: grid; grid-template-columns: repeat(4, max-content); gap: 15px; }
         .nav-btn { width: auto; min-width: 128px; height: 75px; background: rgba(0,0,0,.2509803922); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; color: #fff; border: none; box-shadow: none; transition: all .3s; cursor: pointer; padding: 0 20px; }
         .nav-btn:hover { background: rgba(0,0,0,.4); }
         .nav-btn:active { background: rgba(0,0,0,.45); }
@@ -582,7 +586,7 @@ body.date-off #statAge{display:none!important;}
             .bottom-area-wrapper { position: relative !important; width: 100% !important; min-height: 0 !important; flex: none !important; display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; gap: 0 !important; padding: 0 !important; margin: 0 !important; }
             .center-logo-flow.moved-logo { position: relative !important; top: auto !important; left: auto !important; right: auto !important; width: auto !important; max-width: calc(100vw - 48px) !important; margin: 0 0 18px 0 !important; z-index: 10 !important; transform: none !important; align-self: flex-start !important; order: 1 !important; }
             .center-logo-flow.moved-logo .logo { gap: 14px !important; align-items: center !important; }
-            .center-logo-flow.moved-logo .logo-img { width: 78px !important; height: 78px !important; border-radius: 50% !important; border: 2px solid rgba(255,255,255,0.35) !important; object-fit: cover !important; transform: translateY(10px); }
+            .center-logo-flow.moved-logo .logo-img { width: 90px !important; height: 90px !important; border-radius: 50% !important; border: 2px solid rgba(255,255,255,0.35) !important; object-fit: cover !important; transform: translate(10px, 10px); }
             .center-logo-flow.moved-logo .name .bg {
             font-size: 15vw !important;
             letter-spacing: 2px !important;
@@ -621,7 +625,7 @@ body.date-off #statAge{display:none!important;}
             body.mobile-menu-open .nav-title { font-size: 16px !important; margin-bottom: 14px !important; align-self: center !important; transform: translateX(-20px) !important; }
             body.mobile-menu-open .nav-buttons { display: grid !important; grid-template-columns: repeat(4, 1fr) !important; gap: 6px !important; width: 100% !important; }
             body.mobile-menu-open .nav-row2 { position: static !important; grid-column: 1 / -1 !important;
-                display: grid !important; grid-template-columns: repeat(4, 1fr) !important; gap: 6px !important; }
+            display: grid !important; grid-template-columns: repeat(4, 1fr) !important; gap: 6px !important; }
             body.mobile-menu-open .nav-btn { min-width: 0 !important; height: 58px !important; padding: 0 3px !important; border-radius: 10px !important; }
             body.mobile-menu-open .nav-btn svg { width: 17px !important; height: 17px !important; margin-bottom: 3px !important; }
 
@@ -639,7 +643,7 @@ body.date-off #statAge{display:none!important;}
         }
         /* ========== 左下角网易云入口 + 居中音乐播放器弹窗 ========== */
             .music-fab {
-                position: fixed; left: 28px; bottom: 72px; width: 56px; height: 56px; border-radius: 50%;
+                position: fixed; left: 28px; bottom: 72px; width: 46px; height: 46px; border-radius: 50%;
                 border: 1px solid rgba(255,255,255,.38); background: rgba(255,255,255,.18);
                 backdrop-filter: blur(14px) saturate(1.4); -webkit-backdrop-filter: blur(14px) saturate(1.4);
                 color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer;
@@ -649,7 +653,7 @@ body.date-off #statAge{display:none!important;}
             .music-fab:hover { transform: translateY(-2px) scale(1.05); background: rgba(73,177,245,.32); border-color: rgba(73,177,245,.75); }
             .music-fab:active { transform: scale(.96); }
             .music-fab:focus-visible { outline: 2px solid #49b1f5; outline-offset: 3px; }
-            .music-fab svg { width: 30px; height: 30px; display: block; fill: currentColor; }
+            .music-fab svg { width: 24px; height: 24px; display: block; fill: currentColor; }
 
              body.mobile-menu-open .music-fab,
              body.settings-open .music-fab,
@@ -713,8 +717,8 @@ body.date-off #statAge{display:none!important;}
         body.music-open { overflow: hidden; }
 
         @media (max-width: 768px) {
-            .music-fab { left: 16px; bottom: calc(56px + env(safe-area-inset-bottom)); width: 56px; height: 56px; }
-            .music-fab svg { width: 28px; height: 28px; }
+            .music-fab { left: 16px; bottom: calc(56px + env(safe-area-inset-bottom)); width: 44px; height: 44px; }
+            .music-fab svg { width: 23px; height: 23px; }
             #musicModal { padding: 14px; }
             .music-modal-box { width: min(430px, calc(100vw - 24px)); max-height: 96vh; }
             .music-modal-close { width: 44px; height: 44px; top: 6px; right: 8px; }
@@ -759,7 +763,7 @@ body.date-off #statAge{display:none!important;}
         @media (min-width: 1025px) {
                 .capsule-inner {
                  scrollbar-width: none;
-               -ms-overflow-style: none;
+                -ms-overflow-style: none;
                  padding-bottom: 10px;
                  height: 80%;
                  max-height: none;
@@ -1239,9 +1243,9 @@ body.date-off #statAge{display:none!important;}
                             <i class="fa-solid fa-hourglass-half"></i> 时光胶囊
                         </div>
                         <div class="capsule-actions">
-    <div class="capsule-btn setting-btn" title="设置"><svg width="28" height="28" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18.2838 43.1713C14.9327 42.1736 11.9498 40.3213 9.58787 37.867C10.469 36.8227 11 35.4734 11 34.0001C11 30.6864 8.31371 28.0001 5 28.0001C4.79955 28.0001 4.60139 28.01 4.40599 28.0292C4.13979 26.7277 4 25.3803 4 24.0001C4 21.9095 4.32077 19.8938 4.91579 17.9995C4.94381 17.9999 4.97188 18.0001 5 18.0001C8.31371 18.0001 11 15.3138 11 12.0001C11 11.0488 10.7786 10.1493 10.3846 9.35011C12.6975 7.1995 15.5205 5.59002 18.6521 4.72314C19.6444 6.66819 21.6667 8.00013 24 8.00013C26.3333 8.00013 28.3556 6.66819 29.3479 4.72314C32.4795 5.59002 35.3025 7.1995 37.6154 9.35011C37.2214 10.1493 37 11.0488 37 12.0001C37 15.3138 39.6863 18.0001 43 18.0001C43.0281 18.0001 43.0562 17.9999 43.0842 17.9995C43.6792 19.8938 44 21.9095 44 24.0001C44 25.3803 43.8602 26.7277 43.594 28.0292C43.3986 28.01 43.2005 28.0001 43 28.0001C39.6863 28.0001 37 30.6864 37 34.0001C37 35.4734 37.531 36.8227 38.4121 37.867C36.0502 40.3213 33.0673 42.1736 29.7162 43.1713C28.9428 40.752 26.676 39.0001 24 39.0001C21.324 39.0001 19.0572 40.752 18.2838 43.1713Z" fill="#ffffff60" stroke="#ffffff60" stroke-width="4" stroke-linejoin="round"/><path d="M24 31C27.866 31 31 27.866 31 24C31 20.134 27.866 17 24 17C20.134 17 17 20.134 17 24C17 27.866 20.134 31 24 31Z" fill="#FFF" stroke="#FFF" stroke-width="4" stroke-linejoin="round"/></svg></div>
-    <div class="capsule-btn close-btn" title="关闭"><svg width="28" height="28" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24 44C35.0457 44 44 35.0457 44 24C44 12.9543 35.0457 4 24 4C12.9543 4 4 12.9543 4 24C4 35.0457 12.9543 44 24 44Z" fill="#ffffff60" stroke="#ffffff60" stroke-width="4" stroke-linejoin="round"/><path d="M29.6567 18.3432L18.343 29.6569" stroke="#FFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.3433 18.3432L29.657 29.6569" stroke="#FFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-</div>
+                        <div class="capsule-btn setting-btn" title="设置"><svg width="28" height="28" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18.2838 43.1713C14.9327 42.1736 11.9498 40.3213 9.58787 37.867C10.469 36.8227 11 35.4734 11 34.0001C11 30.6864 8.31371 28.0001 5 28.0001C4.79955 28.0001 4.60139 28.01 4.40599 28.0292C4.13979 26.7277 4 25.3803 4 24.0001C4 21.9095 4.32077 19.8938 4.91579 17.9995C4.94381 17.9999 4.97188 18.0001 5 18.0001C8.31371 18.0001 11 15.3138 11 12.0001C11 11.0488 10.7786 10.1493 10.3846 9.35011C12.6975 7.1995 15.5205 5.59002 18.6521 4.72314C19.6444 6.66819 21.6667 8.00013 24 8.00013C26.3333 8.00013 28.3556 6.66819 29.3479 4.72314C32.4795 5.59002 35.3025 7.1995 37.6154 9.35011C37.2214 10.1493 37 11.0488 37 12.0001C37 15.3138 39.6863 18.0001 43 18.0001C43.0281 18.0001 43.0562 17.9999 43.0842 17.9995C43.6792 19.8938 44 21.9095 44 24.0001C44 25.3803 43.8602 26.7277 43.594 28.0292C43.3986 28.01 43.2005 28.0001 43 28.0001C39.6863 28.0001 37 30.6864 37 34.0001C37 35.4734 37.531 36.8227 38.4121 37.867C36.0502 40.3213 33.0673 42.1736 29.7162 43.1713C28.9428 40.752 26.676 39.0001 24 39.0001C21.324 39.0001 19.0572 40.752 18.2838 43.1713Z" fill="#ffffff60" stroke="#ffffff60" stroke-width="4" stroke-linejoin="round"/><path d="M24 31C27.866 31 31 27.866 31 24C31 20.134 27.866 17 24 17C20.134 17 17 20.134 17 24C17 27.866 20.134 31 24 31Z" fill="#FFF" stroke="#FFF" stroke-width="4" stroke-linejoin="round"/></svg></div>
+                        <div class="capsule-btn close-btn" title="关闭"><svg width="28" height="28" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24 44C35.0457 44 44 35.0457 44 24C44 12.9543 35.0457 4 24 4C12.9543 4 4 12.9543 4 24C4 35.0457 12.9543 44 24 44Z" fill="#ffffff60" stroke="#ffffff60" stroke-width="4" stroke-linejoin="round"/><path d="M29.6567 18.3432L18.343 29.6569" stroke="#FFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.3433 18.3432L29.657 29.6569" stroke="#FFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                     </div>
                     </div>
 
                     <div class="capsule-body">
@@ -2779,7 +2783,7 @@ function showSetToast(msg) {
         });
     })();
     </script>
-<!-- 一言卡片脚本（点击卡片换一句，500ms 防抖） -->
+    <!-- 一言卡片脚本（点击卡片换一句，500ms 防抖） -->
     <script>
     (function () {
       var textEl = document.getElementById('hitokotoText');
